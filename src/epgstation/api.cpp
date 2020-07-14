@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 #include "api.h"
+#include "../base64/base64.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
 
@@ -19,7 +20,12 @@ namespace api {
     {
         std::string text;
         const std::string url = baseURL + apiPath;
-        if (void* handle = XBMC->OpenFile(url.c_str(), 0)) {
+        if (void* handle = XBMC->CURLCreate(url.c_str())) {
+            if (!XBMC->CURLOpen(handle, XFILE::READ_NO_CACHE)) {
+                XBMC->Log(ADDON::LOG_ERROR, "[%s] request failed", url.c_str());
+                XBMC->CloseFile(handle);
+                return REQUEST_FAILED;
+            }
             const unsigned int buffer_size = 4096;
             char buffer[buffer_size];
             text.clear();
@@ -43,44 +49,45 @@ namespace api {
         return text.length();
     }
 
-    int requestDELETE(std::string apiPath)
+    int request(std::string method, std::string path, std::string body = "")
     {
-        const std::string url = baseURL + apiPath;
-        if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
-            const unsigned int buffer_size = 20;
-            const char buffer[] = "{\"_method\":\"DELETE\"}";
-            XBMC->WriteFile(handle, buffer, buffer_size);
-            XBMC->CloseFile(handle);
-            return 0;
-        } else {
-            return REQUEST_FAILED;
-        }
-    }
+        const std::string url = baseURL + path;
 
-    int requestPUT(std::string apiPath)
-    {
-        const std::string url = baseURL + apiPath;
-        if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
-            const unsigned int buffer_size = 17;
-            const char buffer[] = "{\"_method\":\"PUT\"}";
-            XBMC->WriteFile(handle, buffer, buffer_size);
-            XBMC->CloseFile(handle);
-            return 0;
-        } else {
+        void* handle = XBMC->CURLCreate(url.c_str());
+        if (handle == NULL) {
+            XBMC->Log(ADDON::LOG_ERROR, "Failed to create URL: %s", url.c_str());
             return REQUEST_FAILED;
         }
-    }
 
-    int requestPOST(std::string apiPath, const char buffer[], const unsigned int buffer_size)
-    {
-        const std::string url = baseURL + apiPath;
-        if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
-            XBMC->WriteFile(handle, buffer, buffer_size);
+        if (!XBMC->CURLAddOption(handle, XFILE::CURLOPTIONTYPE::CURL_OPTION_PROTOCOL, "customrequest", method.c_str())) {
+            XBMC->Log(ADDON::LOG_ERROR, "Failed to set %s method to %s", method.c_str(), url.c_str());
             XBMC->CloseFile(handle);
-            return 0;
-        } else {
             return REQUEST_FAILED;
         }
+
+        if (!body.empty()) {
+            if (!XBMC->CURLAddOption(handle, XFILE::CURLOPTIONTYPE::CURL_OPTION_HEADER, "Content-Type", "application/json")) {
+                XBMC->Log(ADDON::LOG_ERROR, "Failed to set content-type to %s", url.c_str());
+                XBMC->CloseFile(handle);
+                return REQUEST_FAILED;
+            }
+
+            const std::string data = base64_encode(body);
+            if (!XBMC->CURLAddOption(handle, XFILE::CURLOPTIONTYPE::CURL_OPTION_PROTOCOL, "postdata", data.c_str())) {
+                XBMC->Log(ADDON::LOG_ERROR, "Failed to set post data to %s", url.c_str());
+                XBMC->CloseFile(handle);
+                return REQUEST_FAILED;
+            }
+        }
+
+        if (!XBMC->CURLOpen(handle, XFILE::READ_NO_CACHE)) {
+            XBMC->Log(ADDON::LOG_ERROR, "Failed to open URL: %s", url.c_str());
+            XBMC->CloseFile(handle);
+            return REQUEST_FAILED;
+        }
+
+        XBMC->CloseFile(handle);
+        return 0;
     }
 
     // FIXME: Support other types
@@ -109,29 +116,29 @@ namespace api {
     int deleteRecordedProgram(std::string id)
     {
         const std::string apiPath = "recorded/" + id;
-        return requestDELETE(apiPath);
+        return request("DELETE", apiPath);
     }
 
     // DELETE /api/reserves/:id
     int deleteReserves(std::string id)
     {
         const std::string apiPath = "reserves/" + id;
-        return requestDELETE(apiPath);
+        return request("DELETE", apiPath);
     }
 
     // DELETE /api/reserves/:id/skip
     int deleteReservesSkip(std::string id)
     {
         const std::string apiPath = "reserves/" + id + "/skip";
-        return requestDELETE(apiPath);
+        return request("DELETE", apiPath);
     }
 
     // POST /api/reserves
     int postReserves(std::string id)
     {
-        std::string buffer = "{\"programId\":" + id + ",\"allowEndLack\":true}\"_method\":\"POST\"}";
+        std::string buffer = "{\"programId\":" + id + ",\"allowEndLack\":true}";
         const std::string apiPath = "reserves";
-        return requestPOST(apiPath, buffer.c_str(), buffer.size());
+        return request("POST", apiPath, buffer);
     }
 
     // GET /api/rules
@@ -148,21 +155,21 @@ namespace api {
         const std::string apiPath = "rules";
         std::string buffer = "{\"search\":{\"week\":127,\"keyword\":\"" + title + "\",\"title\":true,\"description\":true,\"GR\":true,\"BS\":true,\"CS\":"
                                                                                   "true,\"SKY\":true},\"option\":{\"enable\":true,\"allowEndLack\":true}}";
-        return requestPOST(apiPath, buffer.c_str(), buffer.size());
+        return request("POST", apiPath, buffer);
     }
 
     // PUT /api/rules/:id/:action
     int putRuleAction(int id, bool state)
     {
         const std::string apiPath = "rules/" + std::to_string(id) + (state ? "/enable" : "/disable");
-        return requestPUT(apiPath);
+        return request("PUT", apiPath);
     }
 
     // PUT /api/schedule/update
     int putScheduleUpdate()
     {
         const std::string apiPath = "schedule/update";
-        return requestPUT(apiPath);
+        return request("PUT", apiPath);
     }
 
     // GET /api/storage
