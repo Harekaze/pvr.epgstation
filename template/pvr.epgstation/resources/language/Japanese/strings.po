@@ -40,10 +40,6 @@ msgctxt "#30400"
 msgid "Recordings"
 msgstr "録画"
 
-msgctxt "#30401"
-msgid "Show thumbnail"
-msgstr "サムネイルを表示する"
-
 msgctxt "#30500"
 msgid "TV Guide"
 msgstr "番組表"

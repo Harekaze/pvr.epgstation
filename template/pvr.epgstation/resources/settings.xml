@@ -12,6 +12,5 @@
 
 	<!-- Recordings -->
 	<category label="30400">
-		<setting id="show_thumbnail" type="bool" label="30401" default="true" />
 	</category>
 </settings>

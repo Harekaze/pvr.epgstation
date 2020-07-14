@@ -46,11 +46,7 @@ msgctxt "#30400"
 msgid "Recordings"
 msgstr ""
 
-msgctxt "#30401"
-msgid "Show thumbnail"
-msgstr ""
-
-#empty strings from id 30402 to 30499
+#empty strings from id 30401 to 30499
 
 msgctxt "#30500"
 msgid "TV Guide"
