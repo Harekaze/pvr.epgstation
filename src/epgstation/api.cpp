@@ -83,106 +83,92 @@ namespace api {
         }
     }
 
-    // GET /schedule.json
+    // FIXME: Support other types
+    // GET /api/schedule?type=GR
     int getSchedule(picojson::value& response)
     {
-        const std::string apiPath = "schedule.json";
+        const std::string apiPath = "schedule?type=GR";
         return requestGET(apiPath, response);
     }
 
-    // GET /recorded.json
+    // GET /api/recorded
     int getRecorded(picojson::value& response)
     {
-        const std::string apiPath = "recorded.json";
+        const std::string apiPath = "recorded";
         return requestGET(apiPath, response);
     }
 
-    // GET /reserves.json
+    // GET /api/reserves
     int getReserves(picojson::value& response)
     {
-        const std::string apiPath = "reserves.json";
+        const std::string apiPath = "reserves";
         return requestGET(apiPath, response);
     }
 
-    // DELETE /recorded/:id.json
+    // DELETE /api/recorded/:id
     int deleteRecordedProgram(std::string id)
     {
-        const std::string apiPath = "recorded/" + id + ".json";
+        const std::string apiPath = "recorded/" + id;
         return requestDELETE(apiPath);
     }
 
-    // DELETE /recording/:id.json
-    int deleteRecordingProgram(std::string id)
+    // DELETE /api/reserves/:id
+    int deleteReserves(std::string id)
     {
-        const std::string apiPath = "recording/" + id + ".json";
+        const std::string apiPath = "reserves/" + id;
         return requestDELETE(apiPath);
     }
 
-    // PUT /reserves/:id/skip.json
-    int putReservesSkip(std::string id)
+    // DELETE /api/reserves/:id/skip
+    int deleteReservesSkip(std::string id)
     {
-        const std::string apiPath = "reserves/" + id + "/skip.json";
-        return requestPUT(apiPath);
+        const std::string apiPath = "reserves/" + id + "/skip";
+        return requestDELETE(apiPath);
     }
 
-    // PUT /reserves/:id/unskip.json
-    int putReservesUnskip(std::string id)
+    // POST /api/reserves
+    int postReserves(std::string id)
     {
-        const std::string apiPath = "reserves/" + id + "/unskip.json";
-        return requestPUT(apiPath);
-    }
-
-    // PUT /program/:id.json
-    int putProgram(std::string id)
-    {
-        const std::string apiPath = "program/" + id + ".json";
-        return requestPUT(apiPath);
-    }
-
-    // GET /rules.json
-    int getRules(picojson::value& response)
-    {
-        const std::string apiPath = "rules.json";
-        return requestGET(apiPath, response);
-    }
-
-    // POST /rules.json
-    int postRule(std::string type, std::string channel, std::string title, std::string genre)
-    {
-        const std::string apiPath = "rules.json";
-        std::string buffer = "{\"types\":[\"\"],\"channels\":[\"\"],\"hour\":{\"start\":0,\"end\":24},\"reserve_titles\":[\"\"],\"categories\":[\"\"],\"_method\":\"POST\"}";
-        buffer.replace(95, 0, genre);
-        buffer.replace(77, 0, title);
-        buffer.replace(27, 0, channel);
-        buffer.replace(11, 0, type);
+        std::string buffer = "{\"programId\":" + id + ",\"allowEndLack\":true}\"_method\":\"POST\"}";
+        const std::string apiPath = "reserves";
         return requestPOST(apiPath, buffer.c_str(), buffer.size());
     }
 
-    // PUT /rules/:id/:action.json
+    // GET /api/rules
+    int getRules(picojson::value& response)
+    {
+        const std::string apiPath = "rules";
+        return requestGET(apiPath, response);
+    }
+
+    // FIXME: Apply other arguments
+    // POST /api/rules
+    int postRules(std::string type, std::string channel, std::string title, std::string genre)
+    {
+        const std::string apiPath = "rules";
+        std::string buffer = "{\"search\":{\"week\":127,\"keyword\":\"" + title + "\",\"title\":true,\"description\":true,\"GR\":true,\"BS\":true,\"CS\":"
+                                                                                  "true,\"SKY\":true},\"option\":{\"enable\":true,\"allowEndLack\":true}}";
+        return requestPOST(apiPath, buffer.c_str(), buffer.size());
+    }
+
+    // PUT /api/rules/:id/:action
     int putRuleAction(int id, bool state)
     {
-        const std::string apiPath = "rules/" + std::to_string(id) + (state ? "/enable" : "/disable") + ".json";
+        const std::string apiPath = "rules/" + std::to_string(id) + (state ? "/enable" : "/disable");
         return requestPUT(apiPath);
     }
 
-    // DELETE /reserves/:id.json
-    int deleteReserves(std::string id)
+    // PUT /api/schedule/update
+    int putScheduleUpdate()
     {
-        const std::string apiPath = "reserves/" + id + ".json";
-        return requestDELETE(apiPath);
-    }
-
-    // PUT /scheduler.json
-    int putScheduler()
-    {
-        const std::string apiPath = "scheduler.json";
+        const std::string apiPath = "schedule/update";
         return requestPUT(apiPath);
     }
 
-    // GET /storage.json
+    // GET /api/storage
     int getStorage(picojson::value& response)
     {
-        const std::string apiPath = "storage.json";
+        const std::string apiPath = "storage";
         return requestGET(apiPath, response);
     }
 

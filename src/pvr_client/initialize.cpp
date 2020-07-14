@@ -207,9 +207,9 @@ PVR_ERROR CallMenuHook(const PVR_MENUHOOK& menuhook, const PVR_MENUHOOK_DATA& it
         return PVR_ERROR_NO_ERROR;
     }
     if (menuhook.category == PVR_MENUHOOK_ALL && menuhook.iHookId == MENUHOOK_FORCE_EXECUTE_SCHEDULER) {
-        if (epgstation::api::putScheduler() == epgstation::api::REQUEST_FAILED) {
-            XBMC->Log(ADDON::LOG_ERROR, "[scheduler.json] Request failed");
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[scheduler.json] Request failed");
+        if (epgstation::api::putScheduleUpdate() == epgstation::api::REQUEST_FAILED) {
+            XBMC->Log(ADDON::LOG_ERROR, "[schedule/update] Request failed");
+            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[schedule/update] Request failed");
             return PVR_ERROR_SERVER_ERROR;
         }
         PVR->TriggerTimerUpdate();

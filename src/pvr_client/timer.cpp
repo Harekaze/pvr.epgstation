@@ -165,7 +165,7 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
     if (timer.state != resv.state) {
         switch (timer.state) {
         case PVR_TIMER_STATE_SCHEDULED:
-            if (epgstation::api::putReservesUnskip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
+            if (epgstation::api::deleteReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
                 XBMC->Log(ADDON::LOG_NOTICE, "Unskip reserving: %s", timer.strDirectory);
                 break;
             }
@@ -173,7 +173,7 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
             XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to enable state: %s", timer.strDirectory);
             return PVR_ERROR_SERVER_ERROR;
         case PVR_TIMER_STATE_DISABLED:
-            if (epgstation::api::putReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
+            if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
                 XBMC->Log(ADDON::LOG_NOTICE, "Skip reserving: %s", timer.strDirectory);
                 break;
             }
@@ -227,7 +227,7 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
                         break;
                     }
                 }
-                if (epgstation::api::postRule(strChannelType, strChannelId, timer.strEpgSearchString, genre) != epgstation::api::REQUEST_FAILED) {
+                if (epgstation::api::postRules(strChannelType, strChannelId, timer.strEpgSearchString, genre) != epgstation::api::REQUEST_FAILED) {
                     XBMC->Log(ADDON::LOG_NOTICE, "Create new rule: [%s:%s]<%s> \"%s\"",
                         strChannelType.c_str(), strChannelId.c_str(), genre.c_str(), timer.strEpgSearchString);
                     sleep(isLive ? 5 : 1);
@@ -242,7 +242,7 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
             }
             for (const epgstation::EPG_PROGRAM program : schedule.second) {
                 if (program.startTime == timer.startTime && program.endTime == timer.endTime) {
-                    if (epgstation::api::putProgram(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) {
+                    if (epgstation::api::postReserves(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) {
                         XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: %s", program.strUniqueBroadcastId.c_str());
                         bool isLive = false;
                         time_t now;
@@ -279,7 +279,7 @@ PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
                         time_t now;
                         time(&now);
                         if (program.startTime < now && now < program.endTime) { // Ongoing recording
-                            if (epgstation::api::deleteRecordingProgram(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) { // Cancel recording
+                            if (epgstation::api::deleteReserves(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) { // Cancel recording
                                 XBMC->Log(ADDON::LOG_NOTICE, "Cancel ongoing recording program: %s", program.strUniqueBroadcastId.c_str());
                                 sleep(5);
                                 PVR->TriggerRecordingUpdate();
@@ -303,7 +303,7 @@ PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
                                 return PVR_ERROR_SERVER_ERROR;
                             }
                         } else {
-                            if (epgstation::api::putReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
+                            if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
                                 XBMC->Log(ADDON::LOG_NOTICE, "Skip reserving: %s", timer.strDirectory);
                                 sleep(1);
                                 PVR->TriggerRecordingUpdate();
