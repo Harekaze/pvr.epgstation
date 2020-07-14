@@ -22,39 +22,30 @@ bool Reserve::refresh()
 
     reserves.clear();
 
-    time_t now;
-    time(&now);
+    int index = 0;
+    picojson::object& root = response.get<picojson::object>();
 
-    for (picojson::value& a : response.get<picojson::array>()) {
-        picojson::object& p = a.get<picojson::object>();
-        // Skip past tv program
-        if ((p["end"].get<double>() / 1000) < now) {
-            continue;
-        }
+    for (picojson::value& a : root["reserves"].get<picojson::array>()) {
+        picojson::object& r = a.get<picojson::object>();
+        picojson::object& p = r["program"].get<picojson::object>();
+
         struct PVR_TIMER resv;
-        char* endptr;
 
-        const std::string strSubstrId = p["id"].get<std::string>().substr(p["id"].get<std::string>().size() - 6, 6);
-        resv.iEpgUid = strtoul(strSubstrId.c_str(), &endptr, 36);
-        resv.iClientIndex = resv.iEpgUid;
-        resv.iClientChannelUid = p["channel"].get<picojson::object>()["sid"].is<std::string>() ? std::atoi((p["channel"].get<picojson::object>()["sid"].get<std::string>()).c_str()) : (int)(p["channel"].get<picojson::object>()["sid"].get<double>());
-        strncpy(resv.strTitle, p["fullTitle"].get<std::string>().c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-        strncpy(resv.strSummary, p["detail"].get<std::string>().c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
-        strncpy(resv.strDirectory, p["id"].get<std::string>().c_str(), PVR_ADDON_URL_STRING_LENGTH - 1); // instead of strProgramId
-        if (p["isConflict"].is<bool>() && p["isConflict"].get<bool>()) {
-            resv.state = PVR_TIMER_STATE_CONFLICT_NOK;
-        } else if (p["isSkip"].is<bool>() && p["isSkip"].get<bool>()) {
-            resv.state = PVR_TIMER_STATE_DISABLED;
-        } else {
-            resv.state = PVR_TIMER_STATE_SCHEDULED;
-        }
-        resv.startTime = (time_t)(p["start"].get<double>() / 1000);
-        resv.endTime = (time_t)(p["end"].get<double>() / 1000);
-        resv.iGenreType = epgstation::iGenreTypePair[p["category"].get<std::string>()] & epgstation::GENRE_TYPE_MASK;
-        resv.iGenreSubType = epgstation::iGenreTypePair[p["category"].get<std::string>()] & epgstation::GENRE_SUBTYPE_MASK;
+        resv.iEpgUid = (unsigned int)(p["id"].get<double>()); // FIXME: Overflow
+        resv.iClientIndex = index++;
+        resv.iClientChannelUid = (int)(p["channelId"].get<double>());
+        strncpy(resv.strTitle, p["name"].get<std::string>().c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+        strncpy(resv.strSummary, p["extended"].get<std::string>().c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
+        strncpy(resv.strDirectory, std::to_string((unsigned long)(p["id"].get<double>())).c_str(), PVR_ADDON_URL_STRING_LENGTH - 1); // NOTE: Store original ID
+
+        resv.state = PVR_TIMER_STATE_SCHEDULED;
+        resv.startTime = (time_t)(p["startAt"].get<double>() / 1000);
+        resv.endTime = (time_t)(p["endAt"].get<double>() / 1000);
+        resv.iGenreType = p["genre1"].is<double>() ? (int)(p["genre1"].get<double>()) : 0;
+        resv.iGenreSubType = p["genre2"].is<double>() ? (int)(p["genre2"].get<double>()) : 0;
         resv.bStartAnyTime = false;
         resv.bEndAnyTime = false;
-        resv.iTimerType = (p["isManualReserved"].is<bool>() && p["isManualReserved"].get<bool>()) ? TIMER_MANUAL_RESERVED : TIMER_PATTERN_MATCHED;
+        resv.iTimerType = r["ruleId"].is<double>() ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
 
         reserves.push_back(resv);
     }
