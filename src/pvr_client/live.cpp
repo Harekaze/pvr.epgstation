@@ -61,14 +61,8 @@ PVR_ERROR IsEPGTagPlayable(const EPG_TAG* tag, bool* bIsPlayable)
 void* liveStreamHandle = NULL;
 bool OpenLiveStream(const PVR_CHANNEL& channel)
 {
-    std::string sId = "";
-    for (unsigned long iId = channel.iSubChannelNumber * 100000 + channel.iUniqueId; iId > 0; iId /= 36) {
-        const int i = iId % 36;
-        const char c = i < 10 ? '0' + i : 'a' + i - 10;
-        sId = c + sId;
-    }
     char url[1024];
-    snprintf(url, sizeof(url) - 1, (const char*)(epgstation::api::baseURL + g_schedule.liveStreamingPath).c_str(), sId.c_str());
+    snprintf(url, sizeof(url) - 1, (const char*)(epgstation::api::baseURL + g_schedule.liveStreamingPath).c_str(), channel.iUniqueId);
     liveStreamHandle = XBMC->OpenFile(url, 0);
     return liveStreamHandle != NULL;
 }
