@@ -76,13 +76,13 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
         epgstation::api::baseURL += "api/";
     }
 
-    g_schedule.liveStreamingPath = "channel/%s/watch.m2ts?ext=m2ts";
-    g_schedule.channelLogoPath = "channel/%s/logo.png";
-    g_recorded.recordedStreamingPath = "recorded/%s/watch.m2ts?ext=m2ts";
+    g_schedule.liveStreamingPath = "streams/live/%u/mpegts";
+    g_schedule.channelLogoPath = "channels/%u/logo";
+    g_recorded.recordedStreamingPath = "recorded/%s/file";
 
     int boolValue = 0;
     if (XBMC->GetSetting("show_thumbnail", &boolValue) && boolValue) {
-        g_recorded.recordedThumbnailPath = "recorded/%s/preview.png?pos=";
+        g_recorded.recordedThumbnailPath = "recorded/%s/thumbnail";
     } else {
         g_recorded.recordedThumbnailPath = "";
     }
