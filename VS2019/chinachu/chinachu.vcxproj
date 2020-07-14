@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7C081EBB-5B67-4F16-8421-654C46E7A8D4}</ProjectGuid>
-    <RootNamespace>chinachu</RootNamespace>
+    <RootNamespace>epgstation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -74,22 +74,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\chinachu\api.cpp" />
-    <ClCompile Include="..\..\src\chinachu\recorded.cpp" />
-    <ClCompile Include="..\..\src\chinachu\recording.cpp" />
-    <ClCompile Include="..\..\src\chinachu\reserves.cpp" />
-    <ClCompile Include="..\..\src\chinachu\rules.cpp" />
-    <ClCompile Include="..\..\src\chinachu\schedule.cpp" />
+    <ClCompile Include="..\..\src\epgstation\api.cpp" />
+    <ClCompile Include="..\..\src\epgstation\recorded.cpp" />
+    <ClCompile Include="..\..\src\epgstation\recording.cpp" />
+    <ClCompile Include="..\..\src\epgstation\reserves.cpp" />
+    <ClCompile Include="..\..\src\epgstation\rules.cpp" />
+    <ClCompile Include="..\..\src\epgstation\schedule.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\chinachu\genre.h" />
-    <ClInclude Include="..\..\src\chinachu\api.h" />
-    <ClInclude Include="..\..\src\chinachu\chinachu.h" />
-    <ClInclude Include="..\..\src\chinachu\recorded.h" />
-    <ClInclude Include="..\..\src\chinachu\recording.h" />
-    <ClInclude Include="..\..\src\chinachu\reserves.h" />
-    <ClInclude Include="..\..\src\chinachu\rules.h" />
-    <ClInclude Include="..\..\src\chinachu\schedule.h" />
+    <ClInclude Include="..\..\include\epgstation\genre.h" />
+    <ClInclude Include="..\..\src\epgstation\api.h" />
+    <ClInclude Include="..\..\src\epgstation\epgstation.h" />
+    <ClInclude Include="..\..\src\epgstation\recorded.h" />
+    <ClInclude Include="..\..\src\epgstation\recording.h" />
+    <ClInclude Include="..\..\src\epgstation\reserves.h" />
+    <ClInclude Include="..\..\src\epgstation\rules.h" />
+    <ClInclude Include="..\..\src\epgstation\schedule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

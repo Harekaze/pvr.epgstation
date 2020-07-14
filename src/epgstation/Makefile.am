@@ -1,9 +1,9 @@
-noinst_LTLIBRARIES = libchinachu.la
+noinst_LTLIBRARIES = libepgstation.la
 
-libchinachu_la_SOURCES = \
+libepgstation_la_SOURCES = \
 	api.cpp \
 	api.h \
-	chinachu.h \
+	epgstation.h \
 	recorded.cpp \
 	recorded.h \
 	recording.cpp \
@@ -15,7 +15,7 @@ libchinachu_la_SOURCES = \
 	schedule.cpp \
 	schedule.h
 
-libchinachu_la_LDFLAGS = \
+libepgstation_la_LDFLAGS = \
 	-avoid-version
 
 AM_CPPFLAGS = \
@@ -27,4 +27,4 @@ AM_CPPFLAGS = \
 EXTRA_DIST = \
 	include
 
-all: libchinachu.la
+all: libepgstation.la

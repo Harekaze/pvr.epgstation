@@ -2,17 +2,17 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([pvrchinachu], [5.0.0], [Harekaze project])
+AC_INIT([pvrepgstation], [5.0.0], [Harekaze2 project])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign])
 LT_INIT
 
-ADDONNAME=pvr.chinachu.so
+ADDONNAME=pvr.epgstation.so
 LIBEXT=so
 
 case $host in
 	arm-apple-darwin)
-		ADDONNAME=pvr.chinachu-ios.dylib
+		ADDONNAME=pvr.epgstation-ios.dylib
 		LIBEXT=dylib
 		CXX=$(xcrun --sdk iphoneos --find clang++)
 		LD=$(xcrun --sdk iphoneos --find ld)
@@ -21,11 +21,11 @@ case $host in
 		AC_SUBST(LDFLAGS_EXT, "-arch arm64 -isysroot $SYSROOT")
 		;;
 	*-apple-*)
-		ADDONNAME=pvr.chinachu.dylib
+		ADDONNAME=pvr.epgstation.dylib
 		LIBEXT=dylib
 		;;
 	arm*-*-linux-gnu*)
-		ADDONNAME=pvr.chinachu.armel.so
+		ADDONNAME=pvr.epgstation.armel.so
 		AC_SUBST(AM_CPPFLAGS_EXT, "-D_ARMEL")
 		;;
 esac
@@ -56,6 +56,6 @@ AC_CHECK_FUNCS([localeconv memset modf select strdup])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
-                 src/chinachu/Makefile
+                 src/epgstation/Makefile
                  src/pvr_client/Makefile])
 AC_OUTPUT

@@ -1,22 +1,22 @@
 /*
  *         Copyright (C) 2015-2018 Yuki MIZUNO
- *         https://github.com/Harekaze/pvr.chinachu/
+ *         https://github.com/Harekaze/pvr.epgstation/
  *
  *
- * This file is part of pvr.chinachu.
+ * This file is part of pvr.epgstation.
  *
- * pvr.chinachu is free software: you can redistribute it and/or modify
+ * pvr.epgstation is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * pvr.chinachu is distributed in the hope that it will be useful,
+ * pvr.epgstation is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with pvr.chinachu.  If not, see <http://www.gnu.org/licenses/>.
+ * along with pvr.epgstation.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #include <iostream>
@@ -24,7 +24,7 @@
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
-#include "chinachu/chinachu.h"
+#include "epgstation/epgstation.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
@@ -33,7 +33,7 @@
 #include <unistd.h>
 #endif
 
-extern chinachu::Recorded g_recorded;
+extern epgstation::Recorded g_recorded;
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 extern CHelper_libXBMC_pvr *PVR;
 
@@ -55,13 +55,13 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted) {
 
 PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED_VALUE* properties, unsigned int* iPropertiesCount) {
 	strncpy(properties[0].strName, PVR_STREAM_PROPERTY_STREAMURL, sizeof(properties[0].strName) - 1);
-	snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, (const char*)(chinachu::api::baseURL + g_recorded.recordedStreamingPath).c_str(), recording->strRecordingId);
+	snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, (const char*)(epgstation::api::baseURL + g_recorded.recordedStreamingPath).c_str(), recording->strRecordingId);
 	*iPropertiesCount = 1;
 	return PVR_ERROR_NO_ERROR;
 }
 
 PVR_ERROR DeleteRecording(const PVR_RECORDING &recording) {
-	if (chinachu::api::deleteRecordedProgram(recording.strRecordingId) != chinachu::api::REQUEST_FAILED) {
+	if (epgstation::api::deleteRecordedProgram(recording.strRecordingId) != epgstation::api::REQUEST_FAILED) {
 		XBMC->Log(ADDON::LOG_NOTICE, "Delete recording: %s", recording.strRecordingId);
 		sleep(1);
 		PVR->TriggerRecordingUpdate();
@@ -85,7 +85,7 @@ PVR_ERROR GetDriveSpace(long long *iTotal, long long *iUsed) {
 		return PVR_ERROR_NO_ERROR;
 	}
 
-	if (chinachu::api::getStorage(response) == chinachu::api::REQUEST_FAILED) {
+	if (epgstation::api::getStorage(response) == epgstation::api::REQUEST_FAILED) {
 		return PVR_ERROR_SERVER_ERROR;
 	}
 

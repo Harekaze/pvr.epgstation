@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ADDONNAME=libpvr.chinachu.so
+ADDONNAME=libpvr.epgstation.so
 
 if [ $# -eq 0 ]; then
 	echo "usage: $0 APP_ABI=armeabi-v7a"
@@ -19,8 +19,8 @@ fi
 set -eux
 which zip
 mkdir -p dist
-cp -r template/pvr.chinachu dist/
-cp ChangeLog.txt dist/pvr.chinachu/
-cp LICENSE dist/pvr.chinachu/
-cp libs/${APP_ABI}/${ADDONNAME} dist/pvr.chinachu/${ADDONNAME}
-cd dist; zip -9 -r ../pvr.chinachu.zip pvr.chinachu
+cp -r template/pvr.epgstation dist/
+cp ChangeLog.txt dist/pvr.epgstation/
+cp LICENSE dist/pvr.epgstation/
+cp libs/${APP_ABI}/${ADDONNAME} dist/pvr.epgstation/${ADDONNAME}
+cd dist; zip -9 -r ../pvr.epgstation.zip pvr.epgstation

@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pvr_client", "pvr_client\pvr_client.vcxproj", "{C3B65033-2A88-4B45-8DDB-EC990CF0DEF0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chinachu", "chinachu\chinachu.vcxproj", "{7C081EBB-5B67-4F16-8421-654C46E7A8D4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "epgstation", "epgstation\epgstation.vcxproj", "{7C081EBB-5B67-4F16-8421-654C46E7A8D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

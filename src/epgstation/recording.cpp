@@ -1,41 +1,42 @@
 /*
  *         Copyright (C) 2015-2018 Yuki MIZUNO
- *         https://github.com/Harekaze/pvr.chinachu/
+ *         https://github.com/Harekaze/pvr.epgstation/
  *
  *
- * This file is part of pvr.chinachu.
+ * This file is part of pvr.epgstation.
  *
- * pvr.chinachu is free software: you can redistribute it and/or modify
+ * pvr.epgstation is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * pvr.chinachu is distributed in the hope that it will be useful,
+ * pvr.epgstation is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with pvr.chinachu.  If not, see <http://www.gnu.org/licenses/>.
+ * along with pvr.epgstation.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #include "api.h"
 #include "recorded.h"
+#include "recording.h"
 #include "schedule.h"
 #include "kodi/libXBMC_addon.h"
 
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 
 
-namespace chinachu {
-	bool Recorded::refresh() {
+namespace epgstation {
+	bool Recording::refresh() {
 		picojson::value response;
 
-		if (chinachu::api::getRecorded(response) == chinachu::api::REQUEST_FAILED) {
+		if (epgstation::api::getRecording(response) == epgstation::api::REQUEST_FAILED) {
 			return false;
 		}
 
-		const bool showThumbnail = !recordedThumbnailPath.empty();
+		const bool showThumbnail = !recordingThumbnailPath.empty();
 		programs.clear();
 
 		for (picojson::value &a: response.get<picojson::array>()) {
@@ -55,8 +56,8 @@ namespace chinachu {
 			rec.iDuration = (int)(p["seconds"].get<double>());
 			rec.iPriority = p["priority"].is<double>() ? (int)(p["priority"].get<double>()) : 0;
 			const std::string strGenreType = p["category"].get<std::string>();
-			rec.iGenreType = chinachu::iGenreTypePair[strGenreType] & chinachu::GENRE_TYPE_MASK;
-			rec.iGenreSubType = chinachu::iGenreTypePair[strGenreType] & chinachu::GENRE_SUBTYPE_MASK;
+			rec.iGenreType = epgstation::iGenreTypePair[strGenreType] & epgstation::GENRE_TYPE_MASK;
+			rec.iGenreSubType = epgstation::iGenreTypePair[strGenreType] & epgstation::GENRE_SUBTYPE_MASK;
 			std::string id = p["id"].get<std::string>();
 			std::remove(id.begin(), id.end(), '-');
 			const std::string strSubstrId = id.substr(id.size() - 6, 6);
@@ -68,7 +69,7 @@ namespace chinachu {
 				(int)(p["channel"].get<picojson::object>()["sid"].get<double>());
 			rec.iChannelUid = sid;
 			if (showThumbnail) {
-				snprintf(rec.strThumbnailPath, PVR_ADDON_URL_STRING_LENGTH - 1, (const char*)(chinachu::api::baseURL + recordedThumbnailPath).c_str(), p["id"].get<std::string>().c_str());
+				snprintf(rec.strThumbnailPath, PVR_ADDON_URL_STRING_LENGTH - 1, (const char*)(epgstation::api::baseURL + recordingThumbnailPath).c_str(), p["id"].get<std::string>().c_str());
 			} else {
 				strncpy(rec.strThumbnailPath, "", PVR_ADDON_URL_STRING_LENGTH - 1);
 			}
@@ -76,7 +77,7 @@ namespace chinachu {
 			programs.push_back(rec);
 		}
 
-		XBMC->Log(ADDON::LOG_NOTICE, "Updated recorded program: ammount = %d", programs.size());
+		XBMC->Log(ADDON::LOG_NOTICE, "Updated recording program: ammount = %d", programs.size());
 
 		return true;
 	}

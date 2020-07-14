@@ -1,38 +1,38 @@
 /*
  *         Copyright (C) 2015-2018 Yuki MIZUNO
- *         https://github.com/Harekaze/pvr.chinachu/
+ *         https://github.com/Harekaze/pvr.epgstation/
  *
  *
- * This file is part of pvr.chinachu.
+ * This file is part of pvr.epgstation.
  *
- * pvr.chinachu is free software: you can redistribute it and/or modify
+ * pvr.epgstation is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * pvr.chinachu is distributed in the hope that it will be useful,
+ * pvr.epgstation is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with pvr.chinachu.  If not, see <http://www.gnu.org/licenses/>.
+ * along with pvr.epgstation.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #include <iostream>
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
-#include "chinachu/chinachu.h"
+#include "epgstation/epgstation.h"
 
-extern chinachu::Schedule g_schedule;
+extern epgstation::Schedule g_schedule;
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 extern CHelper_libXBMC_pvr *PVR;
 
 extern "C" {
 
 PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &channel, time_t iStart, time_t iEnd) {
-	for (const chinachu::EPG_PROGRAM epg: g_schedule.schedule[channel.iUniqueId]) {
+	for (const epgstation::EPG_PROGRAM epg: g_schedule.schedule[channel.iUniqueId]) {
 		if (epg.endTime < iStart) continue;
 		if (epg.startTime > iEnd) break;
 
@@ -47,8 +47,8 @@ PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &channel, time
 		tag.endTime = epg.endTime;
 		tag.strPlotOutline = epg.strPlotOutline.c_str();
 		tag.strPlot = epg.strPlot.c_str();
-		tag.iGenreType = chinachu::iGenreTypePair[epg.strGenreDescription] & chinachu::GENRE_TYPE_MASK;
-		tag.iGenreSubType = chinachu::iGenreTypePair[epg.strGenreDescription] & chinachu::GENRE_SUBTYPE_MASK;
+		tag.iGenreType = epgstation::iGenreTypePair[epg.strGenreDescription] & epgstation::GENRE_TYPE_MASK;
+		tag.iGenreSubType = epgstation::iGenreTypePair[epg.strGenreDescription] & epgstation::GENRE_SUBTYPE_MASK;
 		tag.iEpisodeNumber = epg.iEpisodeNumber;
 		tag.strEpisodeName = epg.strEpisodeName.c_str();
 		tag.strGenreDescription = epg.strGenreDescription.c_str();
@@ -78,7 +78,7 @@ bool OpenLiveStream(const PVR_CHANNEL &channel) {
 		sId = c + sId;
 	}
 	char url[1024];
-	snprintf(url, sizeof(url) - 1, (const char*)(chinachu::api::baseURL + g_schedule.liveStreamingPath).c_str(), sId.c_str());
+	snprintf(url, sizeof(url) - 1, (const char*)(epgstation::api::baseURL + g_schedule.liveStreamingPath).c_str(), sId.c_str());
 	liveStreamHandle = XBMC->OpenFile(url, 0);
 	return liveStreamHandle != NULL;
 }

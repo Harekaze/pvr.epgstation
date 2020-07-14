@@ -1,8 +1,8 @@
 LIB = ../$(ADDONNAME)
 
-lib_LTLIBRARIES = libpvrchinachu.la
+lib_LTLIBRARIES = libpvrepgstation.la
 
-libpvrchinachu_la_SOURCES = \
+libpvrepgstation_la_SOURCES = \
 	channel.cpp \
 	demux.cpp \
 	information.cpp \
@@ -12,10 +12,10 @@ libpvrchinachu_la_SOURCES = \
 	stream.cpp \
 	timer.cpp
 
-libpvrchinachu_la_LIBADD = \
-	../chinachu/libchinachu.la
+libpvrepgstation_la_LIBADD = \
+	../epgstation/libepgstation.la
 
-libpvrchinachu_la_LDFLAGS = \
+libpvrepgstation_la_LDFLAGS = \
 	$(LDFLAGS_EXT) \
 	-avoid-version
 
@@ -28,8 +28,8 @@ AM_CPPFLAGS = \
 EXTRA_DIST = \
 	include
 
-$(ADDONNAME): libpvrchinachu.la
-	cp -f .libs/libpvrchinachu.$(LIBEXT) $(ADDONNAME)
+$(ADDONNAME): libpvrepgstation.la
+	cp -f .libs/libpvrepgstation.$(LIBEXT) $(ADDONNAME)
 
 $(LIB): $(ADDONNAME)
 	cp -f $(ADDONNAME) $(LIB)

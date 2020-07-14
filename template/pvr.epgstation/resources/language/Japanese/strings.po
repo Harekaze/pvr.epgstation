@@ -1,11 +1,11 @@
 # Kodi Media Center language file
-# Addon Name: Harekaze (Chinachu PVR client)
-# Addon id: pvr.chinachu
+# Addon Name: Harekaze (EPGStation PVR client)
+# Addon id: pvr.epgstation
 # Addon Provider: Harekaze project
 msgid ""
 msgstr ""
 "Project-Id-Version: Kodi-Addons\n"
-"Report-Msgid-Bugs-To: https://github.com/Harekaze/pvr.chinachu/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/Harekaze/pvr.epgstation/issues\n"
 "POT-Creation-Date: 2015-02-23 08:11+0000\n"
 "PO-Revision-Date: 2017-02-03 22:55+0900\n"
 "Last-Translator: Yuki MIZUNO <mizuyuu0904@gmail.com>\n"
@@ -13,137 +13,97 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
-
-#Plugin settings strings
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 
 msgctxt "#30200"
 msgid "General"
-msgstr ""
+msgstr "基本"
 
 msgctxt "#30201"
-msgid "Chinachu WUI URL"
-msgstr ""
+msgid "EPGStation WUI URL"
+msgstr "EPGStation WUIのURL"
 
 msgctxt "#30202"
 msgid "Mirakurun URL (optional)"
-msgstr ""
-
-#empty strings from id 30203 to 30299
+msgstr "MirakurunのURL (あれば)"
 
 msgctxt "#30300"
 msgid "Streaming"
-msgstr ""
+msgstr "ストリーミング"
 
 msgctxt "#30301"
 msgid "Transcode video"
-msgstr ""
+msgstr "映像エンコード"
 
 msgctxt "#30302"
 msgid "Transcode audio"
-msgstr ""
-
-#empty strings from id 30303 to 30309
+msgstr "音声エンコード"
 
 msgctxt "#30310"
 msgid "Video transcode options"
-msgstr ""
-
-#empty strings from id 30311 to 30319
+msgstr "映像エンコードオプション"
 
 msgctxt "#30320"
 msgid "Audio transcode options"
-msgstr ""
-
-#empty strings from id 30321 to 30330
+msgstr "音声エンコードオプション"
 
 msgctxt "#30331"
 msgid "Codec"
-msgstr ""
+msgstr "コーデック"
 
 msgctxt "#30332"
 msgid "Bitrate(kbps)"
-msgstr ""
+msgstr "ビットレート(kbps)"
 
 msgctxt "#30333"
 msgid "Size"
-msgstr ""
-
-#empty strings from id 30334 to 30340
-
-msgctxt "#30341"
-msgid "H.264"
-msgstr ""
-
-msgctxt "#30342"
-msgid "MPEG-2"
-msgstr ""
-
-#empty strings from id 30343 to 30350
-
-msgctxt "#30351"
-msgid "AAC"
-msgstr ""
-
-msgctxt "#30352"
-msgid "Vorbis"
-msgstr ""
-
-#empty strings from id 30353 to 30399
+msgstr "サイズ"
 
 msgctxt "#30400"
 msgid "Recordings"
-msgstr ""
+msgstr "録画"
 
 msgctxt "#30401"
 msgid "Show thumbnail"
-msgstr ""
+msgstr "サムネイルを表示する"
 
 msgctxt "#30402"
 msgid "Thumbnail position in seconds"
-msgstr ""
-
-#empty strings from id 30403 to 30499
+msgstr "サムネイルの位置(秒)"
 
 msgctxt "#30500"
 msgid "TV Guide"
-msgstr ""
-
-#empty strings from id 30501 to 30599
+msgstr "番組表"
 
 msgctxt "#30600"
-msgid "Chinachu WUI URL starts with http:// or https://"
-msgstr ""
-
-#empty strings from id 30601 to 30799
+msgid "EPGStation WUI URL starts with http:// or https://"
+msgstr "EPGStation WUIのURLは http:// か https:// を含めて入力してください"
 
 msgctxt "#30800"
 msgid "Refresh recordings"
-msgstr ""
+msgstr "録画一覧を更新"
 
 msgctxt "#30801"
 msgid "Refresh timers"
-msgstr ""
+msgstr "予約一覧を更新"
 
 msgctxt "#30802"
 msgid "Execute scheduler"
-msgstr ""
-
-#empty strings from id 30803 to 30899
+msgstr "スケジューラーの実行"
 
 msgctxt "#30900"
 msgid "Manual Reserved"
-msgstr ""
+msgstr "手動予約"
 
 msgctxt "#30901"
 msgid "Pattern Matched"
-msgstr ""
+msgstr "ルール一致"
 
 msgctxt "#30902"
 msgid "Pattern Match"
-msgstr ""
+msgstr "ルール作成"
 
 msgctxt "#30903"
 msgid "Pattern Match"
-msgstr ""
+msgstr "ルール"

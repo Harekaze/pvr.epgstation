@@ -1,22 +1,22 @@
 /*
  *         Copyright (C) 2015-2018 Yuki MIZUNO
- *         https://github.com/Harekaze/pvr.chinachu/
+ *         https://github.com/Harekaze/pvr.epgstation/
  *
  *
- * This file is part of pvr.chinachu.
+ * This file is part of pvr.epgstation.
  *
- * pvr.chinachu is free software: you can redistribute it and/or modify
+ * pvr.epgstation is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * pvr.chinachu is distributed in the hope that it will be useful,
+ * pvr.epgstation is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with pvr.chinachu.  If not, see <http://www.gnu.org/licenses/>.
+ * along with pvr.epgstation.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #include "schedule.h"
@@ -25,7 +25,7 @@
 
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 
-namespace chinachu {
+namespace epgstation {
 	bool Schedule::refresh() {
 		picojson::value response;
 		const time_t refreshInterval = 10*60; // every 10 minutes
@@ -37,7 +37,7 @@ namespace chinachu {
 			return true;
 		}
 
-		if (chinachu::api::getSchedule(response) == chinachu::api::REQUEST_FAILED) {
+		if (epgstation::api::getSchedule(response) == epgstation::api::REQUEST_FAILED) {
 			return false;
 		}
 
@@ -61,7 +61,7 @@ namespace chinachu {
 
 			if (o["hasLogoData"].get<bool>()) {
 				snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
-					(const char*)(chinachu::api::baseURL + channelLogoPath).c_str(),
+					(const char*)(epgstation::api::baseURL + channelLogoPath).c_str(),
 					o["id"].get<std::string>().c_str());
 			} else {
 				ch.strIconPath[0] = '\0';

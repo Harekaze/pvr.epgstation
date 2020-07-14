@@ -1,22 +1,22 @@
 /*
  *         Copyright (C) 2015-2018 Yuki MIZUNO
- *         https://github.com/Harekaze/pvr.chinachu/
+ *         https://github.com/Harekaze/pvr.epgstation/
  *
  *
- * This file is part of pvr.chinachu.
+ * This file is part of pvr.epgstation.
  *
- * pvr.chinachu is free software: you can redistribute it and/or modify
+ * pvr.epgstation is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * pvr.chinachu is distributed in the hope that it will be useful,
+ * pvr.epgstation is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with pvr.chinachu.  If not, see <http://www.gnu.org/licenses/>.
+ * along with pvr.epgstation.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #include <iostream>
@@ -24,7 +24,7 @@
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
-#include "chinachu/chinachu.h"
+#include "epgstation/epgstation.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
@@ -46,11 +46,11 @@
 
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 extern CHelper_libXBMC_pvr *PVR;
-extern chinachu::Recorded g_recorded;
-extern chinachu::Recording g_recording;
-extern chinachu::Schedule g_schedule;
-extern chinachu::Rule g_rule;
-extern chinachu::Reserve g_reserve;
+extern epgstation::Recorded g_recorded;
+extern epgstation::Recording g_recording;
+extern epgstation::Schedule g_schedule;
+extern epgstation::Rule g_rule;
+extern epgstation::Reserve g_reserve;
 
 std::string channel_id_string(unsigned int nid, unsigned int sid) {
 	const static std::string base36 = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -75,7 +75,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle) {
 		time(&now);
 		unsigned int index = 0;
 
-		for (const chinachu::RULE_ITEM rule: g_rule.rules) {
+		for (const epgstation::RULE_ITEM rule: g_rule.rules) {
 			PVR_TIMER timer;
 			memset(&timer, 0, sizeof(PVR_TIMER));
 
@@ -125,13 +125,13 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle) {
 PVR_ERROR UpdateTimer(const PVR_TIMER &timer) {
 	if (timer.iTimerType == RULES_PATTERN_MATCHED) {
 		const unsigned int index = timer.iClientIndex - TIMER_CLIENT_START_INDEX;
-		const chinachu::RULE_ITEM rule = g_rule.rules[index];
+		const epgstation::RULE_ITEM rule = g_rule.rules[index];
 
 		// Only rule availability changing is supported
 		if (timer.state != rule.state) {
 			switch (timer.state) {
 				case PVR_TIMER_STATE_SCHEDULED:
-					if (chinachu::api::putRuleAction(rule.iIndex, true) != chinachu::api::REQUEST_FAILED) {
+					if (epgstation::api::putRuleAction(rule.iIndex, true) != epgstation::api::REQUEST_FAILED) {
 						XBMC->Log(ADDON::LOG_NOTICE, "Enable rule: #%d", index);
 						break;
 					}
@@ -139,7 +139,7 @@ PVR_ERROR UpdateTimer(const PVR_TIMER &timer) {
 					XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to enable rule: #%d", index);
 					return PVR_ERROR_SERVER_ERROR;
 				case PVR_TIMER_STATE_DISABLED:
-					if (chinachu::api::putRuleAction(rule.iIndex, false) != chinachu::api::REQUEST_FAILED) {
+					if (epgstation::api::putRuleAction(rule.iIndex, false) != epgstation::api::REQUEST_FAILED) {
 						XBMC->Log(ADDON::LOG_NOTICE, "Disable rule: #%d", index);
 						break;
 					}
@@ -184,7 +184,7 @@ PVR_ERROR UpdateTimer(const PVR_TIMER &timer) {
 	if (timer.state != resv.state) {
 		switch (timer.state) {
 			case PVR_TIMER_STATE_SCHEDULED:
-				if (chinachu::api::putReservesUnskip(timer.strDirectory) != chinachu::api::REQUEST_FAILED) {
+				if (epgstation::api::putReservesUnskip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
 					XBMC->Log(ADDON::LOG_NOTICE, "Unskip reserving: %s", timer.strDirectory);
 					break;
 				}
@@ -192,7 +192,7 @@ PVR_ERROR UpdateTimer(const PVR_TIMER &timer) {
 				XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to enable state: %s", timer.strDirectory);
 				return PVR_ERROR_SERVER_ERROR;
 			case PVR_TIMER_STATE_DISABLED:
-				if (chinachu::api::putReservesSkip(timer.strDirectory) != chinachu::api::REQUEST_FAILED) {
+				if (epgstation::api::putReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
 					XBMC->Log(ADDON::LOG_NOTICE, "Skip reserving: %s", timer.strDirectory);
 					break;
 				}
@@ -215,12 +215,12 @@ PVR_ERROR UpdateTimer(const PVR_TIMER &timer) {
 }
 
 PVR_ERROR AddTimer(const PVR_TIMER &timer) {
-	for (const std::pair<unsigned int, std::vector<chinachu::EPG_PROGRAM>> schedule: g_schedule.schedule) {
+	for (const std::pair<unsigned int, std::vector<epgstation::EPG_PROGRAM>> schedule: g_schedule.schedule) {
 		if (schedule.first == timer.iClientChannelUid) {
 			if (timer.iTimerType == CREATE_RULES_PATTERN_MATCHED) {
 				std::string genre;
 				bool isLive = false;
-				for (const chinachu::EPG_PROGRAM program: schedule.second) {
+				for (const epgstation::EPG_PROGRAM program: schedule.second) {
 					if (program.startTime == timer.startTime && program.endTime == timer.endTime) {
 						genre = program.strGenreDescription;
 						time_t now;
@@ -245,7 +245,7 @@ PVR_ERROR AddTimer(const PVR_TIMER &timer) {
 						break;
 					}
 				}
-				if (chinachu::api::postRule(strChannelType, strChannelId, timer.strEpgSearchString, genre) != chinachu::api::REQUEST_FAILED) {
+				if (epgstation::api::postRule(strChannelType, strChannelId, timer.strEpgSearchString, genre) != epgstation::api::REQUEST_FAILED) {
 					XBMC->Log(ADDON::LOG_NOTICE, "Create new rule: [%s:%s]<%s> \"%s\"",
 						strChannelType.c_str(), strChannelId.c_str(), genre.c_str(), timer.strEpgSearchString);
 					sleep(isLive ? 5 : 1);
@@ -258,9 +258,9 @@ PVR_ERROR AddTimer(const PVR_TIMER &timer) {
 				}
 				return PVR_ERROR_NO_ERROR;
 			}
-			for (const chinachu::EPG_PROGRAM program: schedule.second) {
+			for (const epgstation::EPG_PROGRAM program: schedule.second) {
 				if (program.startTime == timer.startTime && program.endTime == timer.endTime) {
-					if (chinachu::api::putProgram(program.strUniqueBroadcastId) != chinachu::api::REQUEST_FAILED) {
+					if (epgstation::api::putProgram(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) {
 						XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: %s", program.strUniqueBroadcastId.c_str());
 						bool isLive = false;
 						time_t now;
@@ -289,14 +289,14 @@ PVR_ERROR AddTimer(const PVR_TIMER &timer) {
 
 PVR_ERROR DeleteTimer(const PVR_TIMER &timer, bool bForceDelete) {
 	if (timer.iTimerType == TIMER_MANUAL_RESERVED || timer.iTimerType == TIMER_PATTERN_MATCHED) {
-		for (const std::pair<unsigned int, std::vector<chinachu::EPG_PROGRAM>> schedule: g_schedule.schedule) {
+		for (const std::pair<unsigned int, std::vector<epgstation::EPG_PROGRAM>> schedule: g_schedule.schedule) {
 			if (schedule.first == timer.iClientChannelUid) {
-				for (const chinachu::EPG_PROGRAM program: schedule.second) {
+				for (const epgstation::EPG_PROGRAM program: schedule.second) {
 					if (program.startTime == timer.startTime && program.endTime == timer.endTime) {
 						time_t now;
 						time(&now);
 						if (program.startTime < now && now < program.endTime) { // Ongoing recording
-							if (chinachu::api::deleteRecordingProgram(program.strUniqueBroadcastId) != chinachu::api::REQUEST_FAILED) { // Cancel recording
+							if (epgstation::api::deleteRecordingProgram(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) { // Cancel recording
 								XBMC->Log(ADDON::LOG_NOTICE, "Cancel ongoing recording program: %s", program.strUniqueBroadcastId.c_str());
 								sleep(5);
 								PVR->TriggerRecordingUpdate();
@@ -308,7 +308,7 @@ PVR_ERROR DeleteTimer(const PVR_TIMER &timer, bool bForceDelete) {
 								return PVR_ERROR_SERVER_ERROR;
 							}
 						} else if (timer.iTimerType == TIMER_MANUAL_RESERVED) {
-							if (chinachu::api::deleteReserves(program.strUniqueBroadcastId) != chinachu::api::REQUEST_FAILED) {
+							if (epgstation::api::deleteReserves(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) {
 								XBMC->Log(ADDON::LOG_NOTICE, "Delete manual reserved program: %s", program.strUniqueBroadcastId.c_str());
 								sleep(1);
 								PVR->TriggerRecordingUpdate();
@@ -320,7 +320,7 @@ PVR_ERROR DeleteTimer(const PVR_TIMER &timer, bool bForceDelete) {
 								return PVR_ERROR_SERVER_ERROR;
 							}
 						} else {
-							if (chinachu::api::putReservesSkip(timer.strDirectory) != chinachu::api::REQUEST_FAILED) {
+							if (epgstation::api::putReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
 								XBMC->Log(ADDON::LOG_NOTICE, "Skip reserving: %s", timer.strDirectory);
 								sleep(1);
 								PVR->TriggerRecordingUpdate();

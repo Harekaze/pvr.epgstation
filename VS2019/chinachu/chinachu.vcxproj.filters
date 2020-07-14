@@ -15,48 +15,48 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\chinachu\api.cpp">
+    <ClCompile Include="..\..\src\epgstation\api.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\chinachu\recorded.cpp">
+    <ClCompile Include="..\..\src\epgstation\recorded.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\chinachu\recording.cpp">
+    <ClCompile Include="..\..\src\epgstation\recording.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\chinachu\reserves.cpp">
+    <ClCompile Include="..\..\src\epgstation\reserves.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\chinachu\rules.cpp">
+    <ClCompile Include="..\..\src\epgstation\rules.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\chinachu\schedule.cpp">
+    <ClCompile Include="..\..\src\epgstation\schedule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\chinachu\api.h">
+    <ClInclude Include="..\..\src\epgstation\api.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\chinachu\chinachu.h">
+    <ClInclude Include="..\..\src\epgstation\epgstation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\chinachu\recorded.h">
+    <ClInclude Include="..\..\src\epgstation\recorded.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\chinachu\recording.h">
+    <ClInclude Include="..\..\src\epgstation\recording.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\chinachu\reserves.h">
+    <ClInclude Include="..\..\src\epgstation\reserves.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\chinachu\rules.h">
+    <ClInclude Include="..\..\src\epgstation\rules.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\chinachu\schedule.h">
+    <ClInclude Include="..\..\src\epgstation\schedule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\chinachu\genre.h">
+    <ClInclude Include="..\..\include\epgstation\genre.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

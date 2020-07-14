@@ -1,22 +1,22 @@
 /*
  *         Copyright (C) 2015-2018 Yuki MIZUNO
- *         https://github.com/Harekaze/pvr.chinachu/
+ *         https://github.com/Harekaze/pvr.epgstation/
  *
  *
- * This file is part of pvr.chinachu.
+ * This file is part of pvr.epgstation.
  *
- * pvr.chinachu is free software: you can redistribute it and/or modify
+ * pvr.epgstation is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * pvr.chinachu is distributed in the hope that it will be useful,
+ * pvr.epgstation is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with pvr.chinachu.  If not, see <http://www.gnu.org/licenses/>.
+ * along with pvr.epgstation.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #include <iostream>
@@ -26,7 +26,7 @@
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
-#include "chinachu/chinachu.h"
+#include "epgstation/epgstation.h"
 
 #define MENUHOOK_FORCE_REFRESH_RECORDING 0x01
 #define MENUHOOK_FORCE_REFRESH_TIMER 0x02
@@ -36,11 +36,11 @@
 #define MSG_FORCE_REFRESH_TIMER 30801
 #define MSG_FORCE_EXECUTE_SCHEDULER 30802
 
-chinachu::Schedule g_schedule;
-chinachu::Recorded g_recorded;
-chinachu::Recording g_recording;
-chinachu::Rule g_rule;
-chinachu::Reserve g_reserve;
+epgstation::Schedule g_schedule;
+epgstation::Recorded g_recorded;
+epgstation::Recording g_recording;
+epgstation::Rule g_rule;
+epgstation::Reserve g_reserve;
 ADDON::CHelper_libXBMC_addon *XBMC = NULL;
 CHelper_libXBMC_pvr *PVR = NULL;
 time_t lastStartTime;
@@ -76,20 +76,20 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props) {
 
 	char serverUrl[1024];
 	if (XBMC->GetSetting("server_url", &serverUrl)) {
-		chinachu::api::baseURL = serverUrl;
+		epgstation::api::baseURL = serverUrl;
 		const std::string httpPrefix = "http://";
 		const std::string httpsPrefix = "https://";
-		if (chinachu::api::baseURL.substr(0, httpPrefix.size()) != httpPrefix && chinachu::api::baseURL.substr(0, httpsPrefix.size()) != httpsPrefix) {
+		if (epgstation::api::baseURL.substr(0, httpPrefix.size()) != httpPrefix && epgstation::api::baseURL.substr(0, httpsPrefix.size()) != httpsPrefix) {
 			if (currentStatus == ADDON_STATUS_UNKNOWN) {
 				XBMC->QueueNotification(ADDON::QUEUE_WARNING, XBMC->GetLocalizedString(30600));
 				currentStatus = ADDON_STATUS_NEED_SETTINGS;
 			}
 			return currentStatus;
 		}
-		if (*(chinachu::api::baseURL.end() - 1) != '/') {
-			chinachu::api::baseURL += "/";
+		if (*(epgstation::api::baseURL.end() - 1) != '/') {
+			epgstation::api::baseURL += "/";
 		}
-		chinachu::api::baseURL += "api/";
+		epgstation::api::baseURL += "api/";
 	}
 
 	g_schedule.liveStreamingPath = "channel/%s/watch.m2ts?ext=m2ts";
@@ -223,7 +223,7 @@ PVR_ERROR CallMenuHook(const PVR_MENUHOOK& menuhook, const PVR_MENUHOOK_DATA &it
 		return PVR_ERROR_NO_ERROR;
 	}
 	if (menuhook.category == PVR_MENUHOOK_ALL && menuhook.iHookId == MENUHOOK_FORCE_EXECUTE_SCHEDULER) {
-		if (chinachu::api::putScheduler() == chinachu::api::REQUEST_FAILED) {
+		if (epgstation::api::putScheduler() == epgstation::api::REQUEST_FAILED) {
 			XBMC->Log(ADDON::LOG_ERROR, "[scheduler.json] Request failed");
 			XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[scheduler.json] Request failed");
 			return PVR_ERROR_SERVER_ERROR;

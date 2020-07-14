@@ -6,18 +6,18 @@ ACLOCAL_AMFLAGS = -I m4
 all:
 	$(MAKE) -C ./src
 	mkdir -p dist
-	cp -r template/pvr.chinachu dist/
-	cp ChangeLog.txt dist/pvr.chinachu/
-	cp LICENSE dist/pvr.chinachu/
-	cp src/$(ADDONNAME) dist/pvr.chinachu/$(ADDONNAME)
-	$(STRIP) -x dist/pvr.chinachu/$(ADDONNAME)
+	cp -r template/pvr.epgstation dist/
+	cp ChangeLog.txt dist/pvr.epgstation/
+	cp LICENSE dist/pvr.epgstation/
+	cp src/$(ADDONNAME) dist/pvr.epgstation/$(ADDONNAME)
+	$(STRIP) -x dist/pvr.epgstation/$(ADDONNAME)
 
 .PHONY: release
 release: all
-	cd dist; zip -9 -r ../pvr.chinachu.zip ./pvr.chinachu
+	cd dist; zip -9 -r ../pvr.epgstation.zip ./pvr.epgstation
 
 .PHONY: clean
 clean:
 	$(MAKE) clean -C ./src
 	rm -rf ./dist/
-	rm -f ./pvr.chinachu.zip
+	rm -f ./pvr.epgstation.zip

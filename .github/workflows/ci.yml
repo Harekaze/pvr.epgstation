@@ -56,6 +56,6 @@ jobs:
       if: matrix.platform != ''
       uses: actions/upload-artifact@master
       with:
-        name: ${{format('pvr.chinachu.{0}-{1}-{2}', matrix.os, matrix.platform, github.sha)}}
-        path: dist/pvr.chinachu
+        name: ${{format('pvr.epgstation.{0}-{1}-{2}', matrix.os, matrix.platform, github.sha)}}
+        path: dist/pvr.epgstation
 

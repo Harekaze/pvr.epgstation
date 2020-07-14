@@ -1,22 +1,22 @@
 /*
  *         Copyright (C) 2015-2018 Yuki MIZUNO
- *         https://github.com/Harekaze/pvr.chinachu/
+ *         https://github.com/Harekaze/pvr.epgstation/
  *
  *
- * This file is part of pvr.chinachu.
+ * This file is part of pvr.epgstation.
  *
- * pvr.chinachu is free software: you can redistribute it and/or modify
+ * pvr.epgstation is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * pvr.chinachu is distributed in the hope that it will be useful,
+ * pvr.epgstation is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with pvr.chinachu.  If not, see <http://www.gnu.org/licenses/>.
+ * along with pvr.epgstation.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #include "api.h"
@@ -29,11 +29,11 @@
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 
 
-namespace chinachu {
+namespace epgstation {
 	bool Reserve::refresh() {
 		picojson::value response;
 
-		if (chinachu::api::getReserves(response) == chinachu::api::REQUEST_FAILED) {
+		if (epgstation::api::getReserves(response) == epgstation::api::REQUEST_FAILED) {
 			return false;
 		}
 
@@ -69,8 +69,8 @@ namespace chinachu {
 			}
 			resv.startTime = (time_t)(p["start"].get<double>() / 1000);
 			resv.endTime = (time_t)(p["end"].get<double>() / 1000);
-			resv.iGenreType = chinachu::iGenreTypePair[p["category"].get<std::string>()] & chinachu::GENRE_TYPE_MASK;
-			resv.iGenreSubType = chinachu::iGenreTypePair[p["category"].get<std::string>()] & chinachu::GENRE_SUBTYPE_MASK;
+			resv.iGenreType = epgstation::iGenreTypePair[p["category"].get<std::string>()] & epgstation::GENRE_TYPE_MASK;
+			resv.iGenreSubType = epgstation::iGenreTypePair[p["category"].get<std::string>()] & epgstation::GENRE_SUBTYPE_MASK;
 			resv.bStartAnyTime = false;
 			resv.bEndAnyTime = false;
 			resv.iTimerType = (p["isManualReserved"].is<bool>() && p["isManualReserved"].get<bool>()) ? TIMER_MANUAL_RESERVED : TIMER_PATTERN_MATCHED;

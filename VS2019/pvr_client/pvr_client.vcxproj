@@ -43,10 +43,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.dll</TargetExt>
-    <TargetName>pvr.chinachu</TargetName>
+    <TargetName>pvr.epgstation</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>pvr.chinachu</TargetName>
+    <TargetName>pvr.epgstation</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -88,7 +88,7 @@
     <ClCompile Include="..\..\src\pvr_client\timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\chinachu\chinachu.vcxproj">
+    <ProjectReference Include="..\epgstation\epgstation.vcxproj">
       <Project>{7c081ebb-5b67-4f16-8421-654c46e7a8d4}</Project>
     </ProjectReference>
   </ItemGroup>
