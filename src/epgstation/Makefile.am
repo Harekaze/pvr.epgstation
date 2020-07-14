@@ -1,17 +1,12 @@
 noinst_LTLIBRARIES = libepgstation.la
 
 libepgstation_la_SOURCES = \
+	../base64/base64.cpp \
 	api.cpp \
-	api.h \
-	epgstation.h \
 	recorded.cpp \
-	recorded.h \
 	reserves.cpp \
-	reserves.h \
 	rules.cpp \
-	rules.h \
-	schedule.cpp \
-	schedule.h
+	schedule.cpp
 
 libepgstation_la_LDFLAGS = \
 	-avoid-version
