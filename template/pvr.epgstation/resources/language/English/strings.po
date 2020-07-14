@@ -100,11 +100,7 @@ msgctxt "#30401"
 msgid "Show thumbnail"
 msgstr ""
 
-msgctxt "#30402"
-msgid "Thumbnail position in seconds"
-msgstr ""
-
-#empty strings from id 30403 to 30499
+#empty strings from id 30402 to 30499
 
 msgctxt "#30500"
 msgid "TV Guide"

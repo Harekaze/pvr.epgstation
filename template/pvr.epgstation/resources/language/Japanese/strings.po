@@ -68,10 +68,6 @@ msgctxt "#30401"
 msgid "Show thumbnail"
 msgstr "サムネイルを表示する"
 
-msgctxt "#30402"
-msgid "Thumbnail position in seconds"
-msgstr "サムネイルの位置(秒)"
-
 msgctxt "#30500"
 msgid "TV Guide"
 msgstr "番組表"
