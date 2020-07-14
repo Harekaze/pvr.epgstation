@@ -6,10 +6,10 @@
 #ifndef EPGSTATION_EPGSTATION_H
 #define EPGSTATION_EPGSTATION_H
 
-#include "schedule.h"
+#include "api.h"
 #include "recorded.h"
 #include "reserves.h"
 #include "rules.h"
-#include "api.h"
+#include "schedule.h"
 
 #endif /* end of include guard */

@@ -7,19 +7,19 @@
 #define EPGSTATION_RESERVES_H
 #include <iostream>
 
-#include "picojson/picojson.h"
 #include "epgstation/genre.h"
 #include "kodi/xbmc_pvr_types.h"
+#include "picojson/picojson.h"
 
 #define TIMER_MANUAL_RESERVED 0x01
 #define TIMER_PATTERN_MATCHED 0x02
 
 namespace epgstation {
-	class Reserve {
-		public:
-			std::vector<PVR_TIMER> reserves;
-			bool refresh();
-	};
+class Reserve {
+public:
+    std::vector<PVR_TIMER> reserves;
+    bool refresh();
+};
 } // namespace epgstation
 
 #endif /* end of include guard */

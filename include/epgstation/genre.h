@@ -25,23 +25,23 @@
 #include <string>
 
 namespace epgstation {
-	static std::map<std::string, unsigned char> iGenreTypePair = {
-		{"anime", 0x55},
-		{"information", 0x22},
-		{"news", 0x21},
-		{"sports", 0x40},
-		{"variety", 0x32},
-		{"drama", 0x10},
-		{"music", 0x60},
-		{"cinema", 0x76},
-		{"documentary", 0x23},
-		{"theater", 0x30},
-		{"hobby", 0xa0},
-		{"welfare", 0x95},
-		{"etc", 0x00},
-	};
-	const unsigned char GENRE_TYPE_MASK = 0xf0;
-	const unsigned char GENRE_SUBTYPE_MASK = 0x0f;
+static std::map<std::string, unsigned char> iGenreTypePair = {
+    { "anime", 0x55 },
+    { "information", 0x22 },
+    { "news", 0x21 },
+    { "sports", 0x40 },
+    { "variety", 0x32 },
+    { "drama", 0x10 },
+    { "music", 0x60 },
+    { "cinema", 0x76 },
+    { "documentary", 0x23 },
+    { "theater", 0x30 },
+    { "hobby", 0xa0 },
+    { "welfare", 0x95 },
+    { "etc", 0x00 },
+};
+const unsigned char GENRE_TYPE_MASK = 0xf0;
+const unsigned char GENRE_SUBTYPE_MASK = 0x0f;
 } // namespace epgstation
 
 #endif /* end of include guard */

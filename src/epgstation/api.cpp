@@ -4,169 +4,187 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 #include "api.h"
-#include "kodi/libXBMC_pvr.h"
 #include "kodi/libXBMC_addon.h"
+#include "kodi/libXBMC_pvr.h"
 
-extern ADDON::CHelper_libXBMC_addon *XBMC;
-extern CHelper_libXBMC_pvr *PVR;
+extern ADDON::CHelper_libXBMC_addon* XBMC;
+extern CHelper_libXBMC_pvr* PVR;
 
 namespace epgstation {
-	namespace api {
-		const int REQUEST_FAILED = -1;
-		std::string baseURL = "";
+namespace api {
+    const int REQUEST_FAILED = -1;
+    std::string baseURL = "";
 
-		int requestGET(std::string apiPath, picojson::value &response) {
-			std::string text;
-			const std::string url = baseURL + apiPath;
-			if (void* handle = XBMC->OpenFile(url.c_str(), 0)) {
-				const unsigned int buffer_size = 4096;
-				char buffer[buffer_size];
-				text.clear();
-				while (int bytesRead = XBMC->ReadFile(handle, buffer, buffer_size)) {
-					text.append(buffer, bytesRead);
-				}
-				XBMC->CloseFile(handle);
-			} else {
-				XBMC->Log(ADDON::LOG_ERROR, "[%s] Request failed", apiPath.c_str());
-				XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[%s] Request failed", apiPath.c_str());
-				return REQUEST_FAILED;
-			}
+    int requestGET(std::string apiPath, picojson::value& response)
+    {
+        std::string text;
+        const std::string url = baseURL + apiPath;
+        if (void* handle = XBMC->OpenFile(url.c_str(), 0)) {
+            const unsigned int buffer_size = 4096;
+            char buffer[buffer_size];
+            text.clear();
+            while (int bytesRead = XBMC->ReadFile(handle, buffer, buffer_size)) {
+                text.append(buffer, bytesRead);
+            }
+            XBMC->CloseFile(handle);
+        } else {
+            XBMC->Log(ADDON::LOG_ERROR, "[%s] Request failed", apiPath.c_str());
+            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[%s] Request failed", apiPath.c_str());
+            return REQUEST_FAILED;
+        }
 
-			const std::string err = picojson::parse(response, text);
-			if (!err.empty()) {
-				XBMC->Log(ADDON::LOG_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.c_str());
-				XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.c_str());
-				return REQUEST_FAILED;
-			}
+        const std::string err = picojson::parse(response, text);
+        if (!err.empty()) {
+            XBMC->Log(ADDON::LOG_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.c_str());
+            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.c_str());
+            return REQUEST_FAILED;
+        }
 
-			return text.length();
-		}
+        return text.length();
+    }
 
-		int requestDELETE(std::string apiPath) {
-			const std::string url = baseURL + apiPath;
-			if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
-				const unsigned int buffer_size = 20;
-				const char buffer[] = "{\"_method\":\"DELETE\"}";
-				XBMC->WriteFile(handle, buffer, buffer_size);
-				XBMC->CloseFile(handle);
-				return 0;
-			} else {
-				return REQUEST_FAILED;
-			}
-		}
+    int requestDELETE(std::string apiPath)
+    {
+        const std::string url = baseURL + apiPath;
+        if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
+            const unsigned int buffer_size = 20;
+            const char buffer[] = "{\"_method\":\"DELETE\"}";
+            XBMC->WriteFile(handle, buffer, buffer_size);
+            XBMC->CloseFile(handle);
+            return 0;
+        } else {
+            return REQUEST_FAILED;
+        }
+    }
 
-		int requestPUT(std::string apiPath) {
-			const std::string url = baseURL + apiPath;
-			if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
-				const unsigned int buffer_size = 17;
-				const char buffer[] = "{\"_method\":\"PUT\"}";
-				XBMC->WriteFile(handle, buffer, buffer_size);
-				XBMC->CloseFile(handle);
-				return 0;
-			} else {
-				return REQUEST_FAILED;
-			}
-		}
+    int requestPUT(std::string apiPath)
+    {
+        const std::string url = baseURL + apiPath;
+        if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
+            const unsigned int buffer_size = 17;
+            const char buffer[] = "{\"_method\":\"PUT\"}";
+            XBMC->WriteFile(handle, buffer, buffer_size);
+            XBMC->CloseFile(handle);
+            return 0;
+        } else {
+            return REQUEST_FAILED;
+        }
+    }
 
-		int requestPOST(std::string apiPath, const char buffer[], const unsigned int buffer_size) {
-			const std::string url = baseURL + apiPath;
-			if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
-				XBMC->WriteFile(handle, buffer, buffer_size);
-				XBMC->CloseFile(handle);
-				return 0;
-			} else {
-				return REQUEST_FAILED;
-			}
-		}
+    int requestPOST(std::string apiPath, const char buffer[], const unsigned int buffer_size)
+    {
+        const std::string url = baseURL + apiPath;
+        if (void* handle = XBMC->OpenFileForWrite(url.c_str(), 0)) {
+            XBMC->WriteFile(handle, buffer, buffer_size);
+            XBMC->CloseFile(handle);
+            return 0;
+        } else {
+            return REQUEST_FAILED;
+        }
+    }
 
-		// GET /schedule.json
-		int getSchedule(picojson::value &response) {
-			const std::string apiPath = "schedule.json";
-			return requestGET(apiPath, response);
-		}
+    // GET /schedule.json
+    int getSchedule(picojson::value& response)
+    {
+        const std::string apiPath = "schedule.json";
+        return requestGET(apiPath, response);
+    }
 
-		// GET /recorded.json
-		int getRecorded(picojson::value &response) {
-			const std::string apiPath = "recorded.json";
-			return requestGET(apiPath, response);
-		}
+    // GET /recorded.json
+    int getRecorded(picojson::value& response)
+    {
+        const std::string apiPath = "recorded.json";
+        return requestGET(apiPath, response);
+    }
 
-		// GET /reserves.json
-		int getReserves(picojson::value &response) {
-			const std::string apiPath = "reserves.json";
-			return requestGET(apiPath, response);
-		}
+    // GET /reserves.json
+    int getReserves(picojson::value& response)
+    {
+        const std::string apiPath = "reserves.json";
+        return requestGET(apiPath, response);
+    }
 
-		// DELETE /recorded/:id.json
-		int deleteRecordedProgram(std::string id) {
-			const std::string apiPath = "recorded/" + id + ".json";
-			return requestDELETE(apiPath);
-		}
+    // DELETE /recorded/:id.json
+    int deleteRecordedProgram(std::string id)
+    {
+        const std::string apiPath = "recorded/" + id + ".json";
+        return requestDELETE(apiPath);
+    }
 
-		// DELETE /recording/:id.json
-		int deleteRecordingProgram(std::string id) {
-			const std::string apiPath = "recording/" + id + ".json";
-			return requestDELETE(apiPath);
-		}
+    // DELETE /recording/:id.json
+    int deleteRecordingProgram(std::string id)
+    {
+        const std::string apiPath = "recording/" + id + ".json";
+        return requestDELETE(apiPath);
+    }
 
-		// PUT /reserves/:id/skip.json
-		int putReservesSkip(std::string id) {
-			const std::string apiPath = "reserves/" + id + "/skip.json";
-			return requestPUT(apiPath);
-		}
+    // PUT /reserves/:id/skip.json
+    int putReservesSkip(std::string id)
+    {
+        const std::string apiPath = "reserves/" + id + "/skip.json";
+        return requestPUT(apiPath);
+    }
 
-		// PUT /reserves/:id/unskip.json
-		int putReservesUnskip(std::string id) {
-			const std::string apiPath = "reserves/" + id + "/unskip.json";
-			return requestPUT(apiPath);
-		}
+    // PUT /reserves/:id/unskip.json
+    int putReservesUnskip(std::string id)
+    {
+        const std::string apiPath = "reserves/" + id + "/unskip.json";
+        return requestPUT(apiPath);
+    }
 
-		// PUT /program/:id.json
-		int putProgram(std::string id) {
-			const std::string apiPath = "program/" + id + ".json";
-			return requestPUT(apiPath);
-		}
+    // PUT /program/:id.json
+    int putProgram(std::string id)
+    {
+        const std::string apiPath = "program/" + id + ".json";
+        return requestPUT(apiPath);
+    }
 
-		// GET /rules.json
-		int getRules(picojson::value &response) {
-			const std::string apiPath = "rules.json";
-			return requestGET(apiPath, response);
-		}
+    // GET /rules.json
+    int getRules(picojson::value& response)
+    {
+        const std::string apiPath = "rules.json";
+        return requestGET(apiPath, response);
+    }
 
-		// POST /rules.json
-		int postRule(std::string type, std::string channel, std::string title, std::string genre) {
-			const std::string apiPath = "rules.json";
-			std::string buffer = "{\"types\":[\"\"],\"channels\":[\"\"],\"hour\":{\"start\":0,\"end\":24},\"reserve_titles\":[\"\"],\"categories\":[\"\"],\"_method\":\"POST\"}";
-			buffer.replace(95, 0, genre);
-			buffer.replace(77, 0, title);
-			buffer.replace(27, 0, channel);
-			buffer.replace(11, 0, type);
-			return requestPOST(apiPath, buffer.c_str(), buffer.size());
-		}
+    // POST /rules.json
+    int postRule(std::string type, std::string channel, std::string title, std::string genre)
+    {
+        const std::string apiPath = "rules.json";
+        std::string buffer = "{\"types\":[\"\"],\"channels\":[\"\"],\"hour\":{\"start\":0,\"end\":24},\"reserve_titles\":[\"\"],\"categories\":[\"\"],\"_method\":\"POST\"}";
+        buffer.replace(95, 0, genre);
+        buffer.replace(77, 0, title);
+        buffer.replace(27, 0, channel);
+        buffer.replace(11, 0, type);
+        return requestPOST(apiPath, buffer.c_str(), buffer.size());
+    }
 
-		// PUT /rules/:id/:action.json
-		int putRuleAction(int id, bool state) {
-			const std::string apiPath = "rules/" + std::to_string(id) + (state ? "/enable" : "/disable") + ".json";
-			return requestPUT(apiPath);
-		}
+    // PUT /rules/:id/:action.json
+    int putRuleAction(int id, bool state)
+    {
+        const std::string apiPath = "rules/" + std::to_string(id) + (state ? "/enable" : "/disable") + ".json";
+        return requestPUT(apiPath);
+    }
 
-		// DELETE /reserves/:id.json
-		int deleteReserves(std::string id) {
-			const std::string apiPath = "reserves/" + id + ".json";
-			return requestDELETE(apiPath);
-		}
+    // DELETE /reserves/:id.json
+    int deleteReserves(std::string id)
+    {
+        const std::string apiPath = "reserves/" + id + ".json";
+        return requestDELETE(apiPath);
+    }
 
-		// PUT /scheduler.json
-		int putScheduler() {
-			const std::string apiPath = "scheduler.json";
-			return requestPUT(apiPath);
-		}
+    // PUT /scheduler.json
+    int putScheduler()
+    {
+        const std::string apiPath = "scheduler.json";
+        return requestPUT(apiPath);
+    }
 
-		// GET /storage.json
-		int getStorage(picojson::value &response) {
-			const std::string apiPath = "storage.json";
-			return requestGET(apiPath, response);
-		}
+    // GET /storage.json
+    int getStorage(picojson::value& response)
+    {
+        const std::string apiPath = "storage.json";
+        return requestGET(apiPath, response);
+    }
 
-	} // namespace api
+} // namespace api
 } // namespace epgstation

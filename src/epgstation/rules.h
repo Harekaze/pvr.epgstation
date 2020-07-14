@@ -7,27 +7,27 @@
 #define EPGSTATION_RULES_H
 #include <iostream>
 
-#include "picojson/picojson.h"
 #include "epgstation/genre.h"
 #include "kodi/xbmc_pvr_types.h"
+#include "picojson/picojson.h"
 
 namespace epgstation {
-	struct RULE_ITEM {
-		unsigned int iIndex;
-		std::string strTitle;
-		std::string strEpgSearchString;
-		unsigned int iClientChannelUid;
-		PVR_TIMER_STATE state;
-		bool bFullTextEpgSearch;
-		bool bIsDisabled;
-		int iGenreType;
-		int iGenreSubType;
-	};
-	class Rule {
-		public:
-			std::vector<RULE_ITEM> rules;
-			bool refresh();
-	};
+struct RULE_ITEM {
+    unsigned int iIndex;
+    std::string strTitle;
+    std::string strEpgSearchString;
+    unsigned int iClientChannelUid;
+    PVR_TIMER_STATE state;
+    bool bFullTextEpgSearch;
+    bool bIsDisabled;
+    int iGenreType;
+    int iGenreSubType;
+};
+class Rule {
+public:
+    std::vector<RULE_ITEM> rules;
+    bool refresh();
+};
 } // namespace epgstation
 
 #endif /* end of include guard */

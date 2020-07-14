@@ -3,81 +3,85 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#include <iostream>
+#include "epgstation/epgstation.h"
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
-#include "epgstation/epgstation.h"
+#include <iostream>
 
 extern epgstation::Schedule g_schedule;
-extern ADDON::CHelper_libXBMC_addon *XBMC;
-extern CHelper_libXBMC_pvr *PVR;
+extern ADDON::CHelper_libXBMC_addon* XBMC;
+extern CHelper_libXBMC_pvr* PVR;
 
 extern "C" {
 
-int GetChannelsAmount(void) {
-	return g_schedule.schedule.size();
+int GetChannelsAmount(void)
+{
+    return g_schedule.schedule.size();
 }
 
-PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio) {
-	if (bRadio) {
-		return PVR_ERROR_NO_ERROR;
-	}
+PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
+{
+    if (bRadio) {
+        return PVR_ERROR_NO_ERROR;
+    }
 
-	if (!g_schedule.refresh()) {
-		return PVR_ERROR_SERVER_ERROR;
-	}
+    if (!g_schedule.refresh()) {
+        return PVR_ERROR_SERVER_ERROR;
+    }
 
-	for (const std::pair<std::string, std::vector<PVR_CHANNEL>> schedule: g_schedule.channelGroups) {
-		for (const PVR_CHANNEL channel: schedule.second) {
-			PVR->TransferChannelEntry(handle, &channel);
-		}
-	}
+    for (const std::pair<std::string, std::vector<PVR_CHANNEL>> schedule : g_schedule.channelGroups) {
+        for (const PVR_CHANNEL channel : schedule.second) {
+            PVR->TransferChannelEntry(handle, &channel);
+        }
+    }
 
-	return PVR_ERROR_NO_ERROR;
+    return PVR_ERROR_NO_ERROR;
 }
 
-int GetChannelGroupsAmount(void) {
-	return g_schedule.channelGroups.size();
+int GetChannelGroupsAmount(void)
+{
+    return g_schedule.channelGroups.size();
 }
 
-PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio) {
-	for (const std::pair<std::string, std::vector<PVR_CHANNEL>> channelGroup: g_schedule.channelGroups) {
-		PVR_CHANNEL_GROUP chGroup;
-		memset(&chGroup, 0, sizeof(PVR_CHANNEL_GROUP));
+PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
+{
+    for (const std::pair<std::string, std::vector<PVR_CHANNEL>> channelGroup : g_schedule.channelGroups) {
+        PVR_CHANNEL_GROUP chGroup;
+        memset(&chGroup, 0, sizeof(PVR_CHANNEL_GROUP));
 
-		strncpy(chGroup.strGroupName, channelGroup.first.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-		chGroup.bIsRadio = false;
-		// chGroup.iPosition = 0; /* not implemented */
+        strncpy(chGroup.strGroupName, channelGroup.first.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+        chGroup.bIsRadio = false;
+        // chGroup.iPosition = 0; /* not implemented */
 
-		PVR->TransferChannelGroup(handle, &chGroup);
-	}
+        PVR->TransferChannelGroup(handle, &chGroup);
+    }
 
-	return PVR_ERROR_NO_ERROR;
+    return PVR_ERROR_NO_ERROR;
 }
 
-PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP &group) {
-	for (const PVR_CHANNEL channel: g_schedule.channelGroups[group.strGroupName]) {
-		PVR_CHANNEL_GROUP_MEMBER chMem;
-		memset(&chMem, 0, sizeof(PVR_CHANNEL_GROUP_MEMBER));
+PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& group)
+{
+    for (const PVR_CHANNEL channel : g_schedule.channelGroups[group.strGroupName]) {
+        PVR_CHANNEL_GROUP_MEMBER chMem;
+        memset(&chMem, 0, sizeof(PVR_CHANNEL_GROUP_MEMBER));
 
-		chMem.iChannelUniqueId = channel.iUniqueId;
-		chMem.iChannelNumber = channel.iChannelNumber;
-		strncpy(chMem.strGroupName, group.strGroupName, PVR_ADDON_NAME_STRING_LENGTH - 1);
+        chMem.iChannelUniqueId = channel.iUniqueId;
+        chMem.iChannelNumber = channel.iChannelNumber;
+        strncpy(chMem.strGroupName, group.strGroupName, PVR_ADDON_NAME_STRING_LENGTH - 1);
 
-		PVR->TransferChannelGroupMember(handle, &chMem);
-	}
+        PVR->TransferChannelGroupMember(handle, &chMem);
+    }
 
-	return PVR_ERROR_NO_ERROR;
+    return PVR_ERROR_NO_ERROR;
 }
 
 /* not implemented */
 PVR_ERROR OpenDialogChannelScan(void) { return PVR_ERROR_NOT_IMPLEMENTED; }
-PVR_ERROR DeleteChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
-PVR_ERROR RenameChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
-PVR_ERROR OpenDialogChannelSettings(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
-PVR_ERROR OpenDialogChannelAdd(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR DeleteChannel(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR RenameChannel(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR OpenDialogChannelSettings(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR OpenDialogChannelAdd(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR SetEPGTimeFrame(int iDays) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR GetChannelStreamProperties(const PVR_CHANNEL* channel, PVR_NAMED_VALUE* properties, unsigned int* iPropertiesCount) { return PVR_ERROR_NOT_IMPLEMENTED; }
-
 }
