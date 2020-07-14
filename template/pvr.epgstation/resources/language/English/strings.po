@@ -37,60 +37,10 @@ msgid "Streaming"
 msgstr ""
 
 msgctxt "#30301"
-msgid "Transcode video"
+msgid "Transcode Live Playback"
 msgstr ""
 
-msgctxt "#30302"
-msgid "Transcode audio"
-msgstr ""
-
-#empty strings from id 30303 to 30309
-
-msgctxt "#30310"
-msgid "Video transcode options"
-msgstr ""
-
-#empty strings from id 30311 to 30319
-
-msgctxt "#30320"
-msgid "Audio transcode options"
-msgstr ""
-
-#empty strings from id 30321 to 30330
-
-msgctxt "#30331"
-msgid "Codec"
-msgstr ""
-
-msgctxt "#30332"
-msgid "Bitrate(kbps)"
-msgstr ""
-
-msgctxt "#30333"
-msgid "Size"
-msgstr ""
-
-#empty strings from id 30334 to 30340
-
-msgctxt "#30341"
-msgid "H.264"
-msgstr ""
-
-msgctxt "#30342"
-msgid "MPEG-2"
-msgstr ""
-
-#empty strings from id 30343 to 30350
-
-msgctxt "#30351"
-msgid "AAC"
-msgstr ""
-
-msgctxt "#30352"
-msgid "Vorbis"
-msgstr ""
-
-#empty strings from id 30353 to 30399
+#empty strings from id 30302 to 30399
 
 msgctxt "#30400"
 msgid "Recordings"

@@ -33,32 +33,8 @@ msgid "Streaming"
 msgstr "ストリーミング"
 
 msgctxt "#30301"
-msgid "Transcode video"
-msgstr "映像エンコード"
-
-msgctxt "#30302"
-msgid "Transcode audio"
-msgstr "音声エンコード"
-
-msgctxt "#30310"
-msgid "Video transcode options"
-msgstr "映像エンコードオプション"
-
-msgctxt "#30320"
-msgid "Audio transcode options"
-msgstr "音声エンコードオプション"
-
-msgctxt "#30331"
-msgid "Codec"
-msgstr "コーデック"
-
-msgctxt "#30332"
-msgid "Bitrate(kbps)"
-msgstr "ビットレート(kbps)"
-
-msgctxt "#30333"
-msgid "Size"
-msgstr "サイズ"
+msgid "Transcode Live Playback"
+msgstr "ライブ視聴エンコードモード"
 
 msgctxt "#30400"
 msgid "Recordings"

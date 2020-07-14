@@ -87,58 +87,13 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
         g_recorded.recordedThumbnailPath = "";
     }
 
-    std::string transcodeParams = "";
-
-    if (XBMC->GetSetting("video_transcode", &boolValue) && boolValue) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Video transcoding enabled.");
-
-        unsigned int option;
-        XBMC->GetSetting("video_codec", &option);
-        if (option == 0) {
-            transcodeParams += "&c:v=h264";
-        } else if (option == 1) {
-            transcodeParams += "&c:v=mpeg2video";
-        }
-
-        const unsigned int buf_len = 256;
-        char buffer[buf_len];
-
-        XBMC->GetSetting("video_bitrate", &option);
-        snprintf(buffer, buf_len - 1, "&b:v=%dk", option);
-        transcodeParams += buffer;
-        char videoSize[16];
-        XBMC->GetSetting("video_size", videoSize);
-        snprintf(buffer, buf_len - 1, "&size=%s", videoSize);
-        transcodeParams += buffer;
-    } else {
-        transcodeParams += "&c:v=copy";
-    }
-
-    if (XBMC->GetSetting("audio_transcode", &boolValue) && boolValue) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Audio transcoding enabled.");
-
-        unsigned int option;
-        XBMC->GetSetting("audio_codec", &option);
-        if (option == 0) {
-            transcodeParams += "&c:a=aac";
-        } else if (option == 1) {
-            transcodeParams += "&c:a=libvorbis";
-        }
-
-        const unsigned int buf_len = 256;
-        char buffer[buf_len];
-
-        XBMC->GetSetting("audio_bitrate", &option);
-        snprintf(buffer, buf_len - 1, "&b:a=%dk", option);
-        transcodeParams += buffer;
-    } else {
-        transcodeParams += "&c:a=copy";
-    }
+    unsigned int mode;
+    XBMC->GetSetting("live_transcode", &mode);
+    std::string transcodeParams = "?mode=" + std::to_string(mode);
 
     XBMC->Log(ADDON::LOG_NOTICE, "Transcoding parameter: %s", transcodeParams.c_str());
 
     g_schedule.liveStreamingPath += transcodeParams;
-    g_recorded.recordedStreamingPath += transcodeParams;
 
     PVR_MENUHOOK menuHookRec;
     memset(&menuHookRec, 0, sizeof(PVR_MENUHOOK));
