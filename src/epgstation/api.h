@@ -36,9 +36,6 @@ namespace epgstation {
 		// GET /recorded.json
 		int getRecorded(picojson::value &response);
 
-		// GET /recording.json
-		int getRecording(picojson::value &response);
-
 		// GET /reserves.json
 		int getReserves(picojson::value &response);
 

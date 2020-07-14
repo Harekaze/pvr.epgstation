@@ -107,12 +107,6 @@ namespace epgstation {
 			return requestGET(apiPath, response);
 		}
 
-		// GET /recording.json
-		int getRecording(picojson::value &response) {
-			const std::string apiPath = "recording.json";
-			return requestGET(apiPath, response);
-		}
-
 		// GET /reserves.json
 		int getReserves(picojson::value &response) {
 			const std::string apiPath = "reserves.json";

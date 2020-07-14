@@ -47,7 +47,6 @@
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 extern CHelper_libXBMC_pvr *PVR;
 extern epgstation::Recorded g_recorded;
-extern epgstation::Recording g_recording;
 extern epgstation::Schedule g_schedule;
 extern epgstation::Rule g_rule;
 extern epgstation::Reserve g_reserve;
@@ -70,7 +69,7 @@ int GetTimersAmount(void) {
 }
 
 PVR_ERROR GetTimers(ADDON_HANDLE handle) {
-	if (g_rule.refresh() && g_reserve.refresh() && g_recording.refresh()) {
+	if (g_rule.refresh() && g_reserve.refresh()) {
 		time_t now;
 		time(&now);
 		unsigned int index = 0;
@@ -102,12 +101,6 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle) {
 					timer.state = PVR_TIMER_STATE_SCHEDULED;
 				} else if (timer.startTime < now && now < timer.endTime) {
 					timer.state = PVR_TIMER_STATE_ABORTED;
-					for (const PVR_RECORDING program: g_recording.programs) {
-						if (timer.iEpgUid == program.iEpgEventId) {
-							timer.state = PVR_TIMER_STATE_RECORDING;
-							break;
-						}
-					}
 				} else {
 					timer.state = PVR_TIMER_STATE_COMPLETED;
 				}

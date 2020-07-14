@@ -22,7 +22,6 @@
 #include "api.h"
 #include "reserves.h"
 #include "recorded.h"
-#include "recording.h"
 #include "schedule.h"
 #include "kodi/libXBMC_addon.h"
 

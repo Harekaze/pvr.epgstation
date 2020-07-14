@@ -38,7 +38,6 @@
 
 epgstation::Schedule g_schedule;
 epgstation::Recorded g_recorded;
-epgstation::Recording g_recording;
 epgstation::Rule g_rule;
 epgstation::Reserve g_reserve;
 ADDON::CHelper_libXBMC_addon *XBMC = NULL;
@@ -95,7 +94,6 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props) {
 	g_schedule.liveStreamingPath = "channel/%s/watch.m2ts?ext=m2ts";
 	g_schedule.channelLogoPath = "channel/%s/logo.png";
 	g_recorded.recordedStreamingPath = "recorded/%s/watch.m2ts?ext=m2ts";
-	g_recording.recordingStreamingPath = "recording/%s/watch.m2ts?ext=m2ts";
 
 	int boolValue = 0;
 	if (XBMC->GetSetting("show_thumbnail", &boolValue) && boolValue) {
@@ -105,8 +103,6 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props) {
 		snprintf(valueString, 4, "%d", intValue);
 		g_recorded.recordedThumbnailPath = "recorded/%s/preview.png?pos=";
 		g_recorded.recordedThumbnailPath += valueString;
-		g_recording.recordingThumbnailPath = "recording/%s/preview.png?pos=";
-		g_recording.recordingThumbnailPath += valueString;
 	} else {
 		g_recorded.recordedThumbnailPath = "";
 	}
@@ -163,7 +159,6 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props) {
 
 	g_schedule.liveStreamingPath += transcodeParams;
 	g_recorded.recordedStreamingPath += transcodeParams;
-	g_recording.recordingStreamingPath += transcodeParams;
 
 	PVR_MENUHOOK menuHookRec;
 	memset(&menuHookRec, 0, sizeof(PVR_MENUHOOK));

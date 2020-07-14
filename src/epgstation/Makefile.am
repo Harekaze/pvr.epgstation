@@ -6,8 +6,6 @@ libepgstation_la_SOURCES = \
 	epgstation.h \
 	recorded.cpp \
 	recorded.h \
-	recording.cpp \
-	recording.h \
 	reserves.cpp \
 	reserves.h \
 	rules.cpp \

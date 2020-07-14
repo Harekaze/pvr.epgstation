@@ -23,7 +23,6 @@
 #include "reserves.h"
 #include "rules.h"
 #include "recorded.h"
-#include "recording.h"
 #include "schedule.h"
 #include "kodi/libXBMC_addon.h"
 
