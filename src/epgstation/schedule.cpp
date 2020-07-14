@@ -35,43 +35,41 @@ bool Schedule::refresh()
             continue;
         }
 
+        picojson::object& c = o["channel"].get<picojson::object>();
+
         PVR_CHANNEL ch;
-        ch.iUniqueId = o["sid"].is<double>() ? (int)(o["sid"].get<double>()) : 0;
+        ch.iUniqueId = c["id"].is<double>() ? (unsigned int)(c["id"].get<double>()) : 0;
         ch.bIsRadio = false;
         ch.bIsHidden = false;
-        ch.iChannelNumber = o["n"].is<double>() ? (int)((o["n"].get<double>())) + 1 : 0;
-        ch.iSubChannelNumber = o["nid"].is<double>() ? (int)(o["nid"].get<double>()) : 0;
-        // use channel id as name instead when name field isn't available.
-        strncpy(ch.strChannelName, o["name"].is<std::string>() ? o["name"].get<std::string>().c_str() : o["id"].get<std::string>().c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+        ch.iChannelNumber = c["remoteControlKeyId"].is<double>() ? (int)((c["remoteControlKeyId"].get<double>())) : 0;
+        ch.iSubChannelNumber = c["networkId"].is<double>() ? (unsigned int)(c["networkId"].get<double>()) : 0;
+        strncpy(ch.strChannelName, c["name"].is<std::string>() ? c["name"].get<std::string>().c_str() : "", PVR_ADDON_NAME_STRING_LENGTH - 1);
 
-        if (o["hasLogoData"].get<bool>()) {
+        if (c["hasLogoData"].is<bool>() && c["hasLogoData"].get<bool>()) {
             snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
                 (const char*)(epgstation::api::baseURL + channelLogoPath).c_str(),
-                o["id"].get<std::string>().c_str());
+                (unsigned int)(c["id"].get<double>()));
         } else {
             ch.strIconPath[0] = '\0';
         }
 
-        const std::string strChannelType = o["type"].get<std::string>();
+        const std::string strChannelType = c["channelType"].get<std::string>();
         channelGroups[strChannelType].push_back(ch);
 
         for (picojson::value& ps : o["programs"].get<picojson::array>()) {
             picojson::object& p = ps.get<picojson::object>();
             struct EPG_PROGRAM epg;
-            char* endptr;
-
-            epg.startTime = (time_t)(p["start"].get<double>() / 1000);
-            epg.endTime = (time_t)(p["end"].get<double>() / 1000);
-            epg.strUniqueBroadcastId = p["id"].get<std::string>();
-            const std::string strSubstrId = epg.strUniqueBroadcastId.substr(epg.strUniqueBroadcastId.size() - 6, 6);
-            epg.iUniqueBroadcastId = strtoul(strSubstrId.c_str(), &endptr, 36);
-            epg.strTitle = p["title"].get<std::string>();
-            epg.strEpisodeName = p["subTitle"].is<std::string>() ? p["subTitle"].get<std::string>() : "";
-            epg.strPlotOutline = p["description"].is<std::string>() ? p["description"].get<std::string>() : p["subTitle"].get<std::string>();
-            epg.strPlot = p["detail"].is<std::string>() ? p["detail"].get<std::string>() : "";
-            epg.strOriginalTitle = p["fullTitle"].is<std::string>() ? p["fullTitle"].get<std::string>() : "";
-            epg.strGenreDescription = p["category"].is<std::string>() ? p["category"].get<std::string>() : "";
-            epg.iEpisodeNumber = p["episode"].is<double>() ? (unsigned int)(p["episode"].get<double>()) : 0;
+            epg.startTime = (time_t)(p["startAt"].get<double>() / 1000);
+            epg.endTime = (time_t)(p["endAt"].get<double>() / 1000);
+            epg.strUniqueBroadcastId = std::to_string((unsigned int)p["id"].get<double>());
+            epg.iUniqueBroadcastId = (unsigned int)p["id"].get<double>();
+            epg.strTitle = p["name"].is<std::string>() ? p["name"].get<std::string>() : "";
+            epg.strEpisodeName = ""; // FIXME: Specify a name of episode
+            epg.strPlotOutline = p["description"].is<std::string>() ? p["description"].get<std::string>() : "";
+            epg.strPlot = p["extended"].is<std::string>() ? p["extended"].get<std::string>() : "";
+            epg.strOriginalTitle = epg.strTitle;
+            epg.strGenreDescription = p["genre1"].is<std::string>() ? p["genre1"].get<std::string>() : "";
+            epg.iEpisodeNumber = 0; // FIXME: Specify a number of episode
 
             schedule[ch.iUniqueId].push_back(epg);
         }
