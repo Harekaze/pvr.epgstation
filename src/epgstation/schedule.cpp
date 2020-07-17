@@ -5,6 +5,7 @@
  */
 #include "schedule.h"
 #include "api.h"
+#include "epgstation/types.h"
 #include "kodi/libXBMC_addon.h"
 #include "json/json.hpp"
 
@@ -35,26 +36,25 @@ bool Schedule::refresh()
             continue;
         }
 
-        nlohmann::json& c = o["channel"];
+        epgstation::channel c = o["channel"].get<epgstation::channel>();
 
         PVR_CHANNEL ch;
-        ch.iUniqueId = c["id"].is_number() ? (unsigned int)(c["id"].get<double>()) : 0;
+        ch.iUniqueId = c.id;
         ch.bIsRadio = false;
         ch.bIsHidden = false;
-        ch.iChannelNumber = c["remoteControlKeyId"].is_number() ? (int)((c["remoteControlKeyId"].get<double>())) : 0;
-        ch.iSubChannelNumber = c["networkId"].is_number() ? (unsigned int)(c["networkId"].get<double>()) : 0;
-        strncpy(ch.strChannelName, c["name"].is_string() ? c["name"].get<std::string>().c_str() : "", PVR_ADDON_NAME_STRING_LENGTH - 1);
+        ch.iChannelNumber = c.remoteControlKeyId;
+        ch.iSubChannelNumber = c.networkId;
+        strncpy(ch.strChannelName, c.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
 
-        if (c["hasLogoData"].is_boolean() && c["hasLogoData"].get<bool>()) {
+        if (c.hasLogoData) {
             snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
                 (const char*)(epgstation::api::baseURL + channelLogoPath).c_str(),
-                (unsigned int)(c["id"].get<double>()));
+                c.id);
         } else {
             ch.strIconPath[0] = '\0';
         }
 
-        const std::string strChannelType = c["channelType"].get<std::string>();
-        channelGroups[strChannelType].push_back(ch);
+        channelGroups[c.channelType].push_back(ch);
 
         for (nlohmann::json& p : o["programs"]) {
             struct EPG_PROGRAM epg;

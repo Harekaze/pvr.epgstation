@@ -54,6 +54,19 @@ public:
         j.at("hasThumbnail").get_to(r.hasThumbnail);
     }
 };
+
+class channel {
+public:
+    unsigned long id;
+    unsigned int serviceId;
+    unsigned int networkId;
+    std::string name;
+    bool hasLogoData;
+    std::string channelType;
+    unsigned int remoteControlKeyId;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(channel, id, serviceId, networkId, name, hasLogoData, channelType, remoteControlKeyId);
+};
 } // namespace epgstation
 
 #endif /* end of include guard */
