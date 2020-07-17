@@ -27,7 +27,7 @@ bool Recorded::refresh()
     for (nlohmann::json& p : response["recorded"]) {
         PVR_RECORDING rec;
         char* endptr;
-        epgstation::recorded r = p.get<epgstation::recorded>();
+        epgstation::program r = p.get<epgstation::program>();
 
         strncpy(rec.strRecordingId, std::to_string(r.id).c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
         strncpy(rec.strTitle, r.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);

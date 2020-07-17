@@ -8,6 +8,11 @@
 #include "json/json.hpp"
 #include <string>
 
+#define OPTIONAL_JSON_FROM(v)  \
+    if (j.contains(#v)) {      \
+        NLOHMANN_JSON_FROM(v); \
+    }
+
 namespace epgstation {
 class storage {
 public:
@@ -17,9 +22,9 @@ public:
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(storage, total, used);
 };
 
-class recorded {
+class program {
 public:
-    unsigned int id;
+    unsigned long id;
     unsigned long programId;
     unsigned long channelId;
     std::string channelType;
@@ -33,25 +38,21 @@ public:
     bool recording;
     bool hasThumbnail;
 
-    friend void from_json(const nlohmann::json& j, recorded& r)
+    friend void from_json(const nlohmann::json& j, program& t)
     {
-        j.at("id").get_to(r.id);
-        j.at("programId").get_to(r.programId);
-        j.at("channelId").get_to(r.channelId);
-        j.at("channelType").get_to(r.channelType);
-        j.at("name").get_to(r.name);
-        if (j.contains("description")) {
-            j.at("description").get_to(r.description);
-        }
-        if (j.contains("extended")) {
-            j.at("extended").get_to(r.extended);
-        }
-        r.startAt = j["startAt"].get<unsigned long>() / 1000;
-        r.endAt = j["endAt"].get<unsigned long>() / 1000;
-        j.at("genre1").get_to(r.genre1);
-        j.at("genre2").get_to(r.genre2);
-        j.at("recording").get_to(r.recording);
-        j.at("hasThumbnail").get_to(r.hasThumbnail);
+        NLOHMANN_JSON_FROM(id);
+        OPTIONAL_JSON_FROM(programId);
+        NLOHMANN_JSON_FROM(channelId);
+        NLOHMANN_JSON_FROM(channelType);
+        NLOHMANN_JSON_FROM(name);
+        OPTIONAL_JSON_FROM(description);
+        OPTIONAL_JSON_FROM(extended);
+        t.startAt = j["startAt"].get<unsigned long>() / 1000;
+        t.endAt = j["endAt"].get<unsigned long>() / 1000;
+        OPTIONAL_JSON_FROM(genre1);
+        OPTIONAL_JSON_FROM(genre2);
+        OPTIONAL_JSON_FROM(recording);
+        OPTIONAL_JSON_FROM(hasThumbnail);
     }
 };
 

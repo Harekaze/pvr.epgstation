@@ -56,18 +56,20 @@ bool Schedule::refresh()
 
         channelGroups[c.channelType].push_back(ch);
 
-        for (nlohmann::json& p : o["programs"]) {
+        for (nlohmann::json& pp : o["programs"]) {
+            epgstation::program p = pp.get<epgstation::program>();
+
             struct EPG_PROGRAM epg;
-            epg.startTime = (time_t)(p["startAt"].get<double>() / 1000);
-            epg.endTime = (time_t)(p["endAt"].get<double>() / 1000);
-            epg.strUniqueBroadcastId = std::to_string((unsigned int)p["id"].get<double>());
-            epg.iUniqueBroadcastId = (unsigned int)p["id"].get<double>();
-            epg.strTitle = p["name"].is_string() ? p["name"].get<std::string>() : "";
+            epg.startTime = p.startAt;
+            epg.endTime = p.endAt;
+            epg.strUniqueBroadcastId = std::to_string(p.id);
+            epg.iUniqueBroadcastId = p.id;
+            epg.strTitle = p.name;
             epg.strEpisodeName = ""; // FIXME: Specify a name of episode
-            epg.strPlotOutline = p["description"].is_string() ? p["description"].get<std::string>() : "";
-            epg.strPlot = p["extended"].is_string() ? p["extended"].get<std::string>() : "";
+            epg.strPlotOutline = p.description;
+            epg.strPlot = p.extended;
             epg.strOriginalTitle = epg.strTitle;
-            epg.strGenreDescription = p["genre1"].is_string() ? p["genre1"].get<std::string>() : "";
+            epg.strGenreDescription = std::to_string(p.genre1) + std::to_string(p.genre2); // FIXME: Valid genre string
             epg.iEpisodeNumber = 0; // FIXME: Specify a number of episode
 
             schedule[ch.iUniqueId].push_back(epg);
