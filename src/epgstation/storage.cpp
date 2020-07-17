@@ -5,6 +5,7 @@
  */
 #include "storage.h"
 #include "api.h"
+#include "epgstation/types.h"
 #include "kodi/libXBMC_addon.h"
 #include "json/json.hpp"
 
@@ -18,8 +19,10 @@ PVR_ERROR Storage::getStorageInfo(long long* used, long long* total)
         return PVR_ERROR_SERVER_ERROR;
     }
 
-    *total = (long long)(response["total"].get<double>() / 1024);
-    *used = (long long)(response["used"].get<double>() / 1024);
+    epgstation::storage info = response.get<epgstation::storage>();
+
+    *total = info.total / 1024;
+    *used = info.used / 1024;
 
     return PVR_ERROR_NO_ERROR;
 }
