@@ -7,7 +7,6 @@
 #define EPGSTATION_RESERVES_H
 #include <iostream>
 
-#include "epgstation/genre.h"
 #include "kodi/xbmc_pvr_types.h"
 
 #define TIMER_MANUAL_RESERVED 0x01

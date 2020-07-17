@@ -8,7 +8,6 @@
 #include <iostream>
 #include <map>
 
-#include "epgstation/genre.h"
 #include "kodi/xbmc_epg_types.h"
 #include "kodi/xbmc_pvr_types.h"
 

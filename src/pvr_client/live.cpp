@@ -34,8 +34,8 @@ PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time
         tag.endTime = epg.endTime;
         tag.strPlotOutline = epg.strPlotOutline.c_str();
         tag.strPlot = epg.strPlot.c_str();
-        tag.iGenreType = epgstation::iGenreTypePair[epg.strGenreDescription] & epgstation::GENRE_TYPE_MASK;
-        tag.iGenreSubType = epgstation::iGenreTypePair[epg.strGenreDescription] & epgstation::GENRE_SUBTYPE_MASK;
+        tag.iGenreType = 0; // FIXME: Set valid genre type
+        tag.iGenreSubType = 0; // FIXME: Set valid genre type
         tag.iEpisodeNumber = epg.iEpisodeNumber;
         tag.strEpisodeName = epg.strEpisodeName.c_str();
         tag.strGenreDescription = epg.strGenreDescription.c_str();

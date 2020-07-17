@@ -7,7 +7,6 @@
 #define EPGSTATION_RULES_H
 #include <iostream>
 
-#include "epgstation/genre.h"
 #include "kodi/xbmc_pvr_types.h"
 
 namespace epgstation {
