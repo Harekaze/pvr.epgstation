@@ -11,7 +11,6 @@
 #include "epgstation/genre.h"
 #include "kodi/xbmc_epg_types.h"
 #include "kodi/xbmc_pvr_types.h"
-#include "picojson/picojson.h"
 
 namespace epgstation {
 struct EPG_PROGRAM {

@@ -7,6 +7,7 @@
 #include "../base64/base64.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
+#include "json/json.hpp"
 
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 extern CHelper_libXBMC_pvr* PVR;
@@ -16,7 +17,7 @@ namespace api {
     const int REQUEST_FAILED = -1;
     std::string baseURL = "";
 
-    int requestGET(std::string apiPath, picojson::value& response)
+    int requestGET(std::string apiPath, nlohmann::json& response)
     {
         std::string text;
         const std::string url = baseURL + apiPath;
@@ -39,10 +40,11 @@ namespace api {
             return REQUEST_FAILED;
         }
 
-        const std::string err = picojson::parse(response, text);
-        if (!err.empty()) {
-            XBMC->Log(ADDON::LOG_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.c_str());
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.c_str());
+        try {
+            response = nlohmann::json::parse(text);
+        } catch (nlohmann::json::parse_error err) {
+            XBMC->Log(ADDON::LOG_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.what());
+            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.what());
             return REQUEST_FAILED;
         }
 
@@ -92,21 +94,21 @@ namespace api {
 
     // FIXME: Support other types
     // GET /api/schedule?type=GR
-    int getSchedule(picojson::value& response)
+    int getSchedule(nlohmann::json& response)
     {
         const std::string apiPath = "schedule?type=GR";
         return requestGET(apiPath, response);
     }
 
     // GET /api/recorded
-    int getRecorded(picojson::value& response)
+    int getRecorded(nlohmann::json& response)
     {
         const std::string apiPath = "recorded";
         return requestGET(apiPath, response);
     }
 
     // GET /api/reserves
-    int getReserves(picojson::value& response)
+    int getReserves(nlohmann::json& response)
     {
         const std::string apiPath = "reserves";
         return requestGET(apiPath, response);
@@ -142,7 +144,7 @@ namespace api {
     }
 
     // GET /api/rules
-    int getRules(picojson::value& response)
+    int getRules(nlohmann::json& response)
     {
         const std::string apiPath = "rules";
         return requestGET(apiPath, response);
@@ -173,7 +175,7 @@ namespace api {
     }
 
     // GET /api/storage
-    int getStorage(picojson::value& response)
+    int getStorage(nlohmann::json& response)
     {
         const std::string apiPath = "storage";
         return requestGET(apiPath, response);

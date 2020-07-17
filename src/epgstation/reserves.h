@@ -9,7 +9,6 @@
 
 #include "epgstation/genre.h"
 #include "kodi/xbmc_pvr_types.h"
-#include "picojson/picojson.h"
 
 #define TIMER_MANUAL_RESERVED 0x01
 #define TIMER_PATTERN_MATCHED 0x02

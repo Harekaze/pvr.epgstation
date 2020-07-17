@@ -8,13 +8,14 @@
 #include "kodi/libXBMC_addon.h"
 #include "recorded.h"
 #include "schedule.h"
+#include "json/json.hpp"
 
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 
 namespace epgstation {
 bool Reserve::refresh()
 {
-    picojson::value response;
+    nlohmann::json response;
 
     if (epgstation::api::getReserves(response) == epgstation::api::REQUEST_FAILED) {
         return false;
@@ -23,11 +24,9 @@ bool Reserve::refresh()
     reserves.clear();
 
     int index = 0;
-    picojson::object& root = response.get<picojson::object>();
 
-    for (picojson::value& a : root["reserves"].get<picojson::array>()) {
-        picojson::object& r = a.get<picojson::object>();
-        picojson::object& p = r["program"].get<picojson::object>();
+    for (nlohmann::json& r : response["reserves"]) {
+        nlohmann::json& p = r["program"];
 
         struct PVR_TIMER resv;
 
@@ -41,11 +40,11 @@ bool Reserve::refresh()
         resv.state = PVR_TIMER_STATE_SCHEDULED;
         resv.startTime = (time_t)(p["startAt"].get<double>() / 1000);
         resv.endTime = (time_t)(p["endAt"].get<double>() / 1000);
-        resv.iGenreType = p["genre1"].is<double>() ? (int)(p["genre1"].get<double>()) : 0;
-        resv.iGenreSubType = p["genre2"].is<double>() ? (int)(p["genre2"].get<double>()) : 0;
+        resv.iGenreType = p["genre1"].is_number() ? (int)(p["genre1"].get<double>()) : 0;
+        resv.iGenreSubType = p["genre2"].is_number() ? (int)(p["genre2"].get<double>()) : 0;
         resv.bStartAnyTime = false;
         resv.bEndAnyTime = false;
-        resv.iTimerType = r["ruleId"].is<double>() ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
+        resv.iTimerType = r["ruleId"].is_number() ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
 
         reserves.push_back(resv);
     }

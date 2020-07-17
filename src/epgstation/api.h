@@ -6,7 +6,7 @@
 #ifndef EPGSTATION_API_H
 #define EPGSTATION_API_H
 
-#include "picojson/picojson.h"
+#include "json/json.hpp"
 #include <iostream>
 
 namespace epgstation {
@@ -15,13 +15,13 @@ namespace api {
     extern std::string baseURL;
 
     // GET /api/schedule
-    int getSchedule(picojson::value& response);
+    int getSchedule(nlohmann::json& response);
 
     // GET /api/recorded
-    int getRecorded(picojson::value& response);
+    int getRecorded(nlohmann::json& response);
 
     // GET /api/reserves
-    int getReserves(picojson::value& response);
+    int getReserves(nlohmann::json& response);
 
     // DELETE /api/recorded/:id
     int deleteRecordedProgram(std::string id);
@@ -36,7 +36,7 @@ namespace api {
     int postReserves(std::string id);
 
     // GET /api/rules
-    int getRules(picojson::value& response);
+    int getRules(nlohmann::json& response);
 
     // POST /api/rules
     int postRules(std::string type,
@@ -51,7 +51,7 @@ namespace api {
     int putScheduleUpdate();
 
     // GET /api/storage
-    int getStorage(picojson::value& response);
+    int getStorage(nlohmann::json& response);
 
 } // namespace api
 } // namespace epgstation

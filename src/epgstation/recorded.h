@@ -9,7 +9,6 @@
 
 #include "epgstation/genre.h"
 #include "kodi/xbmc_pvr_types.h"
-#include "picojson/picojson.h"
 
 namespace epgstation {
 class Recorded {
