@@ -60,10 +60,10 @@ PVR_ERROR DeleteRecording(const PVR_RECORDING& recording)
 
 PVR_ERROR GetDriveSpace(long long* iTotal, long long* iUsed)
 {
-    picojson::value response;
     const time_t refreshInterval = 10 * 60; // every 10 minutes
     static time_t lastUpdated;
     static long long total, used;
+    PVR_ERROR ret;
 
     time_t now;
     time(&now);
@@ -74,13 +74,11 @@ PVR_ERROR GetDriveSpace(long long* iTotal, long long* iUsed)
         return PVR_ERROR_NO_ERROR;
     }
 
-    if (epgstation::api::getStorage(response) == epgstation::api::REQUEST_FAILED) {
-        return PVR_ERROR_SERVER_ERROR;
+    ret = epgstation::Storage::getStorageInfo(&used, &total);
+    if (ret != PVR_ERROR_NO_ERROR) {
+        return ret;
     }
 
-    picojson::object& o = response.get<picojson::object>();
-    total = (long long)(o["total"].get<double>() / 1024);
-    used = (long long)(o["used"].get<double>() / 1024);
     *iTotal = total;
     *iUsed = used;
 

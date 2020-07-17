@@ -6,7 +6,8 @@ libepgstation_la_SOURCES = \
 	recorded.cpp \
 	reserves.cpp \
 	rules.cpp \
-	schedule.cpp
+	schedule.cpp \
+	storage.cpp
 
 libepgstation_la_LDFLAGS = \
 	-avoid-version

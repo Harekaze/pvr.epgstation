@@ -11,5 +11,6 @@
 #include "reserves.h"
 #include "rules.h"
 #include "schedule.h"
+#include "storage.h"
 
 #endif /* end of include guard */
