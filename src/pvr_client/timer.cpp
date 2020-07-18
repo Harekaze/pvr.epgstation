@@ -50,22 +50,20 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
         time(&now);
         unsigned int index = 0;
 
-        for (const epgstation::RULE_ITEM rule : g_rule.rules) {
+        for (const epgstation::rule rule : g_rule.rules) {
             PVR_TIMER timer;
             memset(&timer, 0, sizeof(PVR_TIMER));
 
             timer.iClientIndex = index + TIMER_CLIENT_START_INDEX;
-            timer.state = rule.state;
-            strncpy(timer.strTitle, rule.strTitle.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-            timer.iClientChannelUid = rule.iClientChannelUid;
-            timer.iGenreType = rule.iGenreType;
-            timer.iGenreSubType = rule.iGenreSubType;
+            timer.state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED;
+            strncpy(timer.strTitle, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+            timer.iClientChannelUid = PVR_TIMER_ANY_CHANNEL;
             timer.iTimerType = RULES_PATTERN_MATCHED;
             timer.bStartAnyTime = true;
             timer.bEndAnyTime = true;
-            strncpy(timer.strEpgSearchString, rule.strEpgSearchString.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-            strncpy(timer.strSummary, rule.strEpgSearchString.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
-            timer.bFullTextEpgSearch = rule.bFullTextEpgSearch;
+            strncpy(timer.strEpgSearchString, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+            strncpy(timer.strSummary, rule.keyword.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
+            timer.bFullTextEpgSearch = rule.description;
 
             PVR->TransferTimerEntry(handle, &timer);
             index++;
@@ -111,39 +109,33 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
 {
     if (timer.iTimerType == RULES_PATTERN_MATCHED) {
         const unsigned int index = timer.iClientIndex - TIMER_CLIENT_START_INDEX;
-        const epgstation::RULE_ITEM rule = g_rule.rules[index];
+        const epgstation::rule rule = g_rule.rules[index];
 
-        // Only rule availability changing is supported
-        if (timer.state != rule.state) {
-            switch (timer.state) {
-            case PVR_TIMER_STATE_SCHEDULED:
-                if (epgstation::api::putRuleAction(rule.iIndex, true) != epgstation::api::REQUEST_FAILED) {
-                    XBMC->Log(ADDON::LOG_NOTICE, "Enable rule: #%d", index);
-                    break;
-                }
-                XBMC->Log(ADDON::LOG_ERROR, "Failed to enable rule: #%d", index);
-                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to enable rule: #%d", index);
-                return PVR_ERROR_SERVER_ERROR;
-            case PVR_TIMER_STATE_DISABLED:
-                if (epgstation::api::putRuleAction(rule.iIndex, false) != epgstation::api::REQUEST_FAILED) {
-                    XBMC->Log(ADDON::LOG_NOTICE, "Disable rule: #%d", index);
-                    break;
-                }
-                XBMC->Log(ADDON::LOG_ERROR, "Failed to disable rule: #%d", index);
-                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to disable rule: #%d", index);
-                return PVR_ERROR_SERVER_ERROR;
-            default:
-                XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: #%d", index);
-                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unknown state change: #%d", index);
-                return PVR_ERROR_NOT_IMPLEMENTED;
+        switch (timer.state) {
+        case PVR_TIMER_STATE_SCHEDULED:
+            if (epgstation::api::putRuleAction(rule.id, true) != epgstation::api::REQUEST_FAILED) {
+                XBMC->Log(ADDON::LOG_NOTICE, "Enable rule: #%d", index);
+                break;
             }
-
-            sleep(1);
-            PVR->TriggerTimerUpdate();
-            return PVR_ERROR_NO_ERROR;
+            XBMC->Log(ADDON::LOG_ERROR, "Failed to enable rule: #%d", index);
+            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to enable rule: #%d", index);
+            return PVR_ERROR_SERVER_ERROR;
+        case PVR_TIMER_STATE_DISABLED:
+            if (epgstation::api::putRuleAction(rule.id, false) != epgstation::api::REQUEST_FAILED) {
+                XBMC->Log(ADDON::LOG_NOTICE, "Disable rule: #%d", index);
+                break;
+            }
+            XBMC->Log(ADDON::LOG_ERROR, "Failed to disable rule: #%d", index);
+            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to disable rule: #%d", index);
+            return PVR_ERROR_SERVER_ERROR;
+        default:
+            XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: #%d", index);
+            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unknown state change: #%d", index);
+            return PVR_ERROR_NOT_IMPLEMENTED;
         }
 
-        XBMC->Log(ADDON::LOG_DEBUG, "Nothing to do - Only state change is supported: #%d", index);
+        sleep(1);
+        PVR->TriggerTimerUpdate();
         return PVR_ERROR_NO_ERROR;
     }
 

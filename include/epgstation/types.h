@@ -69,6 +69,17 @@ public:
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(channel, id, serviceId, networkId, name, hasLogoData, channelType, remoteControlKeyId);
 };
+
+class rule {
+public:
+    unsigned int id;
+    std::string keyword;
+    bool description;
+    bool enable;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(rule, id, keyword, description, enable);
+};
+
 } // namespace epgstation
 
 #endif /* end of include guard */

@@ -5,25 +5,14 @@
  */
 #ifndef EPGSTATION_RULES_H
 #define EPGSTATION_RULES_H
+#include "epgstation/types.h"
 #include <iostream>
 
-#include "kodi/xbmc_pvr_types.h"
-
 namespace epgstation {
-struct RULE_ITEM {
-    unsigned int iIndex;
-    std::string strTitle;
-    std::string strEpgSearchString;
-    unsigned int iClientChannelUid;
-    PVR_TIMER_STATE state;
-    bool bFullTextEpgSearch;
-    bool bIsDisabled;
-    int iGenreType;
-    int iGenreSubType;
-};
+
 class Rule {
 public:
-    std::vector<RULE_ITEM> rules;
+    std::vector<rule> rules;
     bool refresh();
 };
 } // namespace epgstation
