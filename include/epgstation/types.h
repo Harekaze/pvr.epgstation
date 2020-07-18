@@ -37,6 +37,7 @@ public:
     unsigned int genre2;
     bool recording;
     bool hasThumbnail;
+    int ruleId; // Optional for reserved program
 
     friend void from_json(const nlohmann::json& j, program& t)
     {

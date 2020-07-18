@@ -71,15 +71,31 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             index++;
         }
 
-        for (PVR_TIMER timer : g_reserve.reserves) {
-            if (timer.state == PVR_TIMER_STATE_SCHEDULED) {
-                if (now < timer.startTime) {
-                    timer.state = PVR_TIMER_STATE_SCHEDULED;
-                } else if (timer.startTime < now && now < timer.endTime) {
-                    timer.state = PVR_TIMER_STATE_ABORTED;
-                } else {
-                    timer.state = PVR_TIMER_STATE_COMPLETED;
-                }
+        for (epgstation::program p : g_reserve.reserves) {
+            struct PVR_TIMER timer;
+
+            timer.iEpgUid = p.id; // NOTE: Overflow casting from unsigned long to unsigned
+            timer.iClientIndex = index++;
+            timer.iClientChannelUid = p.channelId;
+            strncpy(timer.strTitle, p.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+            strncpy(timer.strSummary, p.extended.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
+            strncpy(timer.strDirectory, std::to_string(p.id).c_str(), PVR_ADDON_URL_STRING_LENGTH - 1); // NOTE: Store original ID
+
+            timer.state = PVR_TIMER_STATE_SCHEDULED;
+            timer.startTime = p.startAt;
+            timer.endTime = p.endAt;
+            timer.iGenreType = p.genre1;
+            timer.iGenreSubType = p.genre2;
+            timer.bStartAnyTime = false;
+            timer.bEndAnyTime = false;
+            timer.iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
+
+            if (now < timer.startTime) {
+                timer.state = PVR_TIMER_STATE_SCHEDULED;
+            } else if (timer.startTime < now && now < timer.endTime) {
+                timer.state = PVR_TIMER_STATE_ABORTED;
+            } else {
+                timer.state = PVR_TIMER_STATE_COMPLETED;
             }
 
             PVR->TransferTimerEntry(handle, &timer);
@@ -131,56 +147,31 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
         return PVR_ERROR_NO_ERROR;
     }
 
-    int index = -1;
-    for (unsigned int i = 0, lim = g_reserve.reserves.size(); i < lim; i++) {
-        if (g_reserve.reserves[i].iClientIndex == timer.iClientIndex) {
-            index = i;
+    switch (timer.state) {
+    case PVR_TIMER_STATE_SCHEDULED:
+        if (epgstation::api::deleteReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
+            XBMC->Log(ADDON::LOG_NOTICE, "Unskip reserving: %s", timer.strDirectory);
             break;
         }
-    }
-    if (index < 0) {
-        XBMC->Log(ADDON::LOG_ERROR, "No timer found: %d", timer.iClientIndex);
-        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "No timer found: %d", timer.iClientIndex);
-        return PVR_ERROR_FAILED;
-    }
-
-    const PVR_TIMER resv = g_reserve.reserves[index];
-    // Only reserving state changing is supported
-    if (timer.iTimerType != resv.iTimerType) {
-        XBMC->Log(ADDON::LOG_ERROR, "Unsupport timer type change: %s", timer.strDirectory);
-        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unsupport timer type change: %s", timer.strDirectory);
+        XBMC->Log(ADDON::LOG_ERROR, "Failed to enable state: %s", timer.strDirectory);
+        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to enable state: %s", timer.strDirectory);
+        return PVR_ERROR_SERVER_ERROR;
+    case PVR_TIMER_STATE_DISABLED:
+        if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
+            XBMC->Log(ADDON::LOG_NOTICE, "Skip reserving: %s", timer.strDirectory);
+            break;
+        }
+        XBMC->Log(ADDON::LOG_ERROR, "Failed to disable state: %s", timer.strDirectory);
+        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to disable state: %s", timer.strDirectory);
+        return PVR_ERROR_SERVER_ERROR;
+    default:
+        XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: %s", timer.strDirectory);
+        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unknown state change: %s", timer.strDirectory);
         return PVR_ERROR_NOT_IMPLEMENTED;
     }
-    if (timer.state != resv.state) {
-        switch (timer.state) {
-        case PVR_TIMER_STATE_SCHEDULED:
-            if (epgstation::api::deleteReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
-                XBMC->Log(ADDON::LOG_NOTICE, "Unskip reserving: %s", timer.strDirectory);
-                break;
-            }
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to enable state: %s", timer.strDirectory);
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to enable state: %s", timer.strDirectory);
-            return PVR_ERROR_SERVER_ERROR;
-        case PVR_TIMER_STATE_DISABLED:
-            if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
-                XBMC->Log(ADDON::LOG_NOTICE, "Skip reserving: %s", timer.strDirectory);
-                break;
-            }
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to disable state: %s", timer.strDirectory);
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to disable state: %s", timer.strDirectory);
-            return PVR_ERROR_SERVER_ERROR;
-        default:
-            XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: %s", timer.strDirectory);
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unknown state change: %s", timer.strDirectory);
-            return PVR_ERROR_NOT_IMPLEMENTED;
-        }
 
-        sleep(1);
-        PVR->TriggerTimerUpdate();
-        return PVR_ERROR_NO_ERROR;
-    }
-
-    XBMC->Log(ADDON::LOG_DEBUG, "Nothing to do - Only state change is supported: %s", timer.strDirectory);
+    sleep(1);
+    PVR->TriggerTimerUpdate();
     return PVR_ERROR_NO_ERROR;
 }
 
