@@ -36,18 +36,6 @@ extern epgstation::Schedule g_schedule;
 extern epgstation::Rule g_rule;
 extern epgstation::Reserve g_reserve;
 
-std::string channel_id_string(unsigned int nid, unsigned int sid)
-{
-    const static std::string base36 = "0123456789abcdefghijklmnopqrstuvwxyz";
-    unsigned int val = nid * 100000 + sid;
-    std::string result;
-    result.reserve(14);
-    do {
-        result = base36[val % 36] + result;
-    } while (val /= 36);
-    return result;
-}
-
 extern "C" {
 
 int GetTimersAmount(void)
@@ -216,11 +204,11 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
                 }
                 std::string strChannelId;
                 std::string strChannelType;
-                for (const std::pair<std::string, std::vector<PVR_CHANNEL>> channelGroups : g_schedule.channelGroups) {
-                    for (const PVR_CHANNEL channel : channelGroups.second) {
-                        if (channel.iUniqueId == timer.iClientChannelUid) {
-                            strChannelType = channelGroups.first;
-                            strChannelId = channel_id_string(channel.iSubChannelNumber, channel.iUniqueId);
+                for (const std::pair<std::string, std::vector<epgstation::channel>> channelGroups : g_schedule.channelGroups) {
+                    for (const epgstation::channel channel : channelGroups.second) {
+                        if (channel.id == timer.iClientChannelUid) {
+                            strChannelType = channel.channelType;
+                            strChannelId = std::to_string(channel.id);
                             break;
                         }
                     }

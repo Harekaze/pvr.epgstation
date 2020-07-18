@@ -30,9 +30,24 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
         return PVR_ERROR_SERVER_ERROR;
     }
 
-    for (const std::pair<std::string, std::vector<PVR_CHANNEL>> schedule : g_schedule.channelGroups) {
-        for (const PVR_CHANNEL channel : schedule.second) {
-            PVR->TransferChannelEntry(handle, &channel);
+    for (const std::pair<std::string, std::vector<epgstation::channel>> schedule : g_schedule.channelGroups) {
+        for (const epgstation::channel c : schedule.second) {
+            PVR_CHANNEL ch;
+            ch.iUniqueId = c.id;
+            ch.bIsRadio = false;
+            ch.bIsHidden = false;
+            ch.iChannelNumber = c.remoteControlKeyId;
+            ch.iSubChannelNumber = c.networkId;
+            strncpy(ch.strChannelName, c.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+
+            if (c.hasLogoData) {
+                snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
+                    (const char*)(epgstation::api::baseURL + g_schedule.channelLogoPath).c_str(),
+                    c.id);
+            } else {
+                ch.strIconPath[0] = '\0';
+            }
+            PVR->TransferChannelEntry(handle, &ch);
         }
     }
 
@@ -46,7 +61,7 @@ int GetChannelGroupsAmount(void)
 
 PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 {
-    for (const std::pair<std::string, std::vector<PVR_CHANNEL>> channelGroup : g_schedule.channelGroups) {
+    for (const std::pair<std::string, std::vector<epgstation::channel>> channelGroup : g_schedule.channelGroups) {
         PVR_CHANNEL_GROUP chGroup;
         memset(&chGroup, 0, sizeof(PVR_CHANNEL_GROUP));
 
@@ -62,12 +77,12 @@ PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 
 PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& group)
 {
-    for (const PVR_CHANNEL channel : g_schedule.channelGroups[group.strGroupName]) {
+    for (const epgstation::channel channel : g_schedule.channelGroups[group.strGroupName]) {
         PVR_CHANNEL_GROUP_MEMBER chMem;
         memset(&chMem, 0, sizeof(PVR_CHANNEL_GROUP_MEMBER));
 
-        chMem.iChannelUniqueId = channel.iUniqueId;
-        chMem.iChannelNumber = channel.iChannelNumber;
+        chMem.iChannelUniqueId = channel.id;
+        chMem.iChannelNumber = channel.remoteControlKeyId;
         strncpy(chMem.strGroupName, group.strGroupName, PVR_ADDON_NAME_STRING_LENGTH - 1);
 
         PVR->TransferChannelGroupMember(handle, &chMem);

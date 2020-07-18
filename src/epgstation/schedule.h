@@ -18,7 +18,7 @@ public:
     std::string channelLogoPath;
     std::string liveStreamingPath;
     std::map<unsigned int, std::vector<program>> schedule;
-    std::map<std::string, std::vector<PVR_CHANNEL>> channelGroups;
+    std::map<std::string, std::vector<channel>> channelGroups;
     bool refresh();
 };
 } // namespace epgstation

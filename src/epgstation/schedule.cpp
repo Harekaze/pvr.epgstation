@@ -36,29 +36,13 @@ bool Schedule::refresh()
             continue;
         }
 
-        epgstation::channel c = o["channel"].get<epgstation::channel>();
+        epgstation::channel ch = o["channel"].get<epgstation::channel>();
 
-        PVR_CHANNEL ch;
-        ch.iUniqueId = c.id;
-        ch.bIsRadio = false;
-        ch.bIsHidden = false;
-        ch.iChannelNumber = c.remoteControlKeyId;
-        ch.iSubChannelNumber = c.networkId;
-        strncpy(ch.strChannelName, c.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-
-        if (c.hasLogoData) {
-            snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
-                (const char*)(epgstation::api::baseURL + channelLogoPath).c_str(),
-                c.id);
-        } else {
-            ch.strIconPath[0] = '\0';
-        }
-
-        channelGroups[c.channelType].push_back(ch);
+        channelGroups[ch.channelType].push_back(ch);
 
         for (nlohmann::json& pp : o["programs"]) {
             epgstation::program p = pp.get<epgstation::program>();
-            schedule[ch.iUniqueId].push_back(p);
+            schedule[ch.id].push_back(p);
         }
     }
 
