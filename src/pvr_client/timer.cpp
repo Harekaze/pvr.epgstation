@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 #include "epgstation/epgstation.h"
+#include "epgstation/types.h"
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
@@ -197,17 +198,17 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
 
 PVR_ERROR AddTimer(const PVR_TIMER& timer)
 {
-    for (const std::pair<unsigned int, std::vector<epgstation::EPG_PROGRAM>> schedule : g_schedule.schedule) {
+    for (const std::pair<unsigned int, std::vector<epgstation::program>> schedule : g_schedule.schedule) {
         if (schedule.first == timer.iClientChannelUid) {
             if (timer.iTimerType == CREATE_RULES_PATTERN_MATCHED) {
                 std::string genre;
                 bool isLive = false;
-                for (const epgstation::EPG_PROGRAM program : schedule.second) {
-                    if (program.startTime == timer.startTime && program.endTime == timer.endTime) {
-                        genre = program.strGenreDescription;
+                for (const epgstation::program program : schedule.second) {
+                    if (program.startAt == timer.startTime && program.endAt == timer.endTime) {
+                        genre = ""; // FIXME: Set genre name
                         time_t now;
                         time(&now);
-                        if (program.startTime < now && now < program.endTime) { // Ongoing recording
+                        if (program.startAt < now && now < program.endAt) { // Ongoing recording
                             isLive = true;
                         }
                         break;
@@ -240,22 +241,22 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
                 }
                 return PVR_ERROR_NO_ERROR;
             }
-            for (const epgstation::EPG_PROGRAM program : schedule.second) {
-                if (program.startTime == timer.startTime && program.endTime == timer.endTime) {
-                    if (epgstation::api::postReserves(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) {
-                        XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: %s", program.strUniqueBroadcastId.c_str());
+            for (const epgstation::program program : schedule.second) {
+                if (program.startAt == timer.startTime && program.endAt == timer.endTime) {
+                    if (epgstation::api::postReserves(std::to_string(program.id)) != epgstation::api::REQUEST_FAILED) {
+                        XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: %s", std::to_string(program.id).c_str());
                         bool isLive = false;
                         time_t now;
                         time(&now);
-                        if (program.startTime < now && now < program.endTime) { // Ongoing recording
+                        if (program.startAt < now && now < program.endAt) { // Ongoing recording
                             isLive = true;
                         }
                         sleep(isLive ? 5 : 1);
                         PVR->TriggerTimerUpdate();
                         return PVR_ERROR_NO_ERROR;
                     } else {
-                        XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: %s", program.strUniqueBroadcastId.c_str());
-                        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to reserve new program: %s", program.strUniqueBroadcastId.c_str());
+                        XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
+                        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
                         return PVR_ERROR_SERVER_ERROR;
                     }
                 }
@@ -272,34 +273,34 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
 PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
 {
     if (timer.iTimerType == TIMER_MANUAL_RESERVED || timer.iTimerType == TIMER_PATTERN_MATCHED) {
-        for (const std::pair<unsigned int, std::vector<epgstation::EPG_PROGRAM>> schedule : g_schedule.schedule) {
+        for (const std::pair<unsigned int, std::vector<epgstation::program>> schedule : g_schedule.schedule) {
             if (schedule.first == timer.iClientChannelUid) {
-                for (const epgstation::EPG_PROGRAM program : schedule.second) {
-                    if (program.startTime == timer.startTime && program.endTime == timer.endTime) {
+                for (const epgstation::program program : schedule.second) {
+                    if (program.startAt == timer.startTime && program.endAt == timer.endTime) {
                         time_t now;
                         time(&now);
-                        if (program.startTime < now && now < program.endTime) { // Ongoing recording
-                            if (epgstation::api::deleteReserves(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) { // Cancel recording
-                                XBMC->Log(ADDON::LOG_NOTICE, "Cancel ongoing recording program: %s", program.strUniqueBroadcastId.c_str());
+                        if (program.startAt < now && now < program.endAt) { // Ongoing recording
+                            if (epgstation::api::deleteReserves(std::to_string(program.id)) != epgstation::api::REQUEST_FAILED) { // Cancel recording
+                                XBMC->Log(ADDON::LOG_NOTICE, "Cancel ongoing recording program: %s", std::to_string(program.id).c_str());
                                 sleep(5);
                                 PVR->TriggerRecordingUpdate();
                                 PVR->TriggerTimerUpdate();
                                 return PVR_ERROR_NO_ERROR;
                             } else {
-                                XBMC->Log(ADDON::LOG_ERROR, "Failed to cancel recording program: %s", program.strUniqueBroadcastId.c_str());
-                                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to cancel recording program: %s", program.strUniqueBroadcastId.c_str());
+                                XBMC->Log(ADDON::LOG_ERROR, "Failed to cancel recording program: %s", std::to_string(program.id).c_str());
+                                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to cancel recording program: %s", std::to_string(program.id).c_str());
                                 return PVR_ERROR_SERVER_ERROR;
                             }
                         } else if (timer.iTimerType == TIMER_MANUAL_RESERVED) {
-                            if (epgstation::api::deleteReserves(program.strUniqueBroadcastId) != epgstation::api::REQUEST_FAILED) {
-                                XBMC->Log(ADDON::LOG_NOTICE, "Delete manual reserved program: %s", program.strUniqueBroadcastId.c_str());
+                            if (epgstation::api::deleteReserves(std::to_string(program.id)) != epgstation::api::REQUEST_FAILED) {
+                                XBMC->Log(ADDON::LOG_NOTICE, "Delete manual reserved program: %s", std::to_string(program.id).c_str());
                                 sleep(1);
                                 PVR->TriggerRecordingUpdate();
                                 PVR->TriggerTimerUpdate();
                                 return PVR_ERROR_NO_ERROR;
                             } else {
-                                XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: %s", program.strUniqueBroadcastId.c_str());
-                                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to delete reserved program: %s", program.strUniqueBroadcastId.c_str());
+                                XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: %s", std::to_string(program.id).c_str());
+                                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to delete reserved program: %s", std::to_string(program.id).c_str());
                                 return PVR_ERROR_SERVER_ERROR;
                             }
                         } else {
@@ -310,8 +311,8 @@ PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
                                 PVR->TriggerTimerUpdate();
                                 return PVR_ERROR_NO_ERROR;
                             } else {
-                                XBMC->Log(ADDON::LOG_ERROR, "Failed to skip reserved program: %s", program.strUniqueBroadcastId.c_str());
-                                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to skip reserved program: %s", program.strUniqueBroadcastId.c_str());
+                                XBMC->Log(ADDON::LOG_ERROR, "Failed to skip reserved program: %s", std::to_string(program.id).c_str());
+                                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to skip reserved program: %s", std::to_string(program.id).c_str());
                                 return PVR_ERROR_SERVER_ERROR;
                             }
                         }

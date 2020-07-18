@@ -58,21 +58,7 @@ bool Schedule::refresh()
 
         for (nlohmann::json& pp : o["programs"]) {
             epgstation::program p = pp.get<epgstation::program>();
-
-            struct EPG_PROGRAM epg;
-            epg.startTime = p.startAt;
-            epg.endTime = p.endAt;
-            epg.strUniqueBroadcastId = std::to_string(p.id);
-            epg.iUniqueBroadcastId = p.id;
-            epg.strTitle = p.name;
-            epg.strEpisodeName = ""; // FIXME: Specify a name of episode
-            epg.strPlotOutline = p.description;
-            epg.strPlot = p.extended;
-            epg.strOriginalTitle = epg.strTitle;
-            epg.strGenreDescription = std::to_string(p.genre1) + std::to_string(p.genre2); // FIXME: Valid genre string
-            epg.iEpisodeNumber = 0; // FIXME: Specify a number of episode
-
-            schedule[ch.iUniqueId].push_back(epg);
+            schedule[ch.iUniqueId].push_back(p);
         }
     }
 

@@ -8,28 +8,16 @@
 #include <iostream>
 #include <map>
 
+#include "epgstation/types.h"
 #include "kodi/xbmc_epg_types.h"
 #include "kodi/xbmc_pvr_types.h"
 
 namespace epgstation {
-struct EPG_PROGRAM {
-    unsigned int iUniqueBroadcastId;
-    unsigned int iEpisodeNumber;
-    time_t startTime;
-    time_t endTime;
-    std::string strUniqueBroadcastId;
-    std::string strTitle;
-    std::string strPlotOutline;
-    std::string strPlot;
-    std::string strOriginalTitle;
-    std::string strEpisodeName;
-    std::string strGenreDescription;
-};
 class Schedule {
 public:
     std::string channelLogoPath;
     std::string liveStreamingPath;
-    std::map<unsigned int, std::vector<EPG_PROGRAM>> schedule;
+    std::map<unsigned int, std::vector<program>> schedule;
     std::map<std::string, std::vector<PVR_CHANNEL>> channelGroups;
     bool refresh();
 };

@@ -17,28 +17,28 @@ extern "C" {
 
 PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time_t iStart, time_t iEnd)
 {
-    for (const epgstation::EPG_PROGRAM epg : g_schedule.schedule[channel.iUniqueId]) {
-        if (epg.endTime < iStart)
+    for (const epgstation::program epg : g_schedule.schedule[channel.iUniqueId]) {
+        if (epg.endAt < iStart)
             continue;
-        if (epg.startTime > iEnd)
+        if (epg.startAt > iEnd)
             break;
 
         EPG_TAG tag;
         memset(&tag, 0, sizeof(EPG_TAG));
 
-        tag.iUniqueBroadcastId = epg.iUniqueBroadcastId;
-        tag.strTitle = epg.strTitle.c_str();
-        tag.strOriginalTitle = epg.strOriginalTitle.c_str();
+        tag.iUniqueBroadcastId = epg.id;
+        tag.strTitle = epg.name.c_str();
+        tag.strOriginalTitle = epg.name.c_str();
         tag.iUniqueChannelId = channel.iUniqueId;
-        tag.startTime = epg.startTime;
-        tag.endTime = epg.endTime;
-        tag.strPlotOutline = epg.strPlotOutline.c_str();
-        tag.strPlot = epg.strPlot.c_str();
-        tag.iGenreType = 0; // FIXME: Set valid genre type
-        tag.iGenreSubType = 0; // FIXME: Set valid genre type
-        tag.iEpisodeNumber = epg.iEpisodeNumber;
-        tag.strEpisodeName = epg.strEpisodeName.c_str();
-        tag.strGenreDescription = epg.strGenreDescription.c_str();
+        tag.startTime = epg.startAt;
+        tag.endTime = epg.endAt;
+        tag.strPlotOutline = epg.description.c_str();
+        tag.strPlot = epg.extended.c_str();
+        tag.iGenreType = epg.genre1;
+        tag.iGenreSubType = epg.genre2;
+        tag.iEpisodeNumber = 0;
+        tag.strEpisodeName = "";
+        tag.strGenreDescription = "";
 
         PVR->TransferEpgEntry(handle, &tag);
     }
