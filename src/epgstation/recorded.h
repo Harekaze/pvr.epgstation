@@ -5,16 +5,15 @@
  */
 #ifndef EPGSTATION_RECORDED_H
 #define EPGSTATION_RECORDED_H
+#include "epgstation/types.h"
 #include <iostream>
-
-#include "kodi/xbmc_pvr_types.h"
 
 namespace epgstation {
 class Recorded {
 public:
     std::string recordedStreamingPath;
     std::string recordedThumbnailPath;
-    std::vector<PVR_RECORDING> programs;
+    std::vector<program> programs;
     bool refresh();
 };
 } // namespace epgstation

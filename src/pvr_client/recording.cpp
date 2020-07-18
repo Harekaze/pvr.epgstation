@@ -31,7 +31,33 @@ int GetRecordingsAmount(bool deleted)
 PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
 {
     if (g_recorded.refresh()) {
-        for (const PVR_RECORDING rec : g_recorded.programs) {
+        for (const epgstation::program r : g_recorded.programs) {
+            PVR_RECORDING rec;
+            strncpy(rec.strRecordingId, std::to_string(r.id).c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+            strncpy(rec.strTitle, r.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+            strncpy(rec.strPlotOutline, r.description.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
+            strncpy(rec.strPlot, r.extended.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
+            rec.recordingTime = r.startAt;
+            rec.iDuration = (int)(r.endAt - r.startAt);
+            rec.iGenreType = r.genre1;
+            rec.iGenreSubType = r.genre2;
+            rec.iEpgEventId = r.programId;
+            rec.iChannelUid = r.channelId;
+            rec.channelType = PVR_RECORDING_CHANNEL_TYPE_TV;
+            if (r.hasThumbnail) {
+                snprintf(rec.strThumbnailPath, PVR_ADDON_URL_STRING_LENGTH - 1, (const char*)(epgstation::api::baseURL + g_recorded.recordedThumbnailPath).c_str(), rec.strRecordingId);
+            } else {
+                strncpy(rec.strThumbnailPath, "", PVR_ADDON_URL_STRING_LENGTH - 1);
+            }
+
+            // Not available in API response
+            strncpy(rec.strDirectory, "", PVR_ADDON_URL_STRING_LENGTH - 1);
+            strncpy(rec.strEpisodeName, "", PVR_ADDON_NAME_STRING_LENGTH - 1);
+            strncpy(rec.strChannelName, "", PVR_ADDON_NAME_STRING_LENGTH - 1);
+            rec.iEpisodeNumber = 0;
+            rec.iPriority = 0;
+            rec.bIsDeleted = false;
+
             PVR->TransferRecordingEntry(handle, &rec);
         }
         return PVR_ERROR_NO_ERROR;

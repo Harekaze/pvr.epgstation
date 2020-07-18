@@ -21,40 +21,11 @@ bool Recorded::refresh()
         return false;
     }
 
-    const bool showThumbnail = !recordedThumbnailPath.empty();
     programs.clear();
 
     for (nlohmann::json& p : response["recorded"]) {
-        PVR_RECORDING rec;
-        char* endptr;
         epgstation::program r = p.get<epgstation::program>();
-
-        strncpy(rec.strRecordingId, std::to_string(r.id).c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-        strncpy(rec.strTitle, r.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-        strncpy(rec.strPlotOutline, r.description.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
-        strncpy(rec.strPlot, r.extended.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
-        rec.recordingTime = r.startAt;
-        rec.iDuration = (int)(r.endAt - r.startAt);
-        rec.iGenreType = r.genre1;
-        rec.iGenreSubType = r.genre2;
-        rec.iEpgEventId = r.programId;
-        rec.iChannelUid = r.channelId;
-        rec.channelType = PVR_RECORDING_CHANNEL_TYPE_TV;
-        if (showThumbnail && r.hasThumbnail) {
-            snprintf(rec.strThumbnailPath, PVR_ADDON_URL_STRING_LENGTH - 1, (const char*)(epgstation::api::baseURL + recordedThumbnailPath).c_str(), rec.strRecordingId);
-        } else {
-            strncpy(rec.strThumbnailPath, "", PVR_ADDON_URL_STRING_LENGTH - 1);
-        }
-
-        // Not available in API response
-        strncpy(rec.strDirectory, "", PVR_ADDON_URL_STRING_LENGTH - 1);
-        strncpy(rec.strEpisodeName, "", PVR_ADDON_NAME_STRING_LENGTH - 1);
-        strncpy(rec.strChannelName, "", PVR_ADDON_NAME_STRING_LENGTH - 1);
-        rec.iEpisodeNumber = 0;
-        rec.iPriority = 0;
-        rec.bIsDeleted = false;
-
-        programs.push_back(rec);
+        programs.push_back(r);
     }
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated recorded program: ammount = %d", programs.size());
