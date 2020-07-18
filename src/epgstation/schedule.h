@@ -9,16 +9,14 @@
 #include <map>
 
 #include "epgstation/types.h"
-#include "kodi/xbmc_epg_types.h"
-#include "kodi/xbmc_pvr_types.h"
 
 namespace epgstation {
 class Schedule {
 public:
     std::string channelLogoPath;
     std::string liveStreamingPath;
-    std::map<unsigned int, std::vector<program>> schedule;
-    std::map<std::string, std::vector<channel>> channelGroups;
+    std::vector<program> programs;
+    std::vector<channel> channels;
     bool refresh();
 };
 } // namespace epgstation

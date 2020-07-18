@@ -28,8 +28,8 @@ bool Schedule::refresh()
         return false;
     }
 
-    schedule.clear();
-    channelGroups.clear();
+    programs.clear();
+    channels.clear();
 
     for (nlohmann::json& o : response) {
         if (o["programs"].empty()) {
@@ -38,15 +38,15 @@ bool Schedule::refresh()
 
         epgstation::channel ch = o["channel"].get<epgstation::channel>();
 
-        channelGroups[ch.channelType].push_back(ch);
+        channels.push_back(ch);
 
         for (nlohmann::json& pp : o["programs"]) {
             epgstation::program p = pp.get<epgstation::program>();
-            schedule[ch.id].push_back(p);
+            programs.push_back(p);
         }
     }
 
-    XBMC->Log(ADDON::LOG_NOTICE, "Updated schedule: channel ammount = %d", schedule.size());
+    XBMC->Log(ADDON::LOG_NOTICE, "Updated schedule: channel ammount = %d", 8);
 
     lastUpdated = now;
     return true;

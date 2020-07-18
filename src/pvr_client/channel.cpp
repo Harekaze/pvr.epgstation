@@ -8,6 +8,7 @@
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
 #include <iostream>
+#include <set>
 
 extern epgstation::Schedule g_schedule;
 extern ADDON::CHelper_libXBMC_addon* XBMC;
@@ -17,7 +18,7 @@ extern "C" {
 
 int GetChannelsAmount(void)
 {
-    return g_schedule.schedule.size();
+    return g_schedule.channels.size();
 }
 
 PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
@@ -30,25 +31,23 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
         return PVR_ERROR_SERVER_ERROR;
     }
 
-    for (const std::pair<std::string, std::vector<epgstation::channel>> schedule : g_schedule.channelGroups) {
-        for (const epgstation::channel c : schedule.second) {
-            PVR_CHANNEL ch;
-            ch.iUniqueId = c.id;
-            ch.bIsRadio = false;
-            ch.bIsHidden = false;
-            ch.iChannelNumber = c.remoteControlKeyId;
-            ch.iSubChannelNumber = c.networkId;
-            strncpy(ch.strChannelName, c.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+    for (const epgstation::channel c : g_schedule.channels) {
+        PVR_CHANNEL ch;
+        ch.iUniqueId = c.id;
+        ch.bIsRadio = false;
+        ch.bIsHidden = false;
+        ch.iChannelNumber = c.remoteControlKeyId;
+        ch.iSubChannelNumber = c.networkId;
+        strncpy(ch.strChannelName, c.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
 
-            if (c.hasLogoData) {
-                snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
-                    (const char*)(epgstation::api::baseURL + g_schedule.channelLogoPath).c_str(),
-                    c.id);
-            } else {
-                ch.strIconPath[0] = '\0';
-            }
-            PVR->TransferChannelEntry(handle, &ch);
+        if (c.hasLogoData) {
+            snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
+                (const char*)(epgstation::api::baseURL + g_schedule.channelLogoPath).c_str(),
+                c.id);
+        } else {
+            ch.strIconPath[0] = '\0';
         }
+        PVR->TransferChannelEntry(handle, &ch);
     }
 
     return PVR_ERROR_NO_ERROR;
@@ -56,16 +55,25 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 
 int GetChannelGroupsAmount(void)
 {
-    return g_schedule.channelGroups.size();
+    std::set<std::string> list;
+    for (const epgstation::channel channel : g_schedule.channels) {
+        list.insert(channel.channelType);
+    }
+    return list.size();
 }
 
 PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 {
-    for (const std::pair<std::string, std::vector<epgstation::channel>> channelGroup : g_schedule.channelGroups) {
+    std::set<std::string> list;
+    for (const epgstation::channel channel : g_schedule.channels) {
+        list.insert(channel.channelType);
+    }
+
+    for (const std::string channelType : list) {
         PVR_CHANNEL_GROUP chGroup;
         memset(&chGroup, 0, sizeof(PVR_CHANNEL_GROUP));
 
-        strncpy(chGroup.strGroupName, channelGroup.first.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
+        strncpy(chGroup.strGroupName, channelType.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
         chGroup.bIsRadio = false;
         // chGroup.iPosition = 0; /* not implemented */
 
@@ -77,7 +85,10 @@ PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 
 PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& group)
 {
-    for (const epgstation::channel channel : g_schedule.channelGroups[group.strGroupName]) {
+    for (const epgstation::channel channel : g_schedule.channels) {
+        if (channel.channelType != group.strGroupName) {
+            continue;
+        }
         PVR_CHANNEL_GROUP_MEMBER chMem;
         memset(&chMem, 0, sizeof(PVR_CHANNEL_GROUP_MEMBER));
 
