@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 #include "epgstation/epgstation.h"
+#include "epgstation/genre.h"
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
@@ -32,6 +33,7 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
 {
     if (g_recorded.refresh()) {
         for (const epgstation::program r : g_recorded.programs) {
+            unsigned int genre = epgstation::getGenreCodeFromContentNibble(r.genre1, r.genre2);
             PVR_RECORDING rec;
             strncpy(rec.strRecordingId, std::to_string(r.id).c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(rec.strTitle, r.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
@@ -39,8 +41,8 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
             strncpy(rec.strPlot, r.extended.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             rec.recordingTime = r.startAt;
             rec.iDuration = (int)(r.endAt - r.startAt);
-            rec.iGenreType = r.genre1;
-            rec.iGenreSubType = r.genre2;
+            rec.iGenreType = genre & epgstation::GENRE_TYPE_MASK;
+            rec.iGenreSubType = genre & epgstation::GENRE_SUBTYPE_MASK;
             rec.iEpgEventId = r.programId;
             rec.iChannelUid = r.channelId;
             rec.channelType = PVR_RECORDING_CHANNEL_TYPE_TV;
