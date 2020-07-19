@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 #include "epgstation/epgstation.h"
+#include "epgstation/genre.h"
 #include "epgstation/types.h"
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
@@ -70,6 +71,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
         }
 
         for (epgstation::program p : g_reserve.reserves) {
+            unsigned int genre = epgstation::getGenreCodeFromContentNibble(p.genre1, p.genre2);
             struct PVR_TIMER timer;
 
             timer.iEpgUid = p.id; // NOTE: Overflow casting from unsigned long to unsigned
@@ -82,8 +84,8 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.state = PVR_TIMER_STATE_SCHEDULED;
             timer.startTime = p.startAt;
             timer.endTime = p.endAt;
-            timer.iGenreType = p.genre1;
-            timer.iGenreSubType = p.genre2;
+            timer.iGenreType = genre & epgstation::GENRE_TYPE_MASK;
+            timer.iGenreSubType = genre & epgstation::GENRE_SUBTYPE_MASK;
             timer.bStartAnyTime = false;
             timer.bEndAnyTime = false;
             timer.iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
