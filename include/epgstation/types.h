@@ -33,8 +33,8 @@ public:
     std::string extended;
     time_t startAt;
     time_t endAt;
-    unsigned int genre1;
-    unsigned int genre2;
+    unsigned int genre1 = 0xff;
+    unsigned int genre2 = 0xff;
     bool recording;
     bool hasThumbnail;
     int ruleId; // Optional for reserved program

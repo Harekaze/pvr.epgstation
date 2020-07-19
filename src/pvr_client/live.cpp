@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-only
  */
 #include "epgstation/epgstation.h"
+#include "epgstation/genre.h"
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
@@ -27,6 +28,7 @@ PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time
 
         EPG_TAG tag;
         memset(&tag, 0, sizeof(EPG_TAG));
+        unsigned int genre = epgstation::getGenreCodeFromContentNibble(epg.genre1, epg.genre2);
 
         tag.iUniqueBroadcastId = epg.id;
         tag.strTitle = epg.name.c_str();
@@ -36,8 +38,8 @@ PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time
         tag.endTime = epg.endAt;
         tag.strPlotOutline = epg.description.c_str();
         tag.strPlot = epg.extended.c_str();
-        tag.iGenreType = epg.genre1;
-        tag.iGenreSubType = epg.genre2;
+        tag.iGenreType = genre & epgstation::GENRE_TYPE_MASK;
+        tag.iGenreSubType = genre & epgstation::GENRE_SUBTYPE_MASK;
         tag.iEpisodeNumber = 0;
         tag.strEpisodeName = "";
         tag.strGenreDescription = "";
