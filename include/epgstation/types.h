@@ -65,9 +65,8 @@ public:
     std::string name;
     bool hasLogoData;
     std::string channelType;
-    unsigned int remoteControlKeyId;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(channel, id, serviceId, networkId, name, hasLogoData, channelType, remoteControlKeyId);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(channel, id, serviceId, networkId, name, hasLogoData, channelType);
 };
 
 class rule {

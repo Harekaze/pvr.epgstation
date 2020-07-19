@@ -15,7 +15,7 @@ namespace api {
     extern std::string baseURL;
 
     // GET /api/schedule
-    int getSchedule(nlohmann::json& response);
+    int getSchedule(std::string type, nlohmann::json& response);
 
     // GET /api/recorded
     int getRecorded(nlohmann::json& response);

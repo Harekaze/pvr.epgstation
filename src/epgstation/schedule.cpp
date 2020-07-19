@@ -24,25 +24,26 @@ bool Schedule::refresh()
         return true;
     }
 
-    if (epgstation::api::getSchedule(response) == epgstation::api::REQUEST_FAILED) {
-        return false;
-    }
-
     programs.clear();
     channels.clear();
 
-    for (const auto& o : response) {
-        if (o["programs"].empty()) {
-            continue;
+    std::vector<std::string> types = { "GR", "BS", "CS" };
+    for (const auto type : types) {
+        if (epgstation::api::getSchedule(type, response) == epgstation::api::REQUEST_FAILED) {
+            return false;
         }
 
-        epgstation::channel ch = o["channel"].get<epgstation::channel>();
+        for (const auto& o : response) {
+            if (o["programs"].empty()) {
+                continue;
+            }
+            epgstation::channel ch = o["channel"].get<epgstation::channel>();
+            channels.push_back(ch);
 
-        channels.push_back(ch);
-
-        for (const auto& pp : o["programs"]) {
-            auto p = pp.get<epgstation::program>();
-            programs.push_back(p);
+            for (const auto& pp : o["programs"]) {
+                auto p = pp.get<epgstation::program>();
+                programs.push_back(p);
+            }
         }
     }
 

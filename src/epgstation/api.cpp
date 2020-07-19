@@ -92,11 +92,10 @@ namespace api {
         return 0;
     }
 
-    // FIXME: Support other types
-    // GET /api/schedule?type=GR
-    int getSchedule(nlohmann::json& response)
+    // GET /api/schedule?type=:type
+    int getSchedule(std::string type, nlohmann::json& response)
     {
-        const std::string apiPath = "schedule?type=GR";
+        const std::string apiPath = "schedule?type=" + type;
         return requestGET(apiPath, response);
     }
 

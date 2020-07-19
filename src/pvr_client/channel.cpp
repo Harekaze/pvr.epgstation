@@ -36,7 +36,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
         ch.iUniqueId = c.id;
         ch.bIsRadio = false;
         ch.bIsHidden = false;
-        ch.iChannelNumber = c.remoteControlKeyId;
+        ch.iChannelNumber = c.serviceId;
         ch.iSubChannelNumber = c.networkId;
         strncpy(ch.strChannelName, c.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
 
@@ -93,7 +93,7 @@ PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& g
         memset(&chMem, 0, sizeof(PVR_CHANNEL_GROUP_MEMBER));
 
         chMem.iChannelUniqueId = channel.id;
-        chMem.iChannelNumber = channel.remoteControlKeyId;
+        chMem.iChannelNumber = channel.serviceId;
         strncpy(chMem.strGroupName, group.strGroupName, PVR_ADDON_NAME_STRING_LENGTH - 1);
 
         PVR->TransferChannelGroupMember(handle, &chMem);
