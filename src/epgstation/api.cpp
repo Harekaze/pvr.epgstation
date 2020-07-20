@@ -20,7 +20,7 @@ namespace api {
     int requestGET(std::string apiPath, nlohmann::json& response)
     {
         std::string text;
-        const std::string url = baseURL + apiPath;
+        const auto url = baseURL + apiPath;
         if (void* handle = XBMC->CURLCreate(url.c_str())) {
             if (!XBMC->CURLOpen(handle, XFILE::READ_NO_CACHE)) {
                 XBMC->Log(ADDON::LOG_ERROR, "[%s] request failed", url.c_str());

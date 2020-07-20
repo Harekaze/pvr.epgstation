@@ -23,8 +23,8 @@ bool Recorded::refresh()
 
     programs.clear();
 
-    for (nlohmann::json& p : response["recorded"]) {
-        epgstation::program r = p.get<epgstation::program>();
+    for (const auto& p : response["recorded"]) {
+        auto r = p.get<epgstation::program>();
         programs.push_back(r);
     }
 

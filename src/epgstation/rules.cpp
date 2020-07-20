@@ -26,8 +26,8 @@ bool Rule::refresh()
     rules.clear();
 
     unsigned int i = 0;
-    for (nlohmann::json& p : response["rules"]) {
-        epgstation::rule rule = p.get<epgstation::rule>();
+    for (const auto& p : response["rules"]) {
+        auto rule = p.get<epgstation::rule>();
         rules.push_back(rule);
     }
 

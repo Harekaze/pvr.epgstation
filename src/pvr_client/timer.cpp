@@ -51,7 +51,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
         time(&now);
         unsigned int index = 0;
 
-        for (const epgstation::rule rule : g_rule.rules) {
+        for (const auto rule : g_rule.rules) {
             PVR_TIMER timer;
             memset(&timer, 0, sizeof(PVR_TIMER));
 
@@ -70,8 +70,8 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             index++;
         }
 
-        for (epgstation::program p : g_reserve.reserves) {
-            unsigned int genre = epgstation::getGenreCodeFromContentNibble(p.genre1, p.genre2);
+        for (const auto p : g_reserve.reserves) {
+            const auto genre = epgstation::getGenreCodeFromContentNibble(p.genre1, p.genre2);
             struct PVR_TIMER timer;
 
             timer.iEpgUid = p.id; // NOTE: Overflow casting from unsigned long to unsigned
@@ -174,7 +174,7 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
     if (timer.iTimerType == CREATE_RULES_PATTERN_MATCHED) {
         std::string strChannelId;
         std::string strChannelType;
-        for (const epgstation::channel channel : g_schedule.channels) {
+        for (const auto channel : g_schedule.channels) {
             if (channel.id == timer.iClientChannelUid) {
                 strChannelType = channel.channelType;
                 strChannelId = std::to_string(channel.id);
@@ -196,7 +196,7 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
         return PVR_ERROR_NO_ERROR;
     }
 
-    for (const epgstation::program program : g_schedule.programs) {
+    for (const auto program : g_schedule.programs) {
         if ((int)program.channelId != timer.iClientChannelUid) {
             continue;
         }
@@ -222,7 +222,7 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
 PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
 {
     if (timer.iTimerType == TIMER_MANUAL_RESERVED || timer.iTimerType == TIMER_PATTERN_MATCHED) {
-        for (const epgstation::program program : g_schedule.programs) {
+        for (const auto program : g_schedule.programs) {
             if ((int)program.channelId != timer.iClientChannelUid) {
                 continue;
             }

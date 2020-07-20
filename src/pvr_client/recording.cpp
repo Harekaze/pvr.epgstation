@@ -32,8 +32,8 @@ int GetRecordingsAmount(bool deleted)
 PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
 {
     if (g_recorded.refresh()) {
-        for (const epgstation::program r : g_recorded.programs) {
-            unsigned int genre = epgstation::getGenreCodeFromContentNibble(r.genre1, r.genre2);
+        for (const auto r : g_recorded.programs) {
+            const auto genre = epgstation::getGenreCodeFromContentNibble(r.genre1, r.genre2);
             PVR_RECORDING rec;
             strncpy(rec.strRecordingId, std::to_string(r.id).c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(rec.strTitle, r.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);

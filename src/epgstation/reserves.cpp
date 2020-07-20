@@ -24,8 +24,8 @@ bool Reserve::refresh()
 
     reserves.clear();
 
-    for (nlohmann::json& r : response["reserves"]) {
-        epgstation::program p = r["program"].get<epgstation::program>();
+    for (const auto& r : response["reserves"]) {
+        auto p = r["program"].get<epgstation::program>();
         p.ruleId = r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
         reserves.push_back(p);
     }

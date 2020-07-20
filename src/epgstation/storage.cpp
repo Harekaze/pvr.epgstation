@@ -19,7 +19,7 @@ PVR_ERROR Storage::getStorageInfo(long long* used, long long* total)
         return PVR_ERROR_SERVER_ERROR;
     }
 
-    epgstation::storage info = response.get<epgstation::storage>();
+    auto info = response.get<epgstation::storage>();
 
     *total = info.total / 1024;
     *used = info.used / 1024;

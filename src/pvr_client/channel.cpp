@@ -31,7 +31,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
         return PVR_ERROR_SERVER_ERROR;
     }
 
-    for (const epgstation::channel c : g_schedule.channels) {
+    for (const auto c : g_schedule.channels) {
         PVR_CHANNEL ch;
         ch.iUniqueId = c.id;
         ch.bIsRadio = false;
@@ -56,7 +56,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 int GetChannelGroupsAmount(void)
 {
     std::set<std::string> list;
-    for (const epgstation::channel channel : g_schedule.channels) {
+    for (const auto channel : g_schedule.channels) {
         list.insert(channel.channelType);
     }
     return list.size();
@@ -65,11 +65,11 @@ int GetChannelGroupsAmount(void)
 PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 {
     std::set<std::string> list;
-    for (const epgstation::channel channel : g_schedule.channels) {
+    for (const auto channel : g_schedule.channels) {
         list.insert(channel.channelType);
     }
 
-    for (const std::string channelType : list) {
+    for (const auto channelType : list) {
         PVR_CHANNEL_GROUP chGroup;
         memset(&chGroup, 0, sizeof(PVR_CHANNEL_GROUP));
 
@@ -85,7 +85,7 @@ PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 
 PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& group)
 {
-    for (const epgstation::channel channel : g_schedule.channels) {
+    for (const auto channel : g_schedule.channels) {
         if (channel.channelType != group.strGroupName) {
             continue;
         }

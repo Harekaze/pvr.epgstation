@@ -31,7 +31,7 @@ bool Schedule::refresh()
     programs.clear();
     channels.clear();
 
-    for (nlohmann::json& o : response) {
+    for (const auto& o : response) {
         if (o["programs"].empty()) {
             continue;
         }
@@ -40,8 +40,8 @@ bool Schedule::refresh()
 
         channels.push_back(ch);
 
-        for (nlohmann::json& pp : o["programs"]) {
-            epgstation::program p = pp.get<epgstation::program>();
+        for (const auto& pp : o["programs"]) {
+            auto p = pp.get<epgstation::program>();
             programs.push_back(p);
         }
     }

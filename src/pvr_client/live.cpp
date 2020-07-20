@@ -18,7 +18,7 @@ extern "C" {
 
 PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time_t iStart, time_t iEnd)
 {
-    for (const epgstation::program epg : g_schedule.programs) {
+    for (const auto epg : g_schedule.programs) {
         if (epg.channelId != channel.iUniqueId)
             continue;
         if (epg.endAt < iStart)
@@ -28,7 +28,7 @@ PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time
 
         EPG_TAG tag;
         memset(&tag, 0, sizeof(EPG_TAG));
-        unsigned int genre = epgstation::getGenreCodeFromContentNibble(epg.genre1, epg.genre2);
+        const auto genre = epgstation::getGenreCodeFromContentNibble(epg.genre1, epg.genre2);
 
         tag.iUniqueBroadcastId = epg.id;
         tag.strTitle = epg.name.c_str();
