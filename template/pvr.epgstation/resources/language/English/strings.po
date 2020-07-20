@@ -85,7 +85,3 @@ msgstr ""
 msgctxt "#30902"
 msgid "Pattern Match"
 msgstr ""
-
-msgctxt "#30903"
-msgid "Pattern Match"
-msgstr ""

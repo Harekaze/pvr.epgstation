@@ -71,7 +71,3 @@ msgstr "ルール一致"
 msgctxt "#30902"
 msgid "Pattern Match"
 msgstr "ルール作成"
-
-msgctxt "#30903"
-msgid "Pattern Match"
-msgstr "ルール"
