@@ -73,10 +73,29 @@ class rule {
 public:
     unsigned int id;
     std::string keyword;
-    bool description;
-    bool enable;
+    bool title = true;
+    bool description = false;
+    bool enable = true;
+    unsigned int week = 0;
+    int station = -1;
+    unsigned int startTime = 0;
+    unsigned int timeRange = 0;
+    std::string directory = "";
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(rule, id, keyword, description, enable);
+    friend void from_json(const nlohmann::json& j, rule& t)
+    {
+        NLOHMANN_JSON_FROM(id);
+        NLOHMANN_JSON_FROM(keyword);
+        OPTIONAL_JSON_FROM(title);
+        OPTIONAL_JSON_FROM(description);
+        NLOHMANN_JSON_FROM(enable);
+        NLOHMANN_JSON_FROM(week);
+        t.week = ((t.week & 0b00000001) << 6) | ((t.week & 0b01111110) >> 1);
+        OPTIONAL_JSON_FROM(station);
+        OPTIONAL_JSON_FROM(startTime);
+        OPTIONAL_JSON_FROM(timeRange);
+        OPTIONAL_JSON_FROM(directory);
+    }
 };
 
 } // namespace epgstation

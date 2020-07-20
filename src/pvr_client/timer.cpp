@@ -56,12 +56,21 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.iClientIndex = rule.id + RULE_CLIENT_START_INDEX;
             timer.state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED;
             strncpy(timer.strTitle, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-            timer.iClientChannelUid = PVR_TIMER_ANY_CHANNEL;
+            timer.iClientChannelUid = rule.station == -1 ? PVR_TIMER_ANY_CHANNEL : rule.station;
             timer.iTimerType = CREATE_RULES_PATTERN_MATCHED;
-            timer.bStartAnyTime = true;
-            timer.bEndAnyTime = true;
+            timer.bStartAnyTime = rule.timeRange == 0;
+            timer.bEndAnyTime = rule.timeRange == 0;
+            if (!timer.bStartAnyTime) {
+                struct tm* time = localtime(&now);
+                time->tm_hour = rule.startTime;
+                time->tm_min = 0;
+                timer.startTime = mktime(time);
+                timer.endTime = timer.startTime + rule.timeRange * 60 * 60;
+            }
+            timer.iWeekdays = rule.week;
             strncpy(timer.strEpgSearchString, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(timer.strSummary, rule.keyword.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
+            strncpy(timer.strDirectory, rule.directory.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             timer.bFullTextEpgSearch = rule.description;
 
             PVR->TransferTimerEntry(handle, &timer);
