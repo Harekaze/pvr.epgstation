@@ -26,7 +26,7 @@
 #define MSG_TIMER_PATTERN_MATCHED 30901
 #define MSG_RULES_PATTERN_MATCHED_CREATION 30902
 
-#define TIMER_CLIENT_START_INDEX 1
+#define RULE_CLIENT_START_INDEX 0x100
 
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 extern CHelper_libXBMC_pvr* PVR;
@@ -45,15 +45,15 @@ int GetTimersAmount(void)
 PVR_ERROR GetTimers(ADDON_HANDLE handle)
 {
     if (g_rule.refresh() && g_reserve.refresh()) {
+        unsigned int index = 0;
         time_t now;
         time(&now);
-        unsigned int index = 0;
 
         for (const auto rule : g_rule.rules) {
             PVR_TIMER timer;
             memset(&timer, 0, sizeof(PVR_TIMER));
 
-            timer.iClientIndex = index + TIMER_CLIENT_START_INDEX;
+            timer.iClientIndex = rule.id + RULE_CLIENT_START_INDEX;
             timer.state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED;
             strncpy(timer.strTitle, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             timer.iClientChannelUid = PVR_TIMER_ANY_CHANNEL;
@@ -65,7 +65,6 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.bFullTextEpgSearch = rule.description;
 
             PVR->TransferTimerEntry(handle, &timer);
-            index++;
         }
 
         for (const auto p : g_reserve.reserves) {
@@ -87,6 +86,9 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.bStartAnyTime = false;
             timer.bEndAnyTime = false;
             timer.iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
+            if (p.ruleId != -1) {
+                timer.iParentClientIndex = p.ruleId + RULE_CLIENT_START_INDEX;
+            }
 
             if (now < timer.startTime) {
                 timer.state = PVR_TIMER_STATE_SCHEDULED;
@@ -108,7 +110,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
 PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
 {
     if (timer.iTimerType == CREATE_RULES_PATTERN_MATCHED) {
-        const unsigned int index = timer.iClientIndex - TIMER_CLIENT_START_INDEX;
+        const unsigned int index = timer.iClientIndex - RULE_CLIENT_START_INDEX;
         const epgstation::rule rule = g_rule.rules[index];
 
         switch (timer.state) {
