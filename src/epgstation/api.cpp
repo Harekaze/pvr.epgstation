@@ -149,14 +149,47 @@ namespace api {
         return requestGET(apiPath, response);
     }
 
-    // FIXME: Apply other arguments
     // POST /api/rules
-    int postRules(std::string type, std::string channel, std::string title, std::string genre)
+    int postRules(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
     {
+        unsigned int newWeekdays = weekdays ^ PVR_WEEKDAY_SUNDAY;
+        newWeekdays <<= 1;
+        if (weekdays & PVR_WEEKDAY_SUNDAY) {
+            newWeekdays |= 0x01;
+        }
         const std::string apiPath = "rules";
-        std::string buffer = "{\"search\":{\"week\":127,\"keyword\":\"" + title + "\",\"title\":true,\"description\":true,\"GR\":true,\"BS\":true,\"CS\":"
-                                                                                  "true,\"SKY\":true},\"option\":{\"enable\":true,\"allowEndLack\":true}}";
-        return request("POST", apiPath, buffer);
+        nlohmann::json body = {
+            { "search", {
+                            { "keyword", searchText },
+                            { "title", true },
+                            { "description", fullText },
+                            { "week", newWeekdays },
+                        } },
+            { "option", {
+                            { "enable", enabled },
+                            { "allowEndLack", true },
+                        } }
+        };
+
+        if (channelId == -1) {
+            body["search"]["GR"] = true;
+            body["search"]["BS"] = true;
+            body["search"]["CS"] = true;
+            body["search"]["SKY"] = true;
+        } else {
+            body["search"]["station"] = (unsigned int)channelId;
+        }
+
+        if (!anytime) {
+            body["search"]["startTime"] = startHour;
+            body["search"]["timeRange"] = (24 + endHour - startHour) % 24;
+        }
+
+        if (!directory.empty()) {
+            body["option"]["directory"] = directory;
+        }
+
+        return request("POST", apiPath, body.dump());
     }
 
     // PUT /api/rules/:id/:action

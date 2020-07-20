@@ -169,49 +169,43 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
 
 PVR_ERROR AddTimer(const PVR_TIMER& timer)
 {
-    if (timer.iTimerType == CREATE_RULES_PATTERN_MATCHED) {
-        std::string strChannelId;
-        std::string strChannelType;
-        for (const auto channel : g_schedule.channels) {
-            if (channel.id == timer.iClientChannelUid) {
-                strChannelType = channel.channelType;
-                strChannelId = std::to_string(channel.id);
-                break;
-            }
-        }
+    switch (timer.iTimerType) {
+    case CREATE_RULES_PATTERN_MATCHED: {
+        unsigned int startHour = localtime(&timer.startTime)->tm_hour;
+        unsigned int endHour = localtime(&timer.endTime)->tm_hour;
 
-        if (epgstation::api::postRules(strChannelType, strChannelId, timer.strEpgSearchString, "") != epgstation::api::REQUEST_FAILED) {
-            XBMC->Log(ADDON::LOG_NOTICE, "Create new rule: [%s:%s]<%s> \"%s\"",
-                strChannelType.c_str(), strChannelId.c_str(), "", timer.strEpgSearchString);
+        if (epgstation::api::postRules(timer.state != PVR_TIMER_STATE_DISABLED, timer.strEpgSearchString, timer.bFullTextEpgSearch,
+                timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
+                timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)
+            != epgstation::api::REQUEST_FAILED) {
+            XBMC->Log(ADDON::LOG_NOTICE, "Create new rule: \"%s\"", timer.strEpgSearchString);
             sleep(3);
             PVR->TriggerTimerUpdate();
             return PVR_ERROR_NO_ERROR;
         } else {
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to create new rule: %s", strChannelId.c_str());
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to create new rule: %s", strChannelId.c_str());
+            XBMC->Log(ADDON::LOG_ERROR, "Failed to create new rule: %s", timer.strEpgSearchString);
+            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to create new rule: %s", timer.strEpgSearchString);
             return PVR_ERROR_SERVER_ERROR;
         }
         return PVR_ERROR_NO_ERROR;
     }
-
-    for (const auto program : g_schedule.programs) {
-        if ((int)program.channelId != timer.iClientChannelUid) {
-            continue;
-        }
-        if (program.startAt == timer.startTime && program.endAt == timer.endTime) {
-            if (epgstation::api::postReserves(std::to_string(program.id)) != epgstation::api::REQUEST_FAILED) {
-                XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: %s", std::to_string(program.id).c_str());
-                sleep(3);
-                PVR->TriggerTimerUpdate();
-                return PVR_ERROR_NO_ERROR;
-            } else {
-                XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
-                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
-                return PVR_ERROR_SERVER_ERROR;
+    case CREATE_TIMER_MANUAL_RESERVED: {
+        for (const auto program : g_schedule.programs) {
+            if ((int)program.channelId == timer.iClientChannelUid && program.startAt == timer.startTime && program.endAt == timer.endTime) {
+                if (epgstation::api::postReserves(std::to_string(program.id)) != epgstation::api::REQUEST_FAILED) {
+                    XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: %s", std::to_string(program.id).c_str());
+                    sleep(3);
+                    PVR->TriggerTimerUpdate();
+                    return PVR_ERROR_NO_ERROR;
+                } else {
+                    XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
+                    XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
+                    return PVR_ERROR_SERVER_ERROR;
+                }
             }
         }
     }
-
+    }
     XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: nothing matched");
     XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to reserve new program: nothing matched");
     return PVR_ERROR_FAILED;

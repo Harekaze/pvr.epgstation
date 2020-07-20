@@ -39,10 +39,7 @@ namespace api {
     int getRules(nlohmann::json& response);
 
     // POST /api/rules
-    int postRules(std::string type,
-        std::string channel,
-        std::string title,
-        std::string genre);
+    int postRules(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory);
 
     // PUT /api/rules/:id/:action
     int putRuleAction(int id, bool state);
