@@ -15,7 +15,12 @@ extern "C" {
 
 bool CanPauseStream(void)
 {
-    return true;
+    return false;
+}
+
+bool CanSeekStream(void)
+{
+    return false;
 }
 
 /* not implemented */
@@ -23,7 +28,6 @@ PVR_ERROR SignalStatus(PVR_SIGNAL_STATUS& signalStatus) { return PVR_ERROR_NOT_I
 PVR_ERROR GetStreamProperties(PVR_STREAM_PROPERTIES* pProperties) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR GetStreamReadChunkSize(int* chunksize) { return PVR_ERROR_NOT_IMPLEMENTED; };
 void PauseStream(bool bPaused) {}
-bool CanSeekStream(void) { return false; }
 bool SeekTime(int time, bool backwards, double* startpts) { return false; }
 void SetSpeed(int speed) {}
 }
