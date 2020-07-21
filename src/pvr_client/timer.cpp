@@ -47,7 +47,6 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
     if (g_rule.refresh() && g_reserve.refresh()) {
         unsigned int index = 0;
         time_t now;
-        time(&now);
 
         for (const auto rule : g_rule.rules) {
             PVR_TIMER timer;
@@ -61,6 +60,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.bStartAnyTime = rule.timeRange == 0;
             timer.bEndAnyTime = rule.timeRange == 0;
             if (!timer.bStartAnyTime) {
+                time(&now);
                 struct tm* time = localtime(&now);
                 time->tm_hour = rule.startTime;
                 time->tm_min = 0;
@@ -79,6 +79,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
         for (const auto p : g_reserve.reserves) {
             const auto genre = epgstation::getGenreCodeFromContentNibble(p.genre1, p.genre2);
             struct PVR_TIMER timer;
+            memset(&timer, 0, sizeof(PVR_TIMER));
 
             timer.iEpgUid = p.id; // NOTE: Overflow casting from unsigned long to unsigned
             timer.iClientIndex = index++;
@@ -89,19 +90,13 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
 
             switch (p.state) {
             case epgstation::STATE_RESERVED:
-                if (now < timer.startTime) {
-                    timer.state = PVR_TIMER_STATE_SCHEDULED;
-                } else if (now < timer.endTime) {
-                    timer.state = PVR_TIMER_STATE_RECORDING;
-                } else {
-                    timer.state = PVR_TIMER_STATE_COMPLETED;
-                }
+                timer.state = PVR_TIMER_STATE_SCHEDULED;
                 break;
             case epgstation::STATE_CONFLICT:
                 timer.state = PVR_TIMER_STATE_CONFLICT_NOK;
                 break;
             case epgstation::STATE_SKIPPED:
-                timer.state = PVR_TIMER_STATE_CANCELLED;
+                timer.state = PVR_TIMER_STATE_DISABLED;
                 break;
             }
 
@@ -251,21 +246,15 @@ PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
 {
     switch (timer.iTimerType) {
     case TIMER_MANUAL_RESERVED: {
-        for (const auto program : g_schedule.programs) {
-            if ((int)program.channelId == timer.iClientChannelUid && program.startAt == timer.startTime && program.endAt == timer.endTime) {
-                if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
-                    XBMC->Log(ADDON::LOG_NOTICE, "Delete reserved program: %s", timer.strDirectory);
-                    sleep(1);
-                    PVR->TriggerRecordingUpdate();
-                    PVR->TriggerTimerUpdate();
-                    return PVR_ERROR_NO_ERROR;
-                }
-                XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: %s", std::to_string(program.id).c_str());
-                return PVR_ERROR_SERVER_ERROR;
-            }
+        if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
+            XBMC->Log(ADDON::LOG_NOTICE, "Delete reserved program: %s", timer.strDirectory);
+            sleep(1);
+            PVR->TriggerRecordingUpdate();
+            PVR->TriggerTimerUpdate();
+            return PVR_ERROR_NO_ERROR;
         }
-        XBMC->Log(ADDON::LOG_ERROR, "Failed to delete timer: nothing matched");
-        return PVR_ERROR_FAILED;
+        XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: %s", timer.strDirectory);
+        return PVR_ERROR_SERVER_ERROR;
     }
     default: {
         XBMC->Log(ADDON::LOG_ERROR, "Unknown timer type for deletion request: %d", timer.iTimerType);
