@@ -239,5 +239,12 @@ namespace api {
         return request("GET", apiPath, &response);
     }
 
+    // GET /api/docs
+    int getDocs(nlohmann::json& response)
+    {
+        const std::string apiPath = "docs";
+        return request("GET", apiPath, &response);
+    }
+
 } // namespace api
 } // namespace epgstation

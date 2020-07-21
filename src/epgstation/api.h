@@ -59,6 +59,9 @@ namespace api {
     // GET /api/storage
     int getStorage(nlohmann::json& response);
 
+    // GET /api/docs
+    int getDocs(nlohmann::json& response);
+
 } // namespace api
 } // namespace epgstation
 

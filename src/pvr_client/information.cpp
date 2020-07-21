@@ -3,6 +3,7 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
+#include "epgstation/docs.h"
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
@@ -50,17 +51,17 @@ const char* GetConnectionString(void)
 
 const char* GetBackendName(void)
 {
-    return "EPGStation";
+    return epgstation::Docs::getBackendName();
 }
 
 const char* GetBackendVersion(void)
 {
-    return "gamma";
+    return epgstation::Docs::getBackendVersion();
 }
 
 const char* GetBackendHostname(void)
 {
-    return "";
+    return epgstation::Docs::getBackendHostname();
 }
 
 /* not implemented */
