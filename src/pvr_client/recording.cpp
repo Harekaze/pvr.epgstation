@@ -47,7 +47,7 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
             rec.iChannelUid = r.channelId;
             rec.channelType = PVR_RECORDING_CHANNEL_TYPE_TV;
             if (r.hasThumbnail) {
-                snprintf(rec.strThumbnailPath, PVR_ADDON_URL_STRING_LENGTH - 1, (const char*)(epgstation::api::baseURL + g_recorded.recordedThumbnailPath).c_str(), rec.strRecordingId);
+                snprintf(rec.strThumbnailPath, PVR_ADDON_URL_STRING_LENGTH - 1, g_recorded.recordedThumbnailPath.c_str(), rec.strRecordingId);
             } else {
                 strncpy(rec.strThumbnailPath, "", PVR_ADDON_URL_STRING_LENGTH - 1);
             }
@@ -70,7 +70,7 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
 PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED_VALUE* properties, unsigned int* iPropertiesCount)
 {
     strncpy(properties[0].strName, PVR_STREAM_PROPERTY_STREAMURL, sizeof(properties[0].strName) - 1);
-    snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, (const char*)(epgstation::api::baseURL + g_recorded.recordedStreamingPath).c_str(), recording->strRecordingId);
+    snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, g_recorded.recordedStreamingPath.c_str(), recording->strRecordingId);
     *iPropertiesCount = 1;
     return PVR_ERROR_NO_ERROR;
 }

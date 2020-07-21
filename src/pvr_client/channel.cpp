@@ -42,8 +42,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 
         if (c.hasLogoData) {
             snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
-                (const char*)(epgstation::api::baseURL + g_schedule.channelLogoPath).c_str(),
-                c.id);
+                g_schedule.channelLogoPath.c_str(), c.id);
         } else {
             ch.strIconPath[0] = '\0';
         }

@@ -66,7 +66,7 @@ void* liveStreamHandle = NULL;
 bool OpenLiveStream(const PVR_CHANNEL& channel)
 {
     char url[1024];
-    snprintf(url, sizeof(url) - 1, (const char*)(epgstation::api::baseURL + g_schedule.liveStreamingPath).c_str(), channel.iUniqueId);
+    snprintf(url, sizeof(url) - 1, g_schedule.liveStreamingPath.c_str(), channel.iUniqueId);
     liveStreamHandle = XBMC->OpenFile(url, 0);
     return liveStreamHandle != NULL;
 }

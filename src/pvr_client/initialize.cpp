@@ -76,10 +76,10 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
         epgstation::api::baseURL += "api/";
     }
 
-    g_schedule.liveStreamingPath = "streams/live/%u/mpegts";
-    g_schedule.channelLogoPath = "channels/%u/logo";
-    g_recorded.recordedStreamingPath = "recorded/%s/file";
-    g_recorded.recordedThumbnailPath = "recorded/%s/thumbnail";
+    g_schedule.liveStreamingPath = epgstation::api::baseURL + "streams/live/%u/mpegts";
+    g_schedule.channelLogoPath = epgstation::api::baseURL + "channels/%u/logo";
+    g_recorded.recordedStreamingPath = epgstation::api::baseURL + "recorded/%s/file";
+    g_recorded.recordedThumbnailPath = epgstation::api::baseURL + "recorded/%s/thumbnail";
 
     unsigned int mode;
     XBMC->GetSetting("live_transcode", &mode);
