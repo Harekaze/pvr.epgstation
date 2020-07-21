@@ -148,7 +148,7 @@ namespace api {
     int postReserves(std::string id)
     {
         nlohmann::json body = {
-            { "programId", id },
+            { "programId", std::stoul(id) },
             { "allowEndLack", true },
         };
         const std::string apiPath = "reserves";
