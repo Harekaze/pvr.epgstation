@@ -77,8 +77,7 @@ PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED
 
 PVR_ERROR DeleteRecording(const PVR_RECORDING& recording)
 {
-    if (epgstation::api::deleteRecordedProgram(recording.strRecordingId) != epgstation::api::REQUEST_FAILED) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Delete recording: %s", recording.strRecordingId);
+    if (g_recorded.remove(recording.strRecordingId)) {
         sleep(1);
         PVR->TriggerRecordingUpdate();
         return PVR_ERROR_NO_ERROR;

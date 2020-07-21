@@ -32,4 +32,15 @@ bool Recorded::refresh()
 
     return true;
 }
+
+bool Recorded::remove(std::string id)
+{
+    if (epgstation::api::deleteRecordedProgram(id) != epgstation::api::REQUEST_FAILED) {
+        XBMC->Log(ADDON::LOG_NOTICE, "Deleted recording: #%s", id.c_str());
+        return true;
+    }
+    XBMC->Log(ADDON::LOG_ERROR, "Failed to delete recording: #%s", id.c_str());
+    return false;
+}
+
 }

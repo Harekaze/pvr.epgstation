@@ -15,6 +15,7 @@ public:
     std::string recordedThumbnailPath;
     std::vector<program> programs;
     bool refresh();
+    bool remove(std::string id);
 };
 } // namespace epgstation
 
