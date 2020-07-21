@@ -32,12 +32,10 @@ bool Recorded::refresh()
 
 bool Recorded::remove(std::string id)
 {
-    if (api::deleteRecordedProgram(id) != api::REQUEST_FAILED) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Deleted recording: #%s", id.c_str());
-        return true;
-    }
-    XBMC->Log(ADDON::LOG_ERROR, "Failed to delete recording: #%s", id.c_str());
-    return false;
+    const auto success = api::deleteRecordedProgram(id) != api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
+        "Recording deletion: #%s", id.c_str());
+    return success;
 }
 
 }

@@ -44,32 +44,26 @@ bool Reserve::refresh()
 
 bool Reserve::add(std::string id)
 {
-    if (api::postReserves(id) != api::REQUEST_FAILED) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: #%s", id.c_str());
-        return true;
-    }
-    XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: #%s", id.c_str());
-    return false;
+    const auto success = api::postReserves(id) != api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
+        "Program reservation: #%s", id.c_str());
+    return success;
 }
 
 bool Reserve::remove(std::string id)
 {
-    if (api::deleteReserves(id) != api::REQUEST_FAILED) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Deleted reserved program: #%s", id.c_str());
-        return true;
-    }
-    XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: #%s", id.c_str());
-    return false;
+    const auto success = api::deleteReserves(id) != api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
+        "Program deletion: #%s", id.c_str());
+    return success;
 }
 
 bool Reserve::restore(std::string id)
 {
-    if (api::deleteReservesSkip(id) != api::REQUEST_FAILED) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Restored program: %s", id.c_str());
-        return true;
-    }
-    XBMC->Log(ADDON::LOG_ERROR, "Failed to restore program: %s", id.c_str());
-    return false;
+    const auto success = api::deleteReservesSkip(id) != api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
+        "Program restoration: #%s", id.c_str());
+    return success;
 }
 
 }

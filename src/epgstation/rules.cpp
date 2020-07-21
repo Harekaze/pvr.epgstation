@@ -34,32 +34,26 @@ bool Rule::refresh()
 
 bool Rule::add(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
 {
-    if (api::postRules(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != api::REQUEST_FAILED) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Rule created: \"%s\"", searchText.c_str());
-        return true;
-    }
-    XBMC->Log(ADDON::LOG_ERROR, "Failed to create rule: \"%s\"", searchText.c_str());
-    return false;
+    const auto success = api::postRules(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
+        "Rule creation: \"%s\"", searchText.c_str());
+    return success;
 }
 
 bool Rule::edit(int id, bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
 {
-    if (api::putRule(id, enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != api::REQUEST_FAILED) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Rule updated: #%d", id);
-        return true;
-    }
-    XBMC->Log(ADDON::LOG_ERROR, "Failed to update rule: #%d", id);
-    return false;
+    const auto success = api::putRule(id, enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
+        "Rule update: #%d", id);
+    return success;
 }
 
 bool Rule::enable(int id, bool enabled)
 {
-    if (api::putRuleAction(id, enabled) != api::REQUEST_FAILED) {
-        XBMC->Log(ADDON::LOG_NOTICE, "Rule %s: #%d", enabled ? "enabled" : "disabled", id);
-        return true;
-    }
-    XBMC->Log(ADDON::LOG_ERROR, "Failed to %s rule: #%d", enabled ? "enable" : "disable", id);
-    return false;
+    const auto success = api::putRuleAction(id, enabled) != api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
+        "Rule state change: %s #%d", enabled ? "enable" : "disable", id);
+    return success;
 }
 
 }
