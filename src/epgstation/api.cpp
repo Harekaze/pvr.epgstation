@@ -109,6 +109,20 @@ namespace api {
         return request("GET", apiPath, &response);
     }
 
+    // GET /api/reserves/skips
+    int getReservesSkips(nlohmann::json& response)
+    {
+        const std::string apiPath = "reserves/skips";
+        return request("GET", apiPath, &response);
+    }
+
+    // GET /api/reserves/conflicts
+    int getReservesConflicts(nlohmann::json& response)
+    {
+        const std::string apiPath = "reserves/conflicts";
+        return request("GET", apiPath, &response);
+    }
+
     // DELETE /api/recorded/:id
     int deleteRecordedProgram(std::string id)
     {

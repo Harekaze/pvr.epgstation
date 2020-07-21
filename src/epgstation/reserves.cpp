@@ -27,10 +27,37 @@ bool Reserve::refresh()
     for (const auto& r : response["reserves"]) {
         auto p = r["program"].get<epgstation::program>();
         p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
+        p.state = STATE_RESERVED;
         reserves.push_back(p);
     }
 
-    XBMC->Log(ADDON::LOG_NOTICE, "Updated reserved program: ammount = %d", reserves.size());
+    XBMC->Log(ADDON::LOG_NOTICE, "Updated reserved program: ammount = %d", response["reserves"].size());
+
+    if (epgstation::api::getReservesSkips(response) == epgstation::api::REQUEST_FAILED) {
+        return false;
+    }
+
+    for (const auto& r : response["reserves"]) {
+        auto p = r["program"].get<epgstation::program>();
+        p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
+        p.state = STATE_SKIPPED;
+        reserves.push_back(p);
+    }
+
+    XBMC->Log(ADDON::LOG_NOTICE, "Updated skipped program: ammount = %d", response["reserves"].size());
+
+    if (epgstation::api::getReservesConflicts(response) == epgstation::api::REQUEST_FAILED) {
+        return false;
+    }
+
+    for (const auto& r : response["reserves"]) {
+        auto p = r["program"].get<epgstation::program>();
+        p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
+        p.state = STATE_CONFLICT;
+        reserves.push_back(p);
+    }
+
+    XBMC->Log(ADDON::LOG_NOTICE, "Updated conflicted program: ammount = %d", response["reserves"].size());
 
     return true;
 }

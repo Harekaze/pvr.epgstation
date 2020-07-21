@@ -84,10 +84,27 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.iClientIndex = index++;
             timer.iClientChannelUid = p.channelId;
             strncpy(timer.strTitle, p.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-            strncpy(timer.strSummary, p.extended.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
+            strncpy(timer.strSummary, (p.extended + p.description).c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             strncpy(timer.strDirectory, std::to_string(p.id).c_str(), PVR_ADDON_URL_STRING_LENGTH - 1); // NOTE: Store original ID
 
-            timer.state = PVR_TIMER_STATE_SCHEDULED;
+            switch (p.state) {
+            case epgstation::STATE_RESERVED:
+                if (now < timer.startTime) {
+                    timer.state = PVR_TIMER_STATE_SCHEDULED;
+                } else if (now < timer.endTime) {
+                    timer.state = PVR_TIMER_STATE_RECORDING;
+                } else {
+                    timer.state = PVR_TIMER_STATE_COMPLETED;
+                }
+                break;
+            case epgstation::STATE_CONFLICT:
+                timer.state = PVR_TIMER_STATE_CONFLICT_NOK;
+                break;
+            case epgstation::STATE_SKIPPED:
+                timer.state = PVR_TIMER_STATE_CANCELLED;
+                break;
+            }
+
             timer.startTime = p.startAt;
             timer.endTime = p.endAt;
             timer.iGenreType = genre & epgstation::GENRE_TYPE_MASK;
@@ -97,14 +114,6 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
             if (p.ruleId != -1) {
                 timer.iParentClientIndex = p.ruleId + RULE_CLIENT_START_INDEX;
-            }
-
-            if (now < timer.startTime) {
-                timer.state = PVR_TIMER_STATE_SCHEDULED;
-            } else if (timer.startTime < now && now < timer.endTime) {
-                timer.state = PVR_TIMER_STATE_RECORDING;
-            } else {
-                timer.state = PVR_TIMER_STATE_COMPLETED;
             }
 
             PVR->TransferTimerEntry(handle, &timer);

@@ -22,6 +22,12 @@ public:
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(storage, total, used);
 };
 
+enum ReservedState {
+    STATE_RESERVED,
+    STATE_CONFLICT,
+    STATE_SKIPPED,
+};
+
 class program {
 public:
     unsigned long id;
@@ -38,6 +44,7 @@ public:
     bool recording;
     bool hasThumbnail;
     int ruleId; // Optional for reserved program
+    ReservedState state; // Optional for reserved program
 
     friend void from_json(const nlohmann::json& j, program& t)
     {

@@ -23,6 +23,12 @@ namespace api {
     // GET /api/reserves
     int getReserves(nlohmann::json& response);
 
+    // GET /api/reserves/skips
+    int getReservesSkips(nlohmann::json& response);
+
+    // GET /api/reserves/conflicts
+    int getReservesConflicts(nlohmann::json& response);
+
     // DELETE /api/recorded/:id
     int deleteRecordedProgram(std::string id);
 
