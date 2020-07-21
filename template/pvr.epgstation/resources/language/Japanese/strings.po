@@ -45,8 +45,8 @@ msgid "TV Guide"
 msgstr "番組表"
 
 msgctxt "#30600"
-msgid "EPGStation WUI URL starts with http:// or https://"
-msgstr "EPGStation WUIのURLは http:// か https:// を含めて入力してください"
+msgid "Please enter the URL starting with https:// or http://"
+msgstr "https:// か http:// から始まるURLを入力してください"
 
 msgctxt "#30800"
 msgid "Refresh recordings"

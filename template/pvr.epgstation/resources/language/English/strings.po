@@ -55,7 +55,7 @@ msgstr ""
 #empty strings from id 30501 to 30599
 
 msgctxt "#30600"
-msgid "EPGStation WUI URL starts with http:// or https://"
+msgid "Please enter the URL starting with https:// or http://"
 msgstr ""
 
 #empty strings from id 30601 to 30799
