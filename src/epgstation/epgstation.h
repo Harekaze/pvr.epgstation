@@ -6,7 +6,6 @@
 #ifndef EPGSTATION_EPGSTATION_H
 #define EPGSTATION_EPGSTATION_H
 
-#include "api.h"
 #include "recorded.h"
 #include "reserves.h"
 #include "rules.h"
