@@ -17,64 +17,37 @@ namespace api {
     const int REQUEST_FAILED = -1;
     std::string baseURL = "";
 
-    int requestGET(std::string apiPath, nlohmann::json& response)
+    int request(std::string method, std::string path, nlohmann::json* response = NULL, nlohmann::json body = NULL)
     {
+        const auto url = baseURL + path;
+        XBMC->Log(ADDON::LOG_DEBUG, "Request URL: %s", url.c_str());
+        XBMC->Log(ADDON::LOG_DEBUG, "Request Method: %s", method.c_str());
+
         std::string text;
-        const auto url = baseURL + apiPath;
-        if (void* handle = XBMC->CURLCreate(url.c_str())) {
-            if (!XBMC->CURLOpen(handle, XFILE::READ_NO_CACHE)) {
-                XBMC->Log(ADDON::LOG_ERROR, "[%s] request failed", url.c_str());
-                XBMC->CloseFile(handle);
-                return REQUEST_FAILED;
-            }
-            const unsigned int buffer_size = 4096;
-            char buffer[buffer_size];
-            text.clear();
-            while (int bytesRead = XBMC->ReadFile(handle, buffer, buffer_size)) {
-                text.append(buffer, bytesRead);
-            }
-            XBMC->CloseFile(handle);
-        } else {
-            XBMC->Log(ADDON::LOG_ERROR, "[%s] Request failed", apiPath.c_str());
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[%s] Request failed", apiPath.c_str());
-            return REQUEST_FAILED;
-        }
-
-        try {
-            response = nlohmann::json::parse(text);
-        } catch (nlohmann::json::parse_error err) {
-            XBMC->Log(ADDON::LOG_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.what());
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "[%s] Failed to parse JSON string: %s", apiPath.c_str(), err.what());
-            return REQUEST_FAILED;
-        }
-
-        return text.length();
-    }
-
-    int request(std::string method, std::string path, std::string body = "")
-    {
-        const std::string url = baseURL + path;
-
         void* handle = XBMC->CURLCreate(url.c_str());
         if (handle == NULL) {
             XBMC->Log(ADDON::LOG_ERROR, "Failed to create URL: %s", url.c_str());
             return REQUEST_FAILED;
         }
 
-        if (!XBMC->CURLAddOption(handle, XFILE::CURLOPTIONTYPE::CURL_OPTION_PROTOCOL, "customrequest", method.c_str())) {
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to set %s method to %s", method.c_str(), url.c_str());
-            XBMC->CloseFile(handle);
-            return REQUEST_FAILED;
+        if (method != "GET") {
+            if (!XBMC->CURLAddOption(handle, XFILE::CURLOPTIONTYPE::CURL_OPTION_PROTOCOL, "customrequest", method.c_str())) {
+                XBMC->Log(ADDON::LOG_ERROR, "Failed to set %s method to %s", method.c_str(), url.c_str());
+                XBMC->CloseFile(handle);
+                return REQUEST_FAILED;
+            }
         }
 
-        if (!body.empty()) {
+        if (body != NULL) {
+            XBMC->Log(ADDON::LOG_DEBUG, "Setting request header");
             if (!XBMC->CURLAddOption(handle, XFILE::CURLOPTIONTYPE::CURL_OPTION_HEADER, "Content-Type", "application/json")) {
                 XBMC->Log(ADDON::LOG_ERROR, "Failed to set content-type to %s", url.c_str());
                 XBMC->CloseFile(handle);
                 return REQUEST_FAILED;
             }
 
-            const std::string data = base64_encode(body);
+            XBMC->Log(ADDON::LOG_DEBUG, "Setting request body");
+            const std::string data = base64_encode(body.dump());
             if (!XBMC->CURLAddOption(handle, XFILE::CURLOPTIONTYPE::CURL_OPTION_PROTOCOL, "postdata", data.c_str())) {
                 XBMC->Log(ADDON::LOG_ERROR, "Failed to set post data to %s", url.c_str());
                 XBMC->CloseFile(handle);
@@ -82,13 +55,37 @@ namespace api {
             }
         }
 
+        XBMC->Log(ADDON::LOG_DEBUG, "Open url for requesting");
         if (!XBMC->CURLOpen(handle, XFILE::READ_NO_CACHE)) {
             XBMC->Log(ADDON::LOG_ERROR, "Failed to open URL: %s", url.c_str());
             XBMC->CloseFile(handle);
             return REQUEST_FAILED;
         }
 
+        if (response != NULL) {
+            XBMC->Log(ADDON::LOG_DEBUG, "Read response body");
+
+            const unsigned int buffer_size = 4096;
+            char buffer[buffer_size];
+            while (int bytesRead = XBMC->ReadFile(handle, buffer, buffer_size)) {
+                text.append(buffer, bytesRead);
+            }
+        }
+
         XBMC->CloseFile(handle);
+
+        if (response != NULL && !text.empty()) {
+            try {
+                *response = nlohmann::json::parse(text);
+            } catch (nlohmann::json::parse_error err) {
+                XBMC->Log(ADDON::LOG_ERROR, "Failed to parse JSON string: %s", err.what());
+                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to parse JSON string: %s", err.what());
+                return REQUEST_FAILED;
+            }
+        }
+
+        XBMC->Log(ADDON::LOG_DEBUG, "Complete API request for %s", url.c_str());
+
         return 0;
     }
 
@@ -96,21 +93,21 @@ namespace api {
     int getSchedule(std::string type, nlohmann::json& response)
     {
         const std::string apiPath = "schedule?type=" + type;
-        return requestGET(apiPath, response);
+        return request("GET", apiPath, &response);
     }
 
     // GET /api/recorded
     int getRecorded(nlohmann::json& response)
     {
         const std::string apiPath = "recorded";
-        return requestGET(apiPath, response);
+        return request("GET", apiPath, &response);
     }
 
     // GET /api/reserves
     int getReserves(nlohmann::json& response)
     {
         const std::string apiPath = "reserves";
-        return requestGET(apiPath, response);
+        return request("GET", apiPath, &response);
     }
 
     // DELETE /api/recorded/:id
@@ -137,16 +134,19 @@ namespace api {
     // POST /api/reserves
     int postReserves(std::string id)
     {
-        std::string buffer = "{\"programId\":" + id + ",\"allowEndLack\":true}";
+        nlohmann::json body = {
+            { "programId", id },
+            { "allowEndLack", true },
+        };
         const std::string apiPath = "reserves";
-        return request("POST", apiPath, buffer);
+        return request("POST", apiPath, NULL, body);
     }
 
     // GET /api/rules
     int getRules(nlohmann::json& response)
     {
         const std::string apiPath = "rules";
-        return requestGET(apiPath, response);
+        return request("GET", apiPath, &response);
     }
 
     nlohmann::json createRulePayload(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
@@ -194,7 +194,7 @@ namespace api {
     {
         const std::string apiPath = "rules";
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
-        return request("POST", apiPath, body.dump());
+        return request("POST", apiPath, NULL, body);
     }
 
     // PUT /api/rules/:id
@@ -202,7 +202,7 @@ namespace api {
     {
         const std::string apiPath = "rules/" + std::to_string(id);
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
-        return request("PUT", apiPath, body.dump());
+        return request("PUT", apiPath, NULL, body);
     }
 
     // PUT /api/rules/:id/:action
@@ -223,7 +223,7 @@ namespace api {
     int getStorage(nlohmann::json& response)
     {
         const std::string apiPath = "storage";
-        return requestGET(apiPath, response);
+        return request("GET", apiPath, &response);
     }
 
 } // namespace api
