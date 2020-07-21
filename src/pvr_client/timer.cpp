@@ -130,7 +130,6 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
         }
         if (rule == NULL) {
             XBMC->Log(ADDON::LOG_ERROR, "Rule not found: #%d", index);
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Rule not found: #%d", index);
             return PVR_ERROR_REJECTED;
         }
 
@@ -145,14 +144,10 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
                     timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)
                 != epgstation::api::REQUEST_FAILED) {
                 XBMC->Log(ADDON::LOG_NOTICE, "Update rule: %d", index);
-                sleep(1);
-                PVR->TriggerTimerUpdate();
-                return PVR_ERROR_NO_ERROR;
-            } else {
-                XBMC->Log(ADDON::LOG_ERROR, "Failed to update rule: %d", index);
-                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to update rule: %d", index);
-                return PVR_ERROR_SERVER_ERROR;
+                goto complete;
             }
+            XBMC->Log(ADDON::LOG_ERROR, "Failed to update rule: %d", index);
+            return PVR_ERROR_SERVER_ERROR;
         } else {
             switch (timer.state) {
             case PVR_TIMER_STATE_SCHEDULED:
@@ -160,17 +155,13 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
                 bool enable = timer.state == PVR_TIMER_STATE_SCHEDULED;
                 if (epgstation::api::putRuleAction(rule->id, enable) != epgstation::api::REQUEST_FAILED) {
                     XBMC->Log(ADDON::LOG_NOTICE, "%s rule: #%d", enable ? "Enable" : "Disable", index);
-                    sleep(1);
-                    PVR->TriggerTimerUpdate();
-                    return PVR_ERROR_NO_ERROR;
+                    goto complete;
                 }
                 XBMC->Log(ADDON::LOG_ERROR, "Failed to %s rule: #%d", enable ? "enable" : "disable", index);
-                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to %s rule: #%d", enable ? "enable" : "disable", index);
                 return PVR_ERROR_SERVER_ERROR;
             }
             default:
                 XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: #%d", index);
-                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unknown state change: #%d", index);
                 return PVR_ERROR_NOT_IMPLEMENTED;
             }
         }
@@ -180,35 +171,32 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
         case PVR_TIMER_STATE_SCHEDULED:
             if (epgstation::api::deleteReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
                 XBMC->Log(ADDON::LOG_NOTICE, "Unskip reserving: %s", timer.strDirectory);
-                sleep(1);
-                PVR->TriggerTimerUpdate();
-                return PVR_ERROR_NO_ERROR;
+                goto complete;
             }
             XBMC->Log(ADDON::LOG_ERROR, "Failed to enable state: %s", timer.strDirectory);
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to enable state: %s", timer.strDirectory);
             return PVR_ERROR_SERVER_ERROR;
         case PVR_TIMER_STATE_DISABLED:
             if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
                 XBMC->Log(ADDON::LOG_NOTICE, "Skip reserving: %s", timer.strDirectory);
-                sleep(1);
-                PVR->TriggerTimerUpdate();
-                return PVR_ERROR_NO_ERROR;
+                goto complete;
             }
             XBMC->Log(ADDON::LOG_ERROR, "Failed to disable state: %s", timer.strDirectory);
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to disable state: %s", timer.strDirectory);
             return PVR_ERROR_SERVER_ERROR;
         default:
             XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: %s", timer.strDirectory);
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unknown state change: %s", timer.strDirectory);
             return PVR_ERROR_NOT_IMPLEMENTED;
         }
     }
     default: {
         XBMC->Log(ADDON::LOG_ERROR, "Unknown iTimerType: %d", timer.iTimerType);
-        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unknown iTimerType: %d", timer.iTimerType);
         return PVR_ERROR_NOT_IMPLEMENTED;
     }
     }
+
+complete:
+    sleep(1);
+    PVR->TriggerTimerUpdate();
+    return PVR_ERROR_NO_ERROR;
 }
 
 PVR_ERROR AddTimer(const PVR_TIMER& timer)
@@ -223,36 +211,31 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
                 timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)
             != epgstation::api::REQUEST_FAILED) {
             XBMC->Log(ADDON::LOG_NOTICE, "Create new rule: \"%s\"", timer.strEpgSearchString);
-            sleep(3);
-            PVR->TriggerTimerUpdate();
-            return PVR_ERROR_NO_ERROR;
-        } else {
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to create new rule: %s", timer.strEpgSearchString);
-            XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to create new rule: %s", timer.strEpgSearchString);
-            return PVR_ERROR_SERVER_ERROR;
+            goto complete;
         }
-        return PVR_ERROR_NO_ERROR;
+        XBMC->Log(ADDON::LOG_ERROR, "Failed to create new rule: %s", timer.strEpgSearchString);
+        return PVR_ERROR_SERVER_ERROR;
     }
     case CREATE_TIMER_MANUAL_RESERVED: {
         for (const auto program : g_schedule.programs) {
             if ((int)program.channelId == timer.iClientChannelUid && program.startAt == timer.startTime && program.endAt == timer.endTime) {
                 if (epgstation::api::postReserves(std::to_string(program.id)) != epgstation::api::REQUEST_FAILED) {
                     XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: %s", std::to_string(program.id).c_str());
-                    sleep(3);
-                    PVR->TriggerTimerUpdate();
-                    return PVR_ERROR_NO_ERROR;
-                } else {
-                    XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
-                    XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
-                    return PVR_ERROR_SERVER_ERROR;
+                    goto complete;
                 }
+                XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
+                return PVR_ERROR_SERVER_ERROR;
             }
         }
     }
     }
     XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: nothing matched");
-    XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to reserve new program: nothing matched");
     return PVR_ERROR_FAILED;
+
+complete:
+    sleep(3);
+    PVR->TriggerTimerUpdate();
+    return PVR_ERROR_NO_ERROR;
 }
 
 PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
@@ -267,20 +250,16 @@ PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
                     PVR->TriggerRecordingUpdate();
                     PVR->TriggerTimerUpdate();
                     return PVR_ERROR_NO_ERROR;
-                } else {
-                    XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: %s", std::to_string(program.id).c_str());
-                    XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to delete reserved program: %s", std::to_string(program.id).c_str());
-                    return PVR_ERROR_SERVER_ERROR;
                 }
+                XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: %s", std::to_string(program.id).c_str());
+                return PVR_ERROR_SERVER_ERROR;
             }
         }
         XBMC->Log(ADDON::LOG_ERROR, "Failed to delete timer: nothing matched");
-        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to delete timer: nothing matched");
         return PVR_ERROR_FAILED;
     }
     default: {
         XBMC->Log(ADDON::LOG_ERROR, "Unknown timer type for deletion request: %d", timer.iTimerType);
-        XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Unknown timer type for deletion request: %d", timer.iTimerType);
         return PVR_ERROR_NOT_IMPLEMENTED;
     }
     }

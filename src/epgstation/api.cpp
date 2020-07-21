@@ -79,7 +79,6 @@ namespace api {
                 *response = nlohmann::json::parse(text);
             } catch (nlohmann::json::parse_error err) {
                 XBMC->Log(ADDON::LOG_ERROR, "Failed to parse JSON string: %s", err.what());
-                XBMC->QueueNotification(ADDON::QUEUE_ERROR, "Failed to parse JSON string: %s", err.what());
                 return REQUEST_FAILED;
             }
         }
