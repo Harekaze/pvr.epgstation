@@ -17,48 +17,28 @@ namespace epgstation {
 bool Reserve::refresh()
 {
     nlohmann::json response;
-
-    if (api::getReserves(response) == api::REQUEST_FAILED) {
-        return false;
-    }
+    std::map<ReservedState, int (*)(nlohmann::json & response)> requests = {
+        { STATE_RESERVED, api::getReserves },
+        { STATE_CONFLICT, api::getReservesConflicts },
+        { STATE_SKIPPED, api::getReservesSkips },
+    };
 
     reserves.clear();
 
-    for (const auto& r : response["reserves"]) {
-        auto p = r["program"].get<program>();
-        p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
-        p.state = STATE_RESERVED;
-        reserves.push_back(p);
-    }
+    for (const auto request : requests) {
+        if (request.second(response) == api::REQUEST_FAILED) {
+            return false;
+        }
 
-    XBMC->Log(ADDON::LOG_NOTICE, "Updated reserved program: ammount = %d", response["reserves"].size());
-
-    if (api::getReservesSkips(response) == api::REQUEST_FAILED) {
-        return false;
-    }
-
-    for (const auto& r : response["reserves"]) {
-        auto p = r["program"].get<program>();
-        p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
-        p.state = STATE_SKIPPED;
-        reserves.push_back(p);
-    }
-
-    XBMC->Log(ADDON::LOG_NOTICE, "Updated skipped program: ammount = %d", response["reserves"].size());
-
-    if (api::getReservesConflicts(response) == api::REQUEST_FAILED) {
-        return false;
-    }
-
-    for (const auto& r : response["reserves"]) {
-        auto p = r["program"].get<program>();
-        p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
-        p.state = STATE_CONFLICT;
-        reserves.push_back(p);
+        for (const auto& r : response["reserves"]) {
+            auto p = r["program"].get<program>();
+            p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
+            p.state = request.first;
+            reserves.push_back(p);
+        }
     }
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated conflicted program: ammount = %d", response["reserves"].size());
-
     return true;
 }
 

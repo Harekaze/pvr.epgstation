@@ -16,20 +16,17 @@ namespace epgstation {
 bool Recorded::refresh()
 {
     nlohmann::json response;
+    programs.clear();
 
     if (api::getRecorded(response) == api::REQUEST_FAILED) {
         return false;
     }
 
-    programs.clear();
-
-    for (const auto& p : response["recorded"]) {
-        auto r = p.get<program>();
-        programs.push_back(r);
+    for (const program& p : response["recorded"]) {
+        programs.push_back(p);
     }
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated recorded program: ammount = %d", programs.size());
-
     return true;
 }
 

@@ -18,20 +18,17 @@ namespace epgstation {
 bool Rule::refresh()
 {
     nlohmann::json response;
+    rules.clear();
 
     if (api::getRules(response) == api::REQUEST_FAILED) {
         return false;
     }
 
-    rules.clear();
-
-    for (const auto& p : response["rules"]) {
-        auto r = p.get<rule>();
+    for (const rule& r : response["rules"]) {
         rules.push_back(r);
     }
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated rules: ammount = %d", rules.size());
-
     return true;
 }
 

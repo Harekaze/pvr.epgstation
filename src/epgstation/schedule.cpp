@@ -37,11 +37,10 @@ bool Schedule::refresh()
             if (o["programs"].empty()) {
                 continue;
             }
-            channel ch = o["channel"].get<channel>();
+            const auto ch = o["channel"].get<channel>();
             channels.push_back(ch);
 
-            for (const auto& pp : o["programs"]) {
-                auto p = pp.get<program>();
+            for (const program& p : o["programs"]) {
                 programs.push_back(p);
             }
         }
