@@ -25,7 +25,6 @@ bool Rule::refresh()
 
     rules.clear();
 
-    unsigned int i = 0;
     for (const auto& p : response["rules"]) {
         auto r = p.get<rule>();
         rules.push_back(r);
