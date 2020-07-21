@@ -87,30 +87,7 @@ PVR_ERROR DeleteRecording(const PVR_RECORDING& recording)
 
 PVR_ERROR GetDriveSpace(long long* iTotal, long long* iUsed)
 {
-    const time_t refreshInterval = 10 * 60; // every 10 minutes
-    static time_t lastUpdated;
-    static long long total, used;
-    PVR_ERROR ret;
-
-    time_t now;
-    time(&now);
-
-    if (now - lastUpdated < refreshInterval) {
-        *iTotal = total;
-        *iUsed = used;
-        return PVR_ERROR_NO_ERROR;
-    }
-
-    ret = epgstation::Storage::getStorageInfo(&used, &total);
-    if (ret != PVR_ERROR_NO_ERROR) {
-        return ret;
-    }
-
-    *iTotal = total;
-    *iUsed = used;
-
-    lastUpdated = now;
-    return PVR_ERROR_NO_ERROR;
+    return epgstation::Storage::getStorageInfo(iUsed, iTotal);
 }
 
 /* not implemented */

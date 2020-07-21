@@ -15,14 +15,6 @@ namespace epgstation {
 bool Schedule::refresh()
 {
     nlohmann::json response;
-    const time_t refreshInterval = 10 * 60; // every 10 minutes
-    static time_t lastUpdated;
-    time_t now;
-
-    time(&now);
-    if (now - lastUpdated < refreshInterval) {
-        return true;
-    }
 
     programs.clear();
     channels.clear();
@@ -47,8 +39,6 @@ bool Schedule::refresh()
     }
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated schedule: channel ammount = %d", 8);
-
-    lastUpdated = now;
     return true;
 }
 }
