@@ -26,8 +26,6 @@
 #define MSG_TIMER_PATTERN_MATCHED 30901
 #define MSG_RULES_PATTERN_MATCHED_CREATION 30902
 
-#define RULE_CLIENT_START_INDEX 0x100
-
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 extern CHelper_libXBMC_pvr* PVR;
 extern epgstation::Recorded g_recorded;
@@ -45,14 +43,13 @@ int GetTimersAmount(void)
 PVR_ERROR GetTimers(ADDON_HANDLE handle)
 {
     if (g_rule.refresh() && g_reserve.refresh()) {
-        unsigned int index = 0;
         time_t now;
 
         for (const auto rule : g_rule.rules) {
             PVR_TIMER timer;
             memset(&timer, 0, sizeof(PVR_TIMER));
 
-            timer.iClientIndex = rule.id + RULE_CLIENT_START_INDEX;
+            timer.iClientIndex = rule.id;
             timer.state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED;
             strncpy(timer.strTitle, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             timer.iClientChannelUid = rule.station == -1 ? PVR_TIMER_ANY_CHANNEL : rule.station;
@@ -82,7 +79,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             memset(&timer, 0, sizeof(PVR_TIMER));
 
             timer.iEpgUid = p.id; // NOTE: Overflow casting from unsigned long to unsigned
-            timer.iClientIndex = index++;
+            timer.iClientIndex = p.id;
             timer.iClientChannelUid = p.channelId;
             strncpy(timer.strTitle, p.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(timer.strSummary, (p.extended + p.description).c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
@@ -108,7 +105,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.bEndAnyTime = false;
             timer.iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
             if (p.ruleId != -1) {
-                timer.iParentClientIndex = p.ruleId + RULE_CLIENT_START_INDEX;
+                timer.iParentClientIndex = p.ruleId;
             }
 
             PVR->TransferTimerEntry(handle, &timer);
@@ -124,16 +121,15 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
 {
     switch (timer.iTimerType) {
     case CREATE_RULES_PATTERN_MATCHED: {
-        const unsigned int index = timer.iClientIndex - RULE_CLIENT_START_INDEX;
         epgstation::rule* rule = NULL;
         for (auto& r : g_rule.rules) {
-            if (r.id == index) {
+            if (r.id == timer.iClientIndex) {
                 rule = &r;
                 break;
             }
         }
         if (rule == NULL) {
-            XBMC->Log(ADDON::LOG_ERROR, "Rule not found: #%d", index);
+            XBMC->Log(ADDON::LOG_ERROR, "Rule not found: #%d", timer.iClientIndex);
             return PVR_ERROR_REJECTED;
         }
 
@@ -141,7 +137,7 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
             // Timer state is not changed. Update rule
             unsigned int startHour = localtime(&timer.startTime)->tm_hour;
             unsigned int endHour = localtime(&timer.endTime)->tm_hour;
-            if (g_rule.edit(index, timer.state != PVR_TIMER_STATE_DISABLED,
+            if (g_rule.edit(timer.iClientIndex, timer.state != PVR_TIMER_STATE_DISABLED,
                     timer.strEpgSearchString, timer.bFullTextEpgSearch,
                     timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
                     timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)) {
@@ -153,13 +149,13 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
             case PVR_TIMER_STATE_SCHEDULED:
             case PVR_TIMER_STATE_DISABLED: {
                 bool enable = timer.state == PVR_TIMER_STATE_SCHEDULED;
-                if (g_rule.enable(index, enable)) {
+                if (g_rule.enable(timer.iClientIndex, enable)) {
                     goto complete;
                 }
                 return PVR_ERROR_SERVER_ERROR;
             }
             default:
-                XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: #%d", index);
+                XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: #%d", timer.iClientIndex);
                 return PVR_ERROR_NOT_IMPLEMENTED;
             }
         }
