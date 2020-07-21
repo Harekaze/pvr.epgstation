@@ -149,15 +149,13 @@ namespace api {
         return requestGET(apiPath, response);
     }
 
-    // POST /api/rules
-    int postRules(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
+    nlohmann::json createRulePayload(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
     {
         unsigned int newWeekdays = weekdays ^ PVR_WEEKDAY_SUNDAY;
         newWeekdays <<= 1;
         if (weekdays & PVR_WEEKDAY_SUNDAY) {
             newWeekdays |= 0x01;
         }
-        const std::string apiPath = "rules";
         nlohmann::json body = {
             { "search", {
                             { "keyword", searchText },
@@ -188,8 +186,23 @@ namespace api {
         if (!directory.empty()) {
             body["option"]["directory"] = directory;
         }
+        return body;
+    }
 
+    // POST /api/rules
+    int postRules(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
+    {
+        const std::string apiPath = "rules";
+        nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
         return request("POST", apiPath, body.dump());
+    }
+
+    // PUT /api/rules/:id
+    int putRule(int id, bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
+    {
+        const std::string apiPath = "rules/" + std::to_string(id);
+        nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
+        return request("PUT", apiPath, body.dump());
     }
 
     // PUT /api/rules/:id/:action

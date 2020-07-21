@@ -41,6 +41,9 @@ namespace api {
     // POST /api/rules
     int postRules(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory);
 
+    // PUT /api/rules/:id
+    int putRule(int id, bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory);
+
     // PUT /api/rules/:id/:action
     int putRuleAction(int id, bool state);
 
