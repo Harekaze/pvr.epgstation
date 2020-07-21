@@ -35,4 +35,35 @@ bool Rule::refresh()
 
     return true;
 }
+
+bool Rule::add(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
+{
+    if (epgstation::api::postRules(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != epgstation::api::REQUEST_FAILED) {
+        XBMC->Log(ADDON::LOG_NOTICE, "Rule created: \"%s\"", searchText.c_str());
+        return true;
+    }
+    XBMC->Log(ADDON::LOG_ERROR, "Failed to create rule: \"%s\"", searchText.c_str());
+    return false;
+}
+
+bool Rule::edit(int id, bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
+{
+    if (epgstation::api::putRule(id, enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != epgstation::api::REQUEST_FAILED) {
+        XBMC->Log(ADDON::LOG_NOTICE, "Rule updated: #%d", id);
+        return true;
+    }
+    XBMC->Log(ADDON::LOG_ERROR, "Failed to update rule: #%d", id);
+    return false;
+}
+
+bool Rule::enable(int id, bool enabled)
+{
+    if (epgstation::api::putRuleAction(id, enabled) != epgstation::api::REQUEST_FAILED) {
+        XBMC->Log(ADDON::LOG_NOTICE, "Rule %s: #%d", enabled ? "enabled" : "disabled", id);
+        return true;
+    }
+    XBMC->Log(ADDON::LOG_ERROR, "Failed to %s rule: #%d", enabled ? "enable" : "disable", id);
+    return false;
+}
+
 }

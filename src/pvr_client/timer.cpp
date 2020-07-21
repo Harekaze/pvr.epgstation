@@ -141,27 +141,21 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
             // Timer state is not changed. Update rule
             unsigned int startHour = localtime(&timer.startTime)->tm_hour;
             unsigned int endHour = localtime(&timer.endTime)->tm_hour;
-
-            if (epgstation::api::putRule(index, timer.state != PVR_TIMER_STATE_DISABLED,
+            if (g_rule.edit(index, timer.state != PVR_TIMER_STATE_DISABLED,
                     timer.strEpgSearchString, timer.bFullTextEpgSearch,
                     timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
-                    timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)
-                != epgstation::api::REQUEST_FAILED) {
-                XBMC->Log(ADDON::LOG_NOTICE, "Update rule: %d", index);
+                    timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)) {
                 goto complete;
             }
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to update rule: %d", index);
             return PVR_ERROR_SERVER_ERROR;
         } else {
             switch (timer.state) {
             case PVR_TIMER_STATE_SCHEDULED:
             case PVR_TIMER_STATE_DISABLED: {
                 bool enable = timer.state == PVR_TIMER_STATE_SCHEDULED;
-                if (epgstation::api::putRuleAction(rule->id, enable) != epgstation::api::REQUEST_FAILED) {
-                    XBMC->Log(ADDON::LOG_NOTICE, "%s rule: #%d", enable ? "Enable" : "Disable", index);
+                if (g_rule.enable(index, enable)) {
                     goto complete;
                 }
-                XBMC->Log(ADDON::LOG_ERROR, "Failed to %s rule: #%d", enable ? "enable" : "disable", index);
                 return PVR_ERROR_SERVER_ERROR;
             }
             default:
@@ -210,14 +204,11 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
         unsigned int startHour = localtime(&timer.startTime)->tm_hour;
         unsigned int endHour = localtime(&timer.endTime)->tm_hour;
 
-        if (epgstation::api::postRules(timer.state != PVR_TIMER_STATE_DISABLED, timer.strEpgSearchString, timer.bFullTextEpgSearch,
+        if (g_rule.add(timer.state != PVR_TIMER_STATE_DISABLED, timer.strEpgSearchString, timer.bFullTextEpgSearch,
                 timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
-                timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)
-            != epgstation::api::REQUEST_FAILED) {
-            XBMC->Log(ADDON::LOG_NOTICE, "Create new rule: \"%s\"", timer.strEpgSearchString);
+                timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)) {
             goto complete;
         }
-        XBMC->Log(ADDON::LOG_ERROR, "Failed to create new rule: %s", timer.strEpgSearchString);
         return PVR_ERROR_SERVER_ERROR;
     }
     case CREATE_TIMER_MANUAL_RESERVED: {
