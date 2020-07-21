@@ -102,7 +102,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             if (now < timer.startTime) {
                 timer.state = PVR_TIMER_STATE_SCHEDULED;
             } else if (timer.startTime < now && now < timer.endTime) {
-                timer.state = PVR_TIMER_STATE_ABORTED;
+                timer.state = PVR_TIMER_STATE_RECORDING;
             } else {
                 timer.state = PVR_TIMER_STATE_COMPLETED;
             }
