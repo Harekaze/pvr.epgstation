@@ -15,11 +15,11 @@ namespace epgstation {
 PVR_ERROR Storage::getStorageInfo(long long* used, long long* total)
 {
     nlohmann::json response;
-    if (epgstation::api::getStorage(response) == epgstation::api::REQUEST_FAILED) {
+    if (api::getStorage(response) == api::REQUEST_FAILED) {
         return PVR_ERROR_SERVER_ERROR;
     }
 
-    auto info = response.get<epgstation::storage>();
+    auto info = response.get<storage>();
 
     *total = info.total / 1024;
     *used = info.used / 1024;

@@ -18,14 +18,14 @@ bool Reserve::refresh()
 {
     nlohmann::json response;
 
-    if (epgstation::api::getReserves(response) == epgstation::api::REQUEST_FAILED) {
+    if (api::getReserves(response) == api::REQUEST_FAILED) {
         return false;
     }
 
     reserves.clear();
 
     for (const auto& r : response["reserves"]) {
-        auto p = r["program"].get<epgstation::program>();
+        auto p = r["program"].get<program>();
         p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
         p.state = STATE_RESERVED;
         reserves.push_back(p);
@@ -33,12 +33,12 @@ bool Reserve::refresh()
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated reserved program: ammount = %d", response["reserves"].size());
 
-    if (epgstation::api::getReservesSkips(response) == epgstation::api::REQUEST_FAILED) {
+    if (api::getReservesSkips(response) == api::REQUEST_FAILED) {
         return false;
     }
 
     for (const auto& r : response["reserves"]) {
-        auto p = r["program"].get<epgstation::program>();
+        auto p = r["program"].get<program>();
         p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
         p.state = STATE_SKIPPED;
         reserves.push_back(p);
@@ -46,12 +46,12 @@ bool Reserve::refresh()
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated skipped program: ammount = %d", response["reserves"].size());
 
-    if (epgstation::api::getReservesConflicts(response) == epgstation::api::REQUEST_FAILED) {
+    if (api::getReservesConflicts(response) == api::REQUEST_FAILED) {
         return false;
     }
 
     for (const auto& r : response["reserves"]) {
-        auto p = r["program"].get<epgstation::program>();
+        auto p = r["program"].get<program>();
         p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
         p.state = STATE_CONFLICT;
         reserves.push_back(p);
@@ -64,7 +64,7 @@ bool Reserve::refresh()
 
 bool Reserve::add(std::string id)
 {
-    if (epgstation::api::postReserves(id) != epgstation::api::REQUEST_FAILED) {
+    if (api::postReserves(id) != api::REQUEST_FAILED) {
         XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: #%s", id.c_str());
         return true;
     }
@@ -74,7 +74,7 @@ bool Reserve::add(std::string id)
 
 bool Reserve::remove(std::string id)
 {
-    if (epgstation::api::deleteReserves(id) != epgstation::api::REQUEST_FAILED) {
+    if (api::deleteReserves(id) != api::REQUEST_FAILED) {
         XBMC->Log(ADDON::LOG_NOTICE, "Deleted reserved program: #%s", id.c_str());
         return true;
     }
@@ -84,7 +84,7 @@ bool Reserve::remove(std::string id)
 
 bool Reserve::restore(std::string id)
 {
-    if (epgstation::api::deleteReservesSkip(id) != epgstation::api::REQUEST_FAILED) {
+    if (api::deleteReservesSkip(id) != api::REQUEST_FAILED) {
         XBMC->Log(ADDON::LOG_NOTICE, "Restored program: %s", id.c_str());
         return true;
     }

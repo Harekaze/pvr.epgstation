@@ -17,14 +17,14 @@ bool Recorded::refresh()
 {
     nlohmann::json response;
 
-    if (epgstation::api::getRecorded(response) == epgstation::api::REQUEST_FAILED) {
+    if (api::getRecorded(response) == api::REQUEST_FAILED) {
         return false;
     }
 
     programs.clear();
 
     for (const auto& p : response["recorded"]) {
-        auto r = p.get<epgstation::program>();
+        auto r = p.get<program>();
         programs.push_back(r);
     }
 
@@ -35,7 +35,7 @@ bool Recorded::refresh()
 
 bool Recorded::remove(std::string id)
 {
-    if (epgstation::api::deleteRecordedProgram(id) != epgstation::api::REQUEST_FAILED) {
+    if (api::deleteRecordedProgram(id) != api::REQUEST_FAILED) {
         XBMC->Log(ADDON::LOG_NOTICE, "Deleted recording: #%s", id.c_str());
         return true;
     }

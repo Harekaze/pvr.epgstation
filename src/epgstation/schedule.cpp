@@ -29,7 +29,7 @@ bool Schedule::refresh()
 
     std::vector<std::string> types = { "GR", "BS", "CS" };
     for (const auto type : types) {
-        if (epgstation::api::getSchedule(type, response) == epgstation::api::REQUEST_FAILED) {
+        if (api::getSchedule(type, response) == api::REQUEST_FAILED) {
             return false;
         }
 
@@ -37,11 +37,11 @@ bool Schedule::refresh()
             if (o["programs"].empty()) {
                 continue;
             }
-            epgstation::channel ch = o["channel"].get<epgstation::channel>();
+            channel ch = o["channel"].get<channel>();
             channels.push_back(ch);
 
             for (const auto& pp : o["programs"]) {
-                auto p = pp.get<epgstation::program>();
+                auto p = pp.get<program>();
                 programs.push_back(p);
             }
         }

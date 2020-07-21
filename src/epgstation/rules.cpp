@@ -19,7 +19,7 @@ bool Rule::refresh()
 {
     nlohmann::json response;
 
-    if (epgstation::api::getRules(response) == epgstation::api::REQUEST_FAILED) {
+    if (api::getRules(response) == api::REQUEST_FAILED) {
         return false;
     }
 
@@ -27,8 +27,8 @@ bool Rule::refresh()
 
     unsigned int i = 0;
     for (const auto& p : response["rules"]) {
-        auto rule = p.get<epgstation::rule>();
-        rules.push_back(rule);
+        auto r = p.get<rule>();
+        rules.push_back(r);
     }
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated rules: ammount = %d", rules.size());
@@ -38,7 +38,7 @@ bool Rule::refresh()
 
 bool Rule::add(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
 {
-    if (epgstation::api::postRules(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != epgstation::api::REQUEST_FAILED) {
+    if (api::postRules(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != api::REQUEST_FAILED) {
         XBMC->Log(ADDON::LOG_NOTICE, "Rule created: \"%s\"", searchText.c_str());
         return true;
     }
@@ -48,7 +48,7 @@ bool Rule::add(bool enabled, std::string searchText, bool fullText, int channelI
 
 bool Rule::edit(int id, bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
 {
-    if (epgstation::api::putRule(id, enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != epgstation::api::REQUEST_FAILED) {
+    if (api::putRule(id, enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != api::REQUEST_FAILED) {
         XBMC->Log(ADDON::LOG_NOTICE, "Rule updated: #%d", id);
         return true;
     }
@@ -58,7 +58,7 @@ bool Rule::edit(int id, bool enabled, std::string searchText, bool fullText, int
 
 bool Rule::enable(int id, bool enabled)
 {
-    if (epgstation::api::putRuleAction(id, enabled) != epgstation::api::REQUEST_FAILED) {
+    if (api::putRuleAction(id, enabled) != api::REQUEST_FAILED) {
         XBMC->Log(ADDON::LOG_NOTICE, "Rule %s: #%d", enabled ? "enabled" : "disabled", id);
         return true;
     }
