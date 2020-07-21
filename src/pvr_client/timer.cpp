@@ -167,18 +167,14 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
     case TIMER_PATTERN_MATCHED: {
         switch (timer.state) {
         case PVR_TIMER_STATE_SCHEDULED:
-            if (epgstation::api::deleteReservesSkip(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
-                XBMC->Log(ADDON::LOG_NOTICE, "Unskip reserving: %s", timer.strDirectory);
+            if (g_reserve.restore(timer.strDirectory)) {
                 goto complete;
             }
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to enable state: %s", timer.strDirectory);
             return PVR_ERROR_SERVER_ERROR;
         case PVR_TIMER_STATE_DISABLED:
-            if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
-                XBMC->Log(ADDON::LOG_NOTICE, "Skip reserving: %s", timer.strDirectory);
+            if (g_reserve.remove(timer.strDirectory)) {
                 goto complete;
             }
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to disable state: %s", timer.strDirectory);
             return PVR_ERROR_SERVER_ERROR;
         default:
             XBMC->Log(ADDON::LOG_ERROR, "Unknown state change: %s", timer.strDirectory);
@@ -214,11 +210,9 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
     case CREATE_TIMER_MANUAL_RESERVED: {
         for (const auto program : g_schedule.programs) {
             if ((int)program.channelId == timer.iClientChannelUid && program.startAt == timer.startTime && program.endAt == timer.endTime) {
-                if (epgstation::api::postReserves(std::to_string(program.id)) != epgstation::api::REQUEST_FAILED) {
-                    XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: %s", std::to_string(program.id).c_str());
+                if (g_reserve.add(std::to_string(program.id))) {
                     goto complete;
                 }
-                XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: %s", std::to_string(program.id).c_str());
                 return PVR_ERROR_SERVER_ERROR;
             }
         }
@@ -237,14 +231,12 @@ PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
 {
     switch (timer.iTimerType) {
     case TIMER_MANUAL_RESERVED: {
-        if (epgstation::api::deleteReserves(timer.strDirectory) != epgstation::api::REQUEST_FAILED) {
-            XBMC->Log(ADDON::LOG_NOTICE, "Delete reserved program: %s", timer.strDirectory);
+        if (g_reserve.remove(timer.strDirectory)) {
             sleep(1);
             PVR->TriggerRecordingUpdate();
             PVR->TriggerTimerUpdate();
             return PVR_ERROR_NO_ERROR;
         }
-        XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: %s", timer.strDirectory);
         return PVR_ERROR_SERVER_ERROR;
     }
     default: {

@@ -61,4 +61,35 @@ bool Reserve::refresh()
 
     return true;
 }
+
+bool Reserve::add(std::string id)
+{
+    if (epgstation::api::postReserves(id) != epgstation::api::REQUEST_FAILED) {
+        XBMC->Log(ADDON::LOG_NOTICE, "Reserved new program: #%s", id.c_str());
+        return true;
+    }
+    XBMC->Log(ADDON::LOG_ERROR, "Failed to reserve new program: #%s", id.c_str());
+    return false;
+}
+
+bool Reserve::remove(std::string id)
+{
+    if (epgstation::api::deleteReserves(id) != epgstation::api::REQUEST_FAILED) {
+        XBMC->Log(ADDON::LOG_NOTICE, "Deleted reserved program: #%s", id.c_str());
+        return true;
+    }
+    XBMC->Log(ADDON::LOG_ERROR, "Failed to delete reserved program: #%s", id.c_str());
+    return false;
+}
+
+bool Reserve::restore(std::string id)
+{
+    if (epgstation::api::deleteReservesSkip(id) != epgstation::api::REQUEST_FAILED) {
+        XBMC->Log(ADDON::LOG_NOTICE, "Restored program: %s", id.c_str());
+        return true;
+    }
+    XBMC->Log(ADDON::LOG_ERROR, "Failed to restore program: %s", id.c_str());
+    return false;
+}
+
 }

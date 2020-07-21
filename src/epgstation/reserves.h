@@ -16,6 +16,9 @@ class Reserve {
 public:
     std::vector<program> reserves;
     bool refresh();
+    bool add(std::string id);
+    bool remove(std::string id);
+    bool restore(std::string id);
 };
 } // namespace epgstation
 
