@@ -41,4 +41,11 @@ bool Schedule::refresh()
     XBMC->Log(ADDON::LOG_NOTICE, "Updated schedule: channel ammount = %d", 8);
     return true;
 }
+
+bool Schedule::update()
+{
+    const auto success = api::putScheduleUpdate() != epgstation::api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR, "Schedule update");
+    return success;
+}
 }

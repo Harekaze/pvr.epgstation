@@ -152,12 +152,11 @@ PVR_ERROR CallMenuHook(const PVR_MENUHOOK& menuhook, const PVR_MENUHOOK_DATA& it
         return PVR_ERROR_NO_ERROR;
     }
     if (menuhook.category == PVR_MENUHOOK_ALL && menuhook.iHookId == MENUHOOK_FORCE_EXECUTE_SCHEDULER) {
-        if (epgstation::api::putScheduleUpdate() == epgstation::api::REQUEST_FAILED) {
-            XBMC->Log(ADDON::LOG_ERROR, "[schedule/update] Request failed");
-            return PVR_ERROR_SERVER_ERROR;
+        if (g_schedule.update()) {
+            PVR->TriggerTimerUpdate();
+            return PVR_ERROR_NO_ERROR;
         }
-        PVR->TriggerTimerUpdate();
-        return PVR_ERROR_NO_ERROR;
+        return PVR_ERROR_SERVER_ERROR;
     }
     return PVR_ERROR_FAILED;
 }

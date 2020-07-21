@@ -18,6 +18,7 @@ public:
     std::vector<program> programs;
     std::vector<channel> channels;
     bool refresh();
+    bool update();
 };
 } // namespace epgstation
 
