@@ -74,22 +74,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\base64\base64.cpp" />
     <ClCompile Include="..\..\src\epgstation\api.cpp" />
+    <ClCompile Include="..\..\src\epgstation\docs.cpp" />
     <ClCompile Include="..\..\src\epgstation\recorded.cpp" />
-    <ClCompile Include="..\..\src\epgstation\recording.cpp" />
     <ClCompile Include="..\..\src\epgstation\reserves.cpp" />
     <ClCompile Include="..\..\src\epgstation\rules.cpp" />
     <ClCompile Include="..\..\src\epgstation\schedule.cpp" />
+    <ClCompile Include="..\..\src\epgstation\storage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\epgstation\genre.h" />
+    <ClInclude Include="..\..\include\epgstation\types.h" />
+    <ClInclude Include="..\..\src\base64\base64.h" />
     <ClInclude Include="..\..\src\epgstation\api.h" />
+    <ClInclude Include="..\..\src\epgstation\docs.h" />
     <ClInclude Include="..\..\src\epgstation\epgstation.h" />
     <ClInclude Include="..\..\src\epgstation\recorded.h" />
-    <ClInclude Include="..\..\src\epgstation\recording.h" />
     <ClInclude Include="..\..\src\epgstation\reserves.h" />
     <ClInclude Include="..\..\src\epgstation\rules.h" />
     <ClInclude Include="..\..\src\epgstation\schedule.h" />
+    <ClInclude Include="..\..\src\epgstation\storage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
