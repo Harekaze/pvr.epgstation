@@ -133,7 +133,7 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
             return PVR_ERROR_REJECTED;
         }
 
-        if (timer.state == rule->enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED) {
+        if (timer.state == (rule->enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED)) {
             // Timer state is not changed. Update rule
             unsigned int startHour = localtime(&timer.startTime)->tm_hour;
             unsigned int endHour = localtime(&timer.endTime)->tm_hour;
