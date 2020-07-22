@@ -4,58 +4,71 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ format('{0}-{1}', matrix.os, matrix.version) }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu, windows, macOS]
+        version: [latest]
         mobile: [true, false]
+        unix-like: [true]
         exclude:
-        - os: windows-latest
-          mobile: true
+          - os: windows
+            mobile: true
         include:
-        - mobile: false
-          platform: desktop
-        - os: macOS-latest
-          mobile: true
-          args: --host=arm-apple-darwin
-          platform: ios
-        - os: ubuntu-latest
-          mobile: true
-          platform: android
+          - mobile: false
+            platform: ${{ format('{0}-x64', matrix.os) }}
+          - mobile: false
+            os: windows
+            platform: ${{ format('{0}-x86', matrix.os) }}
+            unix-like: false
+          - os: macOS
+            mobile: true
+            args: --host=arm-apple-darwin
+            platform: ios-arm64
+          - os: ubuntu
+            mobile: true
+            platform: android-armv7a
+            unix-like: false
+          - os: ubuntu
+            version: 20.04
+            args: --host=arm-linux-gnueabihf
+            platform: rpi-armv7
+            unix-like: true
       fail-fast: false
     steps:
-    - uses: actions/checkout@v1
-    # Windows Build
-    - name: build (windows)
-      if: matrix.os == 'windows-latest'
-      run: ./build.ps1
-      shell: powershell
-    # Android Build
-    - name: build (android)
-      if: matrix.platform == 'android'
-      run: /usr/local/lib/android/sdk/ndk-bundle/ndk-build APP_ABI=armeabi-v7a
-    - name: pack (android)
-      if: matrix.platform == 'android'
-      run: ./jni/pack.sh APP_ABI=armeabi-v7a
-    # macOS Prepare
-    - name: prepare (macos)
-      if: matrix.os == 'macOS-latest'
-      run: brew install libtool automake
-    # Linux/macOS/iOS Build
-    - name: bootstrap
-      if: matrix.os != 'windows-latest' && matrix.platform != 'android'
-      run: ./bootstrap
-    - name: configure
-      if: matrix.os != 'windows-latest' && matrix.platform != 'android'
-      run: ./configure ${{ matrix.args }}
-    - name: make
-      if: matrix.os != 'windows-latest' && matrix.platform != 'android'
-      run: make
-    # Upload artifact
-    - name: upload artifact
-      if: matrix.platform != ''
-      uses: actions/upload-artifact@master
-      with:
-        name: ${{format('pvr.epgstation.{0}-{1}-{2}', matrix.os, matrix.platform, github.sha)}}
-        path: dist/pvr.epgstation
-
+      - uses: actions/checkout@v2
+      # Windows Build
+      - name: build (windows)
+        if: matrix.os == 'windows'
+        run: ./build.ps1
+        shell: powershell
+      # Android Build
+      - name: build (android)
+        if: matrix.platform == 'android-armv7a'
+        run: /usr/local/lib/android/sdk/ndk-bundle/ndk-build APP_ABI=armeabi-v7a
+      # macOS Prepare
+      - name: prepare (macos)
+        if: matrix.os == 'macOS'
+        run: brew install libtool automake
+      # Raspberry Pi Prepare
+      - name: prepare (raspberry pi)
+        if: matrix.platform == 'rpi-armv7'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends g++-arm-linux-gnueabihf
+      # Unix-like Build
+      - name: bootstrap
+        if: matrix.unix-like
+        run: ./bootstrap
+      - name: configure
+        if: matrix.unix-like
+        run: ./configure ${{ matrix.args }}
+      - name: make
+        if: matrix.unix-like
+        run: make
+      # Upload artifact
+      - name: upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{format('pvr.epgstation.{0}-{1}', matrix.platform, github.sha)}}
+          path: dist/pvr.epgstation
