@@ -11,9 +11,6 @@ jobs:
           - platform: macOS-x64
             os: macOS-latest
             unix-like: true
-          - platform: ubuntu-x64
-            os: ubuntu-latest
-            unix-like: true
           - platform: windows-x86
             os: windows-latest
           - platform: ios-arm64
@@ -22,7 +19,7 @@ jobs:
             args: --host=arm-apple-darwin
           - platform: android-armv7a
             os: ubuntu-latest
-          - platform: rpi-armv7
+          - platform: linux-armv7
             os: ubuntu-latest
             unix-like: true
             args: --host=arm-linux-gnueabihf
@@ -40,13 +37,13 @@ jobs:
         run: |
           /usr/local/lib/android/sdk/ndk-bundle/ndk-build APP_ABI=armeabi-v7a
           ./jni/pack.sh APP_ABI=armeabi-v7a
-      # macOS Prepare
-      - name: prepare (macos)
+      # macOS build tools Setup
+      - name: setup (macos)
         if: matrix.os == 'macOS-latest'
         run: brew install libtool automake
-      # Raspberry Pi Prepare
-      - name: prepare (raspberry pi)
-        if: matrix.platform == 'rpi-armv7'
+      # Linux ARMv7 cross compiler Setup
+      - name: setup (linux-armv7)
+        if: matrix.platform == 'linux-armv7'
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends g++-arm-linux-gnueabihf
@@ -57,6 +54,10 @@ jobs:
           ./bootstrap
           ./configure ${{ matrix.args }}
           make
+      # Copy Linux ARMv7 binary
+      - name: duplicate (linux-armv7)
+        if: matrix.platform == 'linux-armv7'
+        run: cp -a dist/pvr.epgstation/pvr.epgstation.armel.so dist/pvr.epgstation/pvr.epgstation.so
       # Upload artifact
       - name: upload artifact
         uses: actions/upload-artifact@v2
