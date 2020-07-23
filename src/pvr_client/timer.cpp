@@ -135,8 +135,9 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
 
         if (timer.state == (rule->enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED)) {
             // Timer state is not changed. Update rule
-            unsigned int startHour = localtime(&timer.startTime)->tm_hour;
-            unsigned int endHour = localtime(&timer.endTime)->tm_hour;
+            time_t target;
+            unsigned int startHour = localtime((const time_t*)std::memcpy(&target, &timer.startTime, sizeof(time_t)))->tm_hour;
+            unsigned int endHour = localtime((const time_t*)std::memcpy(&target, &timer.endTime, sizeof(time_t)))->tm_hour;
             if (g_rule.edit(timer.iClientIndex, timer.state != PVR_TIMER_STATE_DISABLED,
                     timer.strEpgSearchString, timer.bFullTextEpgSearch,
                     timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
@@ -193,8 +194,9 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
 {
     switch (timer.iTimerType) {
     case CREATE_RULES_PATTERN_MATCHED: {
-        unsigned int startHour = localtime(&timer.startTime)->tm_hour;
-        unsigned int endHour = localtime(&timer.endTime)->tm_hour;
+        time_t target;
+        unsigned int startHour = localtime((const time_t*)std::memcpy(&target, &timer.startTime, sizeof(time_t)))->tm_hour;
+        unsigned int endHour = localtime((const time_t*)std::memcpy(&target, &timer.endTime, sizeof(time_t)))->tm_hour;
 
         if (g_rule.add(timer.state != PVR_TIMER_STATE_DISABLED, timer.strEpgSearchString, timer.bFullTextEpgSearch,
                 timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
