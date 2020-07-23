@@ -14,7 +14,7 @@ extern CHelper_libXBMC_pvr* PVR;
 
 namespace epgstation {
 namespace api {
-    const int REQUEST_FAILED = -1;
+    constexpr int REQUEST_FAILED = -1;
     std::string baseURL = "";
 
     int request(const std::string method, const std::string path, nlohmann::json* response = NULL, nlohmann::json body = NULL)
@@ -91,56 +91,56 @@ namespace api {
     // GET /api/schedule?type=:type
     int getSchedule(const std::string type, nlohmann::json& response)
     {
-        const std::string apiPath = "schedule?type=" + type;
+        const auto apiPath = "schedule?type=" + type;
         return request("GET", apiPath, &response);
     }
 
     // GET /api/recorded
     int getRecorded(nlohmann::json& response)
     {
-        const std::string apiPath = "recorded";
+        constexpr char apiPath[] = "recorded";
         return request("GET", apiPath, &response);
     }
 
     // GET /api/reserves
     int getReserves(nlohmann::json& response)
     {
-        const std::string apiPath = "reserves";
+        constexpr char apiPath[] = "reserves";
         return request("GET", apiPath, &response);
     }
 
     // GET /api/reserves/skips
     int getReservesSkips(nlohmann::json& response)
     {
-        const std::string apiPath = "reserves/skips";
+        constexpr char apiPath[] = "reserves/skips";
         return request("GET", apiPath, &response);
     }
 
     // GET /api/reserves/conflicts
     int getReservesConflicts(nlohmann::json& response)
     {
-        const std::string apiPath = "reserves/conflicts";
+        constexpr char apiPath[] = "reserves/conflicts";
         return request("GET", apiPath, &response);
     }
 
     // DELETE /api/recorded/:id
     int deleteRecordedProgram(const std::string id)
     {
-        const std::string apiPath = "recorded/" + id;
+        const auto apiPath = "recorded/" + id;
         return request("DELETE", apiPath);
     }
 
     // DELETE /api/reserves/:id
     int deleteReserves(const std::string id)
     {
-        const std::string apiPath = "reserves/" + id;
+        const auto apiPath = "reserves/" + id;
         return request("DELETE", apiPath);
     }
 
     // DELETE /api/reserves/:id/skip
     int deleteReservesSkip(const std::string id)
     {
-        const std::string apiPath = "reserves/" + id + "/skip";
+        const auto apiPath = "reserves/" + id + "/skip";
         return request("DELETE", apiPath);
     }
 
@@ -151,14 +151,14 @@ namespace api {
             { "programId", std::stoul(id) },
             { "allowEndLack", true },
         };
-        const std::string apiPath = "reserves";
+        constexpr char apiPath[] = "reserves";
         return request("POST", apiPath, NULL, body);
     }
 
     // GET /api/rules
     int getRules(nlohmann::json& response)
     {
-        const std::string apiPath = "rules";
+        constexpr char apiPath[] = "rules";
         return request("GET", apiPath, &response);
     }
 
@@ -205,7 +205,7 @@ namespace api {
     // POST /api/rules
     int postRules(bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
-        const std::string apiPath = "rules";
+        constexpr char apiPath[] = "rules";
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
         return request("POST", apiPath, NULL, body);
     }
@@ -213,7 +213,7 @@ namespace api {
     // PUT /api/rules/:id
     int putRule(int id, bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
-        const std::string apiPath = "rules/" + std::to_string(id);
+        const auto apiPath = "rules/" + std::to_string(id);
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
         return request("PUT", apiPath, NULL, body);
     }
@@ -221,28 +221,28 @@ namespace api {
     // PUT /api/rules/:id/:action
     int putRuleAction(int id, bool state)
     {
-        const std::string apiPath = "rules/" + std::to_string(id) + (state ? "/enable" : "/disable");
+        const auto apiPath = "rules/" + std::to_string(id) + (state ? "/enable" : "/disable");
         return request("PUT", apiPath);
     }
 
     // PUT /api/schedule/update
     int putScheduleUpdate()
     {
-        const std::string apiPath = "schedule/update";
+        constexpr char apiPath[] = "schedule/update";
         return request("PUT", apiPath);
     }
 
     // GET /api/storage
     int getStorage(nlohmann::json& response)
     {
-        const std::string apiPath = "storage";
+        constexpr char apiPath[] = "storage";
         return request("GET", apiPath, &response);
     }
 
     // GET /api/docs
     int getDocs(nlohmann::json& response)
     {
-        const std::string apiPath = "docs";
+        constexpr char apiPath[] = "docs";
         return request("GET", apiPath, &response);
     }
 

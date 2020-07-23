@@ -62,9 +62,9 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
     char serverUrl[1024];
     if (XBMC->GetSetting("server_url", &serverUrl)) {
         epgstation::api::baseURL = serverUrl;
-        const std::string httpPrefix = "http://";
-        const std::string httpsPrefix = "https://";
-        if (epgstation::api::baseURL.substr(0, httpPrefix.size()) != httpPrefix && epgstation::api::baseURL.substr(0, httpsPrefix.size()) != httpsPrefix) {
+        constexpr char httpPrefix[] = "http://";
+        constexpr char httpsPrefix[] = "https://";
+        if (epgstation::api::baseURL.rfind(httpPrefix) != 0 && epgstation::api::baseURL.rfind(httpsPrefix, 0) != 0) {
             if (currentStatus == ADDON_STATUS_UNKNOWN) {
                 XBMC->QueueNotification(ADDON::QUEUE_WARNING, XBMC->GetLocalizedString(30600));
                 currentStatus = ADDON_STATUS_NEED_SETTINGS;
