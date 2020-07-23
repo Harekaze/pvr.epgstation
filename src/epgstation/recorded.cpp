@@ -28,7 +28,7 @@ bool Recorded::refresh()
     return true;
 }
 
-bool Recorded::remove(std::string id)
+bool Recorded::remove(const std::string id)
 {
     const auto success = api::deleteRecordedProgram(id) != api::REQUEST_FAILED;
     XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,

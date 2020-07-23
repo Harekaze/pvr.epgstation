@@ -15,7 +15,7 @@ namespace api {
     extern std::string baseURL;
 
     // GET /api/schedule
-    int getSchedule(std::string type, nlohmann::json& response);
+    int getSchedule(const std::string type, nlohmann::json& response);
 
     // GET /api/recorded
     int getRecorded(nlohmann::json& response);
@@ -30,25 +30,25 @@ namespace api {
     int getReservesConflicts(nlohmann::json& response);
 
     // DELETE /api/recorded/:id
-    int deleteRecordedProgram(std::string id);
+    int deleteRecordedProgram(const std::string id);
 
     // DELETE /api/reserves/:id
-    int deleteReserves(std::string id);
+    int deleteReserves(const std::string id);
 
     // DELETE /api/reserves/:id/skip
-    int deleteReservesSkip(std::string id);
+    int deleteReservesSkip(const std::string id);
 
     // POST /api/reserves
-    int postReserves(std::string id);
+    int postReserves(const std::string id);
 
     // GET /api/rules
     int getRules(nlohmann::json& response);
 
     // POST /api/rules
-    int postRules(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory);
+    int postRules(bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory);
 
     // PUT /api/rules/:id
-    int putRule(int id, bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory);
+    int putRule(int id, bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory);
 
     // PUT /api/rules/:id/:action
     int putRuleAction(int id, bool state);

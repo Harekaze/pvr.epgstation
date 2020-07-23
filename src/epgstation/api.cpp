@@ -17,7 +17,7 @@ namespace api {
     const int REQUEST_FAILED = -1;
     std::string baseURL = "";
 
-    int request(std::string method, std::string path, nlohmann::json* response = NULL, nlohmann::json body = NULL)
+    int request(const std::string method, const std::string path, nlohmann::json* response = NULL, nlohmann::json body = NULL)
     {
         const auto url = baseURL + path;
         XBMC->Log(ADDON::LOG_DEBUG, "Request URL: %s", url.c_str());
@@ -89,7 +89,7 @@ namespace api {
     }
 
     // GET /api/schedule?type=:type
-    int getSchedule(std::string type, nlohmann::json& response)
+    int getSchedule(const std::string type, nlohmann::json& response)
     {
         const std::string apiPath = "schedule?type=" + type;
         return request("GET", apiPath, &response);
@@ -124,28 +124,28 @@ namespace api {
     }
 
     // DELETE /api/recorded/:id
-    int deleteRecordedProgram(std::string id)
+    int deleteRecordedProgram(const std::string id)
     {
         const std::string apiPath = "recorded/" + id;
         return request("DELETE", apiPath);
     }
 
     // DELETE /api/reserves/:id
-    int deleteReserves(std::string id)
+    int deleteReserves(const std::string id)
     {
         const std::string apiPath = "reserves/" + id;
         return request("DELETE", apiPath);
     }
 
     // DELETE /api/reserves/:id/skip
-    int deleteReservesSkip(std::string id)
+    int deleteReservesSkip(const std::string id)
     {
         const std::string apiPath = "reserves/" + id + "/skip";
         return request("DELETE", apiPath);
     }
 
     // POST /api/reserves
-    int postReserves(std::string id)
+    int postReserves(const std::string id)
     {
         nlohmann::json body = {
             { "programId", std::stoul(id) },
@@ -162,7 +162,7 @@ namespace api {
         return request("GET", apiPath, &response);
     }
 
-    nlohmann::json createRulePayload(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
+    nlohmann::json createRulePayload(bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
         unsigned int newWeekdays = weekdays ^ PVR_WEEKDAY_SUNDAY;
         newWeekdays <<= 1;
@@ -203,7 +203,7 @@ namespace api {
     }
 
     // POST /api/rules
-    int postRules(bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
+    int postRules(bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
         const std::string apiPath = "rules";
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
@@ -211,7 +211,7 @@ namespace api {
     }
 
     // PUT /api/rules/:id
-    int putRule(int id, bool enabled, std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, std::string directory)
+    int putRule(int id, bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
         const std::string apiPath = "rules/" + std::to_string(id);
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);

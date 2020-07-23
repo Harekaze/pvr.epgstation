@@ -42,7 +42,7 @@ bool Reserve::refresh()
     return true;
 }
 
-bool Reserve::add(std::string id)
+bool Reserve::add(const std::string id)
 {
     const auto success = api::postReserves(id) != api::REQUEST_FAILED;
     XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
@@ -50,7 +50,7 @@ bool Reserve::add(std::string id)
     return success;
 }
 
-bool Reserve::remove(std::string id)
+bool Reserve::remove(const std::string id)
 {
     const auto success = api::deleteReserves(id) != api::REQUEST_FAILED;
     XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
@@ -58,7 +58,7 @@ bool Reserve::remove(std::string id)
     return success;
 }
 
-bool Reserve::restore(std::string id)
+bool Reserve::restore(const std::string id)
 {
     const auto success = api::deleteReservesSkip(id) != api::REQUEST_FAILED;
     XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
