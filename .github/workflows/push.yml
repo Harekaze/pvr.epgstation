@@ -37,10 +37,9 @@ jobs:
       # Android Build
       - name: build (android)
         if: matrix.platform == 'android-armv7a'
-        run: /usr/local/lib/android/sdk/ndk-bundle/ndk-build APP_ABI=armeabi-v7a
-      - name: pack (android)
-        if: matrix.platform == 'android-armv7a'
-        run: ./jni/pack.sh APP_ABI=armeabi-v7a
+        run: |
+          /usr/local/lib/android/sdk/ndk-bundle/ndk-build APP_ABI=armeabi-v7a
+          ./jni/pack.sh APP_ABI=armeabi-v7a
       # macOS Prepare
       - name: prepare (macos)
         if: matrix.os == 'macOS-latest'
@@ -63,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{format('pvr.epgstation.{0}-{1}', matrix.platform, github.sha)}}
-          path: dist/pvr.epgstation
+          path: dist
   pack:
     runs-on: ubuntu-latest
     needs: [build]
@@ -74,7 +73,9 @@ jobs:
         with:
           path: downloads
       - name: check hash
-        run: md5sum downloads/*/*pvr.epgstation*
+        run: md5sum downloads/*/*/*pvr.epgstation*
+      - name: add permission
+        run: chmod a+x downloads/*/*/*pvr.epgstation*
       - name: prepare package
         run: |
           mkdir -p dist
@@ -82,12 +83,12 @@ jobs:
           cp ChangeLog.txt dist/pvr.epgstation/
           cp LICENSE dist/pvr.epgstation/
       - name: move binary
-        run: mv downloads/*/*pvr.epgstation* dist/pvr.epgstation/
+        run: mv downloads/*/*/*pvr.epgstation* dist/pvr.epgstation/
       - name: upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{format('pvr.epgstation.multiarch-{0}', github.sha)}}
-          path: dist/pvr.epgstation
+          path: dist
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: [pack]
@@ -141,8 +142,10 @@ jobs:
         with:
           name: ${{format('pvr.epgstation.multiarch-{0}', github.sha)}}
           path: downloads
+      - name: add permission
+        run: chmod a+x downloads/pvr.epgstation/*pvr.epgstation*
       - name: create repository
-        run: ../create_repository.py ../template/repository.harekaze2 ../downloads
+        run: ../create_repository.py ../template/repository.harekaze2 ../downloads/pvr.epgstation
         working-directory: root
       - name: deploy repository
         uses: peaceiris/actions-gh-pages@v3
