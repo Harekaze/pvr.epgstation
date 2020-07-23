@@ -30,7 +30,7 @@ PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time
         memset(&tag, 0, sizeof(EPG_TAG));
         const auto genre = epgstation::getGenreCodeFromContentNibble(epg.genre1, epg.genre2);
 
-        tag.iUniqueBroadcastId = epg.id;
+        tag.iUniqueBroadcastId = (unsigned int)(epg.id % 100000);
         tag.strTitle = epg.name.c_str();
         tag.strOriginalTitle = epg.name.c_str();
         tag.iUniqueChannelId = channel.iUniqueId;

@@ -43,7 +43,7 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
             rec.iDuration = (int)(r.endAt - r.startAt);
             rec.iGenreType = genre & epgstation::GENRE_TYPE_MASK;
             rec.iGenreSubType = genre & epgstation::GENRE_SUBTYPE_MASK;
-            rec.iEpgEventId = r.programId;
+            rec.iEpgEventId = (unsigned int)(r.programId % 100000);
             rec.iChannelUid = r.channelId;
             rec.channelType = PVR_RECORDING_CHANNEL_TYPE_TV;
             if (r.hasThumbnail) {

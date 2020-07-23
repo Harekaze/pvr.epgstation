@@ -78,7 +78,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             struct PVR_TIMER timer;
             memset(&timer, 0, sizeof(PVR_TIMER));
 
-            timer.iEpgUid = p.id; // NOTE: Overflow casting from unsigned long to unsigned
+            timer.iEpgUid = p.eventId;
             timer.iClientIndex = p.id;
             timer.iClientChannelUid = p.channelId;
             strncpy(timer.strTitle, p.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
