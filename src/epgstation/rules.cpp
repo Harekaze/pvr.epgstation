@@ -24,9 +24,7 @@ bool Rule::refresh()
         return false;
     }
 
-    for (const rule& r : response["rules"]) {
-        rules.push_back(r);
-    }
+    std::copy(response["rules"].begin(), response["rules"].end(), std::back_inserter(rules));
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated rules: ammount = %d", rules.size());
     return true;

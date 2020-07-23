@@ -121,14 +121,10 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
 {
     switch (timer.iTimerType) {
     case CREATE_RULES_PATTERN_MATCHED: {
-        epgstation::rule* rule = NULL;
-        for (auto& r : g_rule.rules) {
-            if (r.id == timer.iClientIndex) {
-                rule = &r;
-                break;
-            }
-        }
-        if (rule == NULL) {
+        const auto rule = std::find_if(g_rule.rules.begin(), g_rule.rules.end(), [timer](epgstation::rule r) {
+            return r.id == timer.iClientIndex;
+        });
+        if (rule == g_rule.rules.end()) {
             XBMC->Log(ADDON::LOG_ERROR, "Rule not found: #%d", timer.iClientIndex);
             return PVR_ERROR_REJECTED;
         }
@@ -206,13 +202,14 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
         return PVR_ERROR_SERVER_ERROR;
     }
     case CREATE_TIMER_MANUAL_RESERVED: {
-        for (const auto program : g_schedule.programs) {
-            if ((int)program.channelId == timer.iClientChannelUid && program.startAt == timer.startTime && program.endAt == timer.endTime) {
-                if (g_reserve.add(std::to_string(program.id))) {
-                    goto complete;
-                }
-                return PVR_ERROR_SERVER_ERROR;
+        const auto program = std::find_if(g_schedule.programs.begin(), g_schedule.programs.end(), [timer](epgstation::program p) {
+            return (int)p.channelId == timer.iClientChannelUid && p.startAt == timer.startTime;
+        });
+        if (program != g_schedule.programs.end()) {
+            if (g_reserve.add(std::to_string(program->id))) {
+                goto complete;
             }
+            return PVR_ERROR_SERVER_ERROR;
         }
     }
     }

@@ -29,12 +29,8 @@ bool Schedule::refresh()
             if (o["programs"].empty()) {
                 continue;
             }
-            const auto ch = o["channel"].get<channel>();
-            channels.push_back(ch);
-
-            for (const program& p : o["programs"]) {
-                programs.push_back(p);
-            }
+            channels.push_back(o["channel"]);
+            std::copy(o["programs"].begin(), o["programs"].end(), std::back_inserter(programs));
         }
     }
 
