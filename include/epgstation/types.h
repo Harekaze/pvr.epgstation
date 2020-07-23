@@ -33,6 +33,7 @@ public:
     unsigned long id;
     unsigned long programId;
     unsigned long channelId;
+    unsigned long eventId;
     std::string channelType;
     std::string name;
     std::string description;
@@ -50,6 +51,7 @@ public:
     {
         NLOHMANN_JSON_FROM(id);
         OPTIONAL_JSON_FROM(programId);
+        OPTIONAL_JSON_FROM(eventId);
         NLOHMANN_JSON_FROM(channelId);
         NLOHMANN_JSON_FROM(channelType);
         NLOHMANN_JSON_FROM(name);
