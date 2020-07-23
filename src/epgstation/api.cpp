@@ -14,7 +14,7 @@ extern CHelper_libXBMC_pvr* PVR;
 
 namespace epgstation {
 namespace api {
-    constexpr int REQUEST_FAILED = -1;
+    const int REQUEST_FAILED = -1;
     std::string baseURL = "";
 
     int request(const std::string method, const std::string path, nlohmann::json* response = NULL, nlohmann::json body = NULL)
