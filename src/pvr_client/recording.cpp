@@ -35,6 +35,8 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
         for (const auto r : g_recorded.programs) {
             const auto genre = epgstation::getGenreCodeFromContentNibble(r.genre1, r.genre2);
             PVR_RECORDING rec;
+            memset(&rec, 0, sizeof(PVR_RECORDING));
+
             strncpy(rec.strRecordingId, std::to_string(r.id).c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(rec.strTitle, r.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(rec.strPlotOutline, r.description.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
@@ -51,14 +53,6 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
             } else {
                 strncpy(rec.strThumbnailPath, "", PVR_ADDON_URL_STRING_LENGTH - 1);
             }
-
-            // Not available in API response
-            strncpy(rec.strDirectory, "", PVR_ADDON_URL_STRING_LENGTH - 1);
-            strncpy(rec.strEpisodeName, "", PVR_ADDON_NAME_STRING_LENGTH - 1);
-            strncpy(rec.strChannelName, "", PVR_ADDON_NAME_STRING_LENGTH - 1);
-            rec.iEpisodeNumber = 0;
-            rec.iPriority = 0;
-            rec.bIsDeleted = false;
 
             PVR->TransferRecordingEntry(handle, &rec);
         }

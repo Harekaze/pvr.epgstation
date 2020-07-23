@@ -33,6 +33,8 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 
     for (const auto c : g_schedule.channels) {
         PVR_CHANNEL ch;
+        memset(&ch, 0, sizeof(PVR_CHANNEL));
+
         ch.iUniqueId = c.id;
         ch.bIsRadio = false;
         ch.bIsHidden = false;
@@ -43,8 +45,6 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
         if (c.hasLogoData) {
             snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
                 g_schedule.channelLogoPath.c_str(), c.id);
-        } else {
-            ch.strIconPath[0] = '\0';
         }
         PVR->TransferChannelEntry(handle, &ch);
     }
@@ -74,7 +74,6 @@ PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 
         strncpy(chGroup.strGroupName, channelType.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
         chGroup.bIsRadio = false;
-        // chGroup.iPosition = 0; /* not implemented */
 
         PVR->TransferChannelGroup(handle, &chGroup);
     }
