@@ -88,3 +88,43 @@ jobs:
         with:
           name: ${{format('pvr.epgstation.multiarch-{0}', github.sha)}}
           path: dist/pvr.epgstation
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [pack]
+    runs-on: ubuntu-latest
+    steps:
+      - name: download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{format('pvr.epgstation.multiarch-{0}', github.sha)}}
+          path: downloads
+      - name: create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          tag_name: ${{github.ref}}
+          release_name: Release ${{github.ref}}
+          draft: false
+          prerelease: false
+      - name: zip package
+        run: zip -9 -r ../release.zip ./
+        working-directory: downloads
+      - name: get release version
+        id: release-version
+        uses: frabert/replace-string-action@v1.1
+        with:
+          pattern: "refs/tags/v(.*)"
+          string: ${{ github.ref }}
+          replace-with: "$1"
+      - name: upload release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: release.zip
+          asset_name: ${{format('pvr.epgstation.multiarch-{0}.zip', steps.release-version.outputs.replaced)}}
+          asset_content_type: application/zip
