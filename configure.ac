@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([pvrepgstation], [5.0.0], [Harekaze2 project])
+AC_INIT([pvrepgstation], [0.0.1], [Harekaze2 project])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign])
 LT_INIT
