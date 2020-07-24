@@ -148,6 +148,8 @@ jobs:
       - name: create repository
         run: ../create_repository.py ../template/repository.harekaze2 ../downloads/pvr.epgstation
         working-directory: root
+      - name: Add index.html
+        run: echo '<html><body><h1>It works!</h1></body></html>' > root/index.html
       - name: deploy repository
         uses: peaceiris/actions-gh-pages@v3
         with:
