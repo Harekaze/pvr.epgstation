@@ -44,6 +44,8 @@ public:
     unsigned int genre2 = 0xff;
     bool recording;
     bool hasThumbnail;
+    bool original;
+    std::vector<std::pair<int, std::string>> encoded;
     int ruleId; // Optional for reserved program
     ReservedState state; // Optional for reserved program
 
@@ -63,6 +65,12 @@ public:
         OPTIONAL_JSON_FROM(genre2);
         OPTIONAL_JSON_FROM(recording);
         OPTIONAL_JSON_FROM(hasThumbnail);
+        OPTIONAL_JSON_FROM(original);
+        if (j.contains("encoded") && j["encoded"].is_array()) {
+            for (auto e : j["encoded"]) {
+                t.encoded.push_back(std::make_pair(e["encodedId"], e["name"]));
+            }
+        }
     }
 };
 
