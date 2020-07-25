@@ -1,3 +1,6 @@
+v0.0.3
+- Support encoded file playback when original one is not available
+
 v0.0.2
 - Better support for 32bit platform
 - Drop Linux x86/x86 build from release
