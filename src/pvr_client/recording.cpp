@@ -63,8 +63,25 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
 
 PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED_VALUE* properties, unsigned int* iPropertiesCount)
 {
+    const auto rec = std::find_if(g_recorded.programs.begin(), g_recorded.programs.end(), [recording](epgstation::program p) {
+        return p.id == std::stoul(recording->strRecordingId);
+    });
+
+    if (rec == g_recorded.programs.end()) {
+        XBMC->Log(ADDON::LOG_ERROR, "Recording not found: #%s", recording->strRecordingId);
+        return PVR_ERROR_FAILED;
+    }
+
     strncpy(properties[0].strName, PVR_STREAM_PROPERTY_STREAMURL, sizeof(properties[0].strName) - 1);
-    snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, g_recorded.recordedStreamingPath.c_str(), recording->strRecordingId);
+    // TODO: Add setting of playback priority for original content
+    if (rec->original) {
+        snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, g_recorded.recordedStreamingPath.c_str(), recording->strRecordingId);
+    } else {
+        // TODO: Selectable recorded id
+        const auto param = "?encodedId=" + std::to_string(rec->encoded[0].first);
+        snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, (g_recorded.recordedStreamingPath + param).c_str(), recording->strRecordingId);
+    }
+
     *iPropertiesCount = 1;
     return PVR_ERROR_NO_ERROR;
 }
