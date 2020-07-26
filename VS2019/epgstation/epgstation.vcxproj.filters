@@ -71,7 +71,7 @@
     <ClInclude Include="..\..\include\epgstation\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\base64\base64.h">
+    <ClInclude Include="..\..\src\base64\base64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
