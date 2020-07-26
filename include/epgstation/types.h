@@ -59,8 +59,8 @@ public:
         NLOHMANN_JSON_FROM(name);
         OPTIONAL_JSON_FROM(description);
         OPTIONAL_JSON_FROM(extended);
-        t.startAt = (time_t)(j["startAt"].get<unsigned long>() / 1000);
-        t.endAt = (time_t)(j["endAt"].get<unsigned long>() / 1000);
+        t.startAt = (time_t)(j["startAt"].get<long long>() / (long long)1000);
+        t.endAt = (time_t)(j["endAt"].get<long long>() / (long long)1000);
         OPTIONAL_JSON_FROM(genre1);
         OPTIONAL_JSON_FROM(genre2);
         OPTIONAL_JSON_FROM(recording);
