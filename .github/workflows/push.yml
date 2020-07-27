@@ -11,8 +11,6 @@ jobs:
           - platform: macOS-x64
             os: macOS-latest
             unix-like: true
-          - platform: windows-x86
-            os: windows-latest
           - platform: windows-x64
             os: windows-latest
             args: x64
