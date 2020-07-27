@@ -27,6 +27,7 @@ epgstation::Rule g_rule;
 epgstation::Reserve g_reserve;
 ADDON::CHelper_libXBMC_addon* XBMC = NULL;
 CHelper_libXBMC_pvr* PVR = NULL;
+CHelper_libKODI_guilib* GUI = NULL;
 time_t lastStartTime;
 
 ADDON_STATUS currentStatus = ADDON_STATUS_UNKNOWN;
@@ -42,12 +43,18 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 
     XBMC = new ADDON::CHelper_libXBMC_addon;
     PVR = new CHelper_libXBMC_pvr;
+    GUI = new CHelper_libKODI_guilib;
 
-    if (!XBMC->RegisterMe(callbacks) || !PVR->RegisterMe(callbacks)) {
+    if (
+        !XBMC->RegisterMe(callbacks)
+        || !PVR->RegisterMe(callbacks)
+        || !GUI->RegisterMe(callbacks)) {
         delete PVR;
         delete XBMC;
+        delete GUI;
         PVR = NULL;
         XBMC = NULL;
+        GUI = NULL;
         return ADDON_STATUS_PERMANENT_FAILURE;
     }
 
