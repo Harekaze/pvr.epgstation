@@ -1,3 +1,9 @@
+v0.0.4
+- Add 64bit Windows and Windows Store build support
+- Drop 32bit Windows support
+- Fix 32bit `time_t` and `long` overflow
+- Add option to play encoded files as a preferred media
+
 v0.0.3
 - Support encoded file playback when original one is not available
 
