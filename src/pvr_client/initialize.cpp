@@ -143,20 +143,22 @@ ADDON_STATUS ADDON_SetSetting(const char* settingName, const void* settingValue)
 
 PVR_ERROR CallMenuHook(const PVR_MENUHOOK& menuhook, const PVR_MENUHOOK_DATA& item)
 {
-    if (menuhook.category == PVR_MENUHOOK_ALL && menuhook.iHookId == MENUHOOK_FORCE_REFRESH_RECORDING) {
+    switch (menuhook.iHookId) {
+    case MENUHOOK_FORCE_REFRESH_RECORDING: {
         PVR->TriggerRecordingUpdate();
         return PVR_ERROR_NO_ERROR;
     }
-    if (menuhook.category == PVR_MENUHOOK_ALL && menuhook.iHookId == MENUHOOK_FORCE_REFRESH_TIMER) {
+    case MENUHOOK_FORCE_REFRESH_TIMER: {
         PVR->TriggerTimerUpdate();
         return PVR_ERROR_NO_ERROR;
     }
-    if (menuhook.category == PVR_MENUHOOK_ALL && menuhook.iHookId == MENUHOOK_FORCE_EXECUTE_SCHEDULER) {
+    case MENUHOOK_FORCE_EXECUTE_SCHEDULER: {
         if (g_schedule.update()) {
             PVR->TriggerTimerUpdate();
             return PVR_ERROR_NO_ERROR;
         }
         return PVR_ERROR_SERVER_ERROR;
+    }
     }
     return PVR_ERROR_FAILED;
 }
