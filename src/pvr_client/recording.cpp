@@ -73,8 +73,11 @@ PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED
     }
 
     strncpy(properties[0].strName, PVR_STREAM_PROPERTY_STREAMURL, sizeof(properties[0].strName) - 1);
-    // TODO: Add setting of playback priority for original content
-    if (rec->original) {
+
+    int prefer_encoded;
+    XBMC->GetSetting("prefer_encoded", &prefer_encoded);
+    const auto ignoreOriginalPlayback = !rec->encoded.empty() && prefer_encoded;
+    if (rec->original && ignoreOriginalPlayback) {
         snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, g_recorded.recordedStreamingPath.c_str(), recording->strRecordingId);
     } else {
         // TODO: Selectable recorded id
