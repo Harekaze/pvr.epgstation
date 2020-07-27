@@ -93,21 +93,21 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
     PVR_MENUHOOK menuHookRec;
     memset(&menuHookRec, 0, sizeof(PVR_MENUHOOK));
     menuHookRec.iLocalizedStringId = MSG_FORCE_REFRESH_RECORDING;
-    menuHookRec.category = PVR_MENUHOOK_ALL;
+    menuHookRec.category = PVR_MENUHOOK_RECORDING;
     menuHookRec.iHookId = MENUHOOK_FORCE_REFRESH_RECORDING;
     PVR->AddMenuHook(&menuHookRec);
 
     PVR_MENUHOOK menuHookTimer;
     memset(&menuHookTimer, 0, sizeof(PVR_MENUHOOK));
     menuHookTimer.iLocalizedStringId = MSG_FORCE_REFRESH_TIMER;
-    menuHookTimer.category = PVR_MENUHOOK_ALL;
+    menuHookTimer.category = PVR_MENUHOOK_TIMER;
     menuHookTimer.iHookId = MENUHOOK_FORCE_REFRESH_TIMER;
     PVR->AddMenuHook(&menuHookTimer);
 
     PVR_MENUHOOK menuHookScheduler;
     memset(&menuHookScheduler, 0, sizeof(PVR_MENUHOOK));
     menuHookScheduler.iLocalizedStringId = MSG_FORCE_EXECUTE_SCHEDULER;
-    menuHookScheduler.category = PVR_MENUHOOK_ALL;
+    menuHookScheduler.category = PVR_MENUHOOK_EPG;
     menuHookScheduler.iHookId = MENUHOOK_FORCE_EXECUTE_SCHEDULER;
     PVR->AddMenuHook(&menuHookScheduler);
 
