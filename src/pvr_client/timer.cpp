@@ -203,7 +203,7 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
     }
     case CREATE_TIMER_MANUAL_RESERVED: {
         const auto program = std::find_if(g_schedule.programs.begin(), g_schedule.programs.end(), [timer](epgstation::program p) {
-            return (int)p.channelId == timer.iClientChannelUid && p.startAt == timer.startTime;
+            return static_cast<int>(p.channelId) == timer.iClientChannelUid && p.startAt == timer.startTime;
         });
         if (program != g_schedule.programs.end()) {
             if (g_reserve.add(std::to_string(program->id))) {

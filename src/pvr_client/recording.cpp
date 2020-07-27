@@ -42,10 +42,10 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
             strncpy(rec.strPlotOutline, r.description.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             strncpy(rec.strPlot, r.extended.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             rec.recordingTime = r.startAt;
-            rec.iDuration = (int)(r.endAt - r.startAt);
+            rec.iDuration = static_cast<int>(r.endAt - r.startAt);
             rec.iGenreType = genre & epgstation::GENRE_TYPE_MASK;
             rec.iGenreSubType = genre & epgstation::GENRE_SUBTYPE_MASK;
-            rec.iEpgEventId = (unsigned int)(r.programId % 100000);
+            rec.iEpgEventId = static_cast<unsigned int>(r.programId % 100000);
             rec.iChannelUid = r.channelId;
             rec.channelType = PVR_RECORDING_CHANNEL_TYPE_TV;
             if (r.hasThumbnail) {

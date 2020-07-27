@@ -188,7 +188,7 @@ namespace api {
             body["search"]["CS"] = true;
             body["search"]["SKY"] = true;
         } else {
-            body["search"]["station"] = (unsigned int)channelId;
+            body["search"]["station"] = static_cast<unsigned int>(channelId);
         }
 
         if (!anytime) {
