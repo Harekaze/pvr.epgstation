@@ -10,12 +10,12 @@
 		<description />
 		<platform>all</platform>
 	</extension>
-</addon><addon id="pvr.epgstation" name="Harekaze (EPGStation PVR client)" provider-name="Harekaze project" version="0.0.3">
+</addon><addon id="pvr.epgstation" name="Harekaze (EPGStation PVR client)" provider-name="Harekaze project" version="0.0.4">
 	<requires>
 		<import addon="kodi.binary.instance.pvr" version="5.10.0" />
 		<import addon="kodi.binary.global.main" version="1.0.12" />
 	</requires>
-	<extension library_android="libpvr.epgstation.so" library_ios="pvr.epgstation-ios.dylib" library_linux="pvr.epgstation.so" library_osx="pvr.epgstation.dylib" library_rbpi="pvr.epgstation.armel.so" library_windx="pvr.epgstation.dll" point="xbmc.pvrclient" />
+	<extension library_android="libpvr.epgstation.so" library_ios="pvr.epgstation-ios.dylib" library_linux="pvr.epgstation.so" library_osx="pvr.epgstation.dylib" library_rbpi="pvr.epgstation.armel.so" library_windowsstore="pvr.epgstation.dll" library_windx="pvr.epgstation.dll" point="xbmc.pvrclient" />
 	<extension point="xbmc.addon.metadata">
 		<platform>linux osx ios android rbpi windx</platform>
 		<license>GPL v3.0</license>
