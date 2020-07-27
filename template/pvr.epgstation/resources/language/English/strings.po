@@ -46,7 +46,11 @@ msgctxt "#30400"
 msgid "Recordings"
 msgstr ""
 
-#empty strings from id 30401 to 30499
+msgctxt "#30401"
+msgid "Prefer encoded media playback"
+msgstr ""
+
+#empty strings from id 30402 to 30499
 
 msgctxt "#30500"
 msgid "TV Guide"

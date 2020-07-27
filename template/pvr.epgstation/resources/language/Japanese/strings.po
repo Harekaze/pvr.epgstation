@@ -40,6 +40,10 @@ msgctxt "#30400"
 msgid "Recordings"
 msgstr "録画"
 
+msgctxt "#30401"
+msgid "Prefer encoded media playback"
+msgstr "エンコード済みのメディアの再生を優先する"
+
 msgctxt "#30500"
 msgid "TV Guide"
 msgstr "番組表"

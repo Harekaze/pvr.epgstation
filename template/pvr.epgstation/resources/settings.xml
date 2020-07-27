@@ -12,5 +12,6 @@
 
 	<!-- Recordings -->
 	<category label="30400">
+		<setting id="prefer_encoded" type="bool" label="30401" default="false" />
 	</category>
 </settings>
