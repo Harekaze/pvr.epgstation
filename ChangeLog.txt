@@ -3,7 +3,7 @@ v0.0.3
 
 v0.0.2
 - Better support for 32bit platform
-- Drop Linux x86/x86 build from release
+- Drop Linux x86/x64 build from release
 
 v0.0.1
 - Initial release
