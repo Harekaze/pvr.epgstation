@@ -19,7 +19,7 @@ EPGStation PVR addon for Kodi
 - Kodi **18.7** Leia
   + for macOS (x86_64)
   + for Raspberry Pi OS (armv7)
-  + for Windows 10 (32 bit)
+  + for Windows 10 (64 bit/Microsoft Store)
 
 It might work on other platforms, but it hasn't been tested.
 
