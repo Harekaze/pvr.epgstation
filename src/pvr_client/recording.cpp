@@ -21,6 +21,7 @@
 extern epgstation::Recorded g_recorded;
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 extern CHelper_libXBMC_pvr* PVR;
+extern CHelper_libKODI_guilib* GUI;
 
 extern "C" {
 
@@ -80,8 +81,27 @@ PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED
     if (rec->original && ignoreOriginalPlayback) {
         snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, g_recorded.recordedStreamingPath.c_str(), recording->strRecordingId);
     } else {
-        // TODO: Selectable recorded id
-        const auto param = "?encodedId=" + std::to_string(rec->encoded[0].first);
+        auto id = rec->encoded[0].first;
+
+        if (rec->encoded.size() > 1) {
+            auto entries = static_cast<char**>(malloc(sizeof(char*) * rec->encoded.size()));
+            for (size_t i = 0; i < rec->encoded.size(); i++) {
+                const auto name = rec->encoded[i].second;
+                entries[i] = (char*)malloc(name.length() + 1);
+                memcpy(entries[i], name.c_str(), name.length());
+            }
+            const auto selected = GUI->Dialog_Select("Select media", (const char**)(entries), rec->encoded.size());
+            for (size_t i = 0; i < rec->encoded.size(); i++) {
+                free(entries[i]);
+            }
+            free(entries);
+            if (selected < 0) {
+                return PVR_ERROR_NOT_IMPLEMENTED;
+            }
+            id = rec->encoded[selected].first;
+        }
+
+        const auto param = "?encodedId=" + std::to_string(id);
         snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, (g_recorded.recordedStreamingPath + param).c_str(), recording->strRecordingId);
     }
 
