@@ -78,9 +78,7 @@ PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED
     int prefer_encoded;
     XBMC->GetSetting("prefer_encoded", &prefer_encoded);
     const auto ignoreOriginalPlayback = !rec->encoded.empty() && prefer_encoded;
-    if (rec->original && ignoreOriginalPlayback) {
-        snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, g_recorded.recordedStreamingPath.c_str(), recording->strRecordingId);
-    } else {
+    if (!rec->original || ignoreOriginalPlayback) {
         auto id = rec->encoded[0].first;
 
         if (rec->encoded.size() > 1) {
@@ -103,6 +101,8 @@ PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED
 
         const auto param = "?encodedId=" + std::to_string(id);
         snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, (g_recorded.recordedStreamingPath + param).c_str(), recording->strRecordingId);
+    } else {
+        snprintf(properties[0].strValue, sizeof(properties[0].strValue) - 1, g_recorded.recordedStreamingPath.c_str(), recording->strRecordingId);
     }
 
     *iPropertiesCount = 1;
