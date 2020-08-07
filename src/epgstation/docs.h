@@ -3,8 +3,8 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#ifndef EPGSTATION_STORAGE_H
-#define EPGSTATION_STORAGE_H
+#ifndef SRC_EPGSTATION_DOCS_H_
+#define SRC_EPGSTATION_DOCS_H_
 #include <iostream>
 
 namespace epgstation {
@@ -22,4 +22,4 @@ public:
 };
 } // namespace epgstation
 
-#endif /* end of include guard */
+#endif // SRC_EPGSTATION_DOCS_H_

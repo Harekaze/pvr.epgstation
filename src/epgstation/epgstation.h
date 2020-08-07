@@ -3,13 +3,13 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#ifndef EPGSTATION_EPGSTATION_H
-#define EPGSTATION_EPGSTATION_H
+#ifndef SRC_EPGSTATION_EPGSTATION_H_
+#define SRC_EPGSTATION_EPGSTATION_H_
 
-#include "recorded.h"
-#include "reserves.h"
-#include "rules.h"
-#include "schedule.h"
-#include "storage.h"
+#include "epgstation/recorded.h"
+#include "epgstation/reserves.h"
+#include "epgstation/rules.h"
+#include "epgstation/schedule.h"
+#include "epgstation/storage.h"
 
-#endif /* end of include guard */
+#endif // SRC_EPGSTATION_EPGSTATION_H_

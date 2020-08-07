@@ -3,10 +3,12 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#ifndef EPGSTATION_RECORDED_H
-#define EPGSTATION_RECORDED_H
+#ifndef SRC_EPGSTATION_RECORDED_H_
+#define SRC_EPGSTATION_RECORDED_H_
 #include "epgstation/types.h"
 #include <iostream>
+#include <string>
+#include <vector>
 
 namespace epgstation {
 class Recorded {
@@ -19,4 +21,4 @@ public:
 };
 } // namespace epgstation
 
-#endif /* end of include guard */
+#endif // SRC_EPGSTATION_RECORDED_H_

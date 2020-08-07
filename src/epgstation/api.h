@@ -3,11 +3,12 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#ifndef EPGSTATION_API_H
-#define EPGSTATION_API_H
+#ifndef SRC_EPGSTATION_API_H_
+#define SRC_EPGSTATION_API_H_
 
 #include "json/json.hpp"
 #include <iostream>
+#include <string>
 
 namespace epgstation {
 namespace api {
@@ -65,4 +66,4 @@ namespace api {
 } // namespace api
 } // namespace epgstation
 
-#endif /* end of include guard */
+#endif // SRC_EPGSTATION_API_H_

@@ -3,12 +3,13 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#ifndef EPGSTATION_SCHEDULE_H
-#define EPGSTATION_SCHEDULE_H
+#ifndef SRC_EPGSTATION_SCHEDULE_H_
+#define SRC_EPGSTATION_SCHEDULE_H_
+#include "epgstation/types.h"
 #include <iostream>
 #include <map>
-
-#include "epgstation/types.h"
+#include <string>
+#include <vector>
 
 namespace epgstation {
 class Schedule {
@@ -22,4 +23,4 @@ public:
 };
 } // namespace epgstation
 
-#endif /* end of include guard */
+#endif // SRC_EPGSTATION_SCHEDULE_H_

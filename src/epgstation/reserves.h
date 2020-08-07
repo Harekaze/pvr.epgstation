@@ -3,10 +3,12 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#ifndef EPGSTATION_RESERVES_H
-#define EPGSTATION_RESERVES_H
+#ifndef SRC_EPGSTATION_RESERVES_H_
+#define SRC_EPGSTATION_RESERVES_H_
 #include "epgstation/types.h"
 #include <iostream>
+#include <string>
+#include <vector>
 
 #define TIMER_MANUAL_RESERVED 0x01
 #define TIMER_PATTERN_MATCHED 0x02
@@ -22,4 +24,4 @@ public:
 };
 } // namespace epgstation
 
-#endif /* end of include guard */
+#endif // SRC_EPGSTATION_RESERVES_H_
