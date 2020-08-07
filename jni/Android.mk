@@ -6,7 +6,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE      := epgstation
 
 LOCAL_SRC_FILES   := $(wildcard src/epgstation/*.cpp) $(wildcard src/base64/*.cpp)
-LOCAL_C_INCLUDES  := $(LOCAL_PATH)/include
+LOCAL_C_INCLUDES  := $(LOCAL_PATH)/include $(LOCAL_PATH)/src
 
 include $(BUILD_STATIC_LIBRARY)
 
