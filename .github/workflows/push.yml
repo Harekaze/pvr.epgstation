@@ -23,6 +23,14 @@ jobs:
           flags: --linelength=280
           filter: -whitespace/braces,-whitespace/comments,-whitespace/indent,-build/include_order,-runtime/references,-runtime/int
           targets: --exclude=src/dlfcn-win32 --exclude=src/base64 --recursive src
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: clang-format -i src/epgstation/*.{cpp,h} src/pvr_client/*.cpp include/epgstation/*
+      - uses: reviewdog/action-suggester@master
+        with:
+          tool_name: gofmt
   build:
     runs-on: ${{matrix.os}}
     strategy:
