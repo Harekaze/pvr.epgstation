@@ -33,6 +33,28 @@ extern epgstation::Schedule g_schedule;
 extern epgstation::Rule g_rule;
 extern epgstation::Reserve g_reserve;
 
+struct tm* localtime_now()
+{
+    time_t now;
+    time(&now);
+#if defined(_WIN32) || defined(_WIN64)
+    return localtime(&now);
+#else
+    struct tm time;
+    return localtime_r(&now, &time);
+#endif
+}
+
+unsigned int get_hour(time_t time)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    return localtime(&time)->tm_hour;
+#else
+    struct tm t;
+    return localtime_r(&time, &t)->tm_hour;
+#endif
+}
+
 extern "C" {
 
 int GetTimersAmount(void)
@@ -43,8 +65,6 @@ int GetTimersAmount(void)
 PVR_ERROR GetTimers(ADDON_HANDLE handle)
 {
     if (g_rule.refresh() && g_reserve.refresh()) {
-        time_t now;
-
         for (const auto rule : g_rule.rules) {
             PVR_TIMER timer;
             memset(&timer, 0, sizeof(PVR_TIMER));
@@ -57,9 +77,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             timer.bStartAnyTime = rule.timeRange == 0;
             timer.bEndAnyTime = rule.timeRange == 0;
             if (!timer.bStartAnyTime) {
-                time(&now);
-                struct tm result;
-                struct tm* time = localtime_r(&now, &result);
+                auto time = localtime_now();
                 time->tm_hour = rule.startTime;
                 time->tm_min = 0;
                 timer.startTime = mktime(time);
@@ -132,10 +150,8 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
 
         if (timer.state == (rule->enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED)) {
             // Timer state is not changed. Update rule
-            time_t target;
-            struct tm startTime, endTime;
-            unsigned int startHour = localtime_r((const time_t*)std::memcpy(&target, &timer.startTime, sizeof(time_t)), &startTime)->tm_hour;
-            unsigned int endHour = localtime_r((const time_t*)std::memcpy(&target, &timer.endTime, sizeof(time_t)), &endTime)->tm_hour;
+            auto startHour = get_hour(timer.startTime);
+            auto endHour = get_hour(timer.endTime);
             if (g_rule.edit(timer.iClientIndex, timer.state != PVR_TIMER_STATE_DISABLED,
                     timer.strEpgSearchString, timer.bFullTextEpgSearch,
                     timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
@@ -192,10 +208,8 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
 {
     switch (timer.iTimerType) {
     case CREATE_RULES_PATTERN_MATCHED: {
-        time_t target;
-        struct tm startTime, endTime;
-        unsigned int startHour = localtime_r((const time_t*)std::memcpy(&target, &timer.startTime, sizeof(time_t)), &startTime)->tm_hour;
-        unsigned int endHour = localtime_r((const time_t*)std::memcpy(&target, &timer.endTime, sizeof(time_t)), &endTime)->tm_hour;
+        auto startHour = get_hour(timer.startTime);
+        auto endHour = get_hour(timer.endTime);
 
         if (g_rule.add(timer.state != PVR_TIMER_STATE_DISABLED, timer.strEpgSearchString, timer.bFullTextEpgSearch,
                 timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
