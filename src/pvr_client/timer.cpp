@@ -118,8 +118,8 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
 
             timer.startTime = p.startAt;
             timer.endTime = p.endAt;
-            timer.iGenreType = genre & epgstation::GENRE_TYPE_MASK;
-            timer.iGenreSubType = genre & epgstation::GENRE_SUBTYPE_MASK;
+            timer.iGenreType = genre.main;
+            timer.iGenreSubType = genre.sub;
             timer.bStartAnyTime = false;
             timer.bEndAnyTime = false;
             timer.iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;

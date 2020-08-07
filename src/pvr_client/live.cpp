@@ -38,8 +38,8 @@ PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time
         tag.endTime = epg.endAt;
         tag.strPlotOutline = epg.description.c_str();
         tag.strPlot = epg.extended.c_str();
-        tag.iGenreType = genre & epgstation::GENRE_TYPE_MASK;
-        tag.iGenreSubType = genre & epgstation::GENRE_SUBTYPE_MASK;
+        tag.iGenreType = genre.main;
+        tag.iGenreSubType = genre.sub;
 
         PVR->TransferEpgEntry(handle, &tag);
     }
