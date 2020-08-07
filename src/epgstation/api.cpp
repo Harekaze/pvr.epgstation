@@ -66,10 +66,11 @@ namespace api {
             XBMC->Log(ADDON::LOG_DEBUG, "Read response body");
 
             const unsigned int buffer_size = 4096;
-            char buffer[buffer_size];
+            char* buffer = static_cast<char*>(malloc(buffer_size));
             while (int bytesRead = XBMC->ReadFile(handle, buffer, buffer_size)) {
                 text.append(buffer, bytesRead);
             }
+            free(buffer);
         }
 
         XBMC->CloseFile(handle);
