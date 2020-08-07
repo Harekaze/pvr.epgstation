@@ -10,6 +10,13 @@
 #include "json/json.hpp"
 #include <string>
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#define sleep(sec) Sleep(sec)
+#else
+#include <unistd.h>
+#endif
+
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 extern CHelper_libXBMC_pvr* PVR;
 
@@ -57,11 +64,19 @@ namespace api {
         }
 
         XBMC->Log(ADDON::LOG_DEBUG, "Open url for requesting");
-        if (!XBMC->CURLOpen(handle, XFILE::READ_NO_CACHE)) {
-            XBMC->Log(ADDON::LOG_ERROR, "Failed to open URL: %s", url.c_str());
-            XBMC->CloseFile(handle);
-            return REQUEST_FAILED;
-        }
+        constexpr int retry_limit = 3;
+        int retry = 0;
+        do {
+            if (XBMC->CURLOpen(handle, XFILE::READ_NO_CACHE)) {
+                break;
+            }
+            XBMC->Log(ADDON::LOG_ERROR, "Failed to open URL: %s (retry %d)", url.c_str(), retry);
+            if (++retry >= retry_limit) {
+                XBMC->CloseFile(handle);
+                return REQUEST_FAILED;
+            }
+            sleep(3);
+        } while (1);
 
         if (response != NULL) {
             XBMC->Log(ADDON::LOG_DEBUG, "Read response body");
