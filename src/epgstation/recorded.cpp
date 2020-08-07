@@ -36,4 +36,4 @@ bool Recorded::remove(const std::string id)
     return success;
 }
 
-}
+} // namespace epgstation

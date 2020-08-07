@@ -26,4 +26,4 @@ PVR_ERROR Storage::getStorageInfo(long long* used, long long* total)
 
     return PVR_ERROR_NO_ERROR;
 }
-}
+} // namespace epgstation

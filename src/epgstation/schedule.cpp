@@ -44,4 +44,4 @@ bool Schedule::update()
     XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR, "Schedule update");
     return success;
 }
-}
+} // namespace epgstation

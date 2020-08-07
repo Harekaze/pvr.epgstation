@@ -66,4 +66,4 @@ bool Reserve::restore(const std::string id)
     return success;
 }
 
-}
+} // namespace epgstation

@@ -54,4 +54,4 @@ bool Rule::enable(int id, bool enabled)
     return success;
 }
 
-}
+} // namespace epgstation
