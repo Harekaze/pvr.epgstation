@@ -3,14 +3,16 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#include "rules.h"
-#include "api.h"
+#include "epgstation/rules.h"
+#include "epgstation/api.h"
+#include "epgstation/recorded.h"
+#include "epgstation/reserves.h"
+#include "epgstation/schedule.h"
 #include "epgstation/types.h"
 #include "kodi/libXBMC_addon.h"
-#include "recorded.h"
-#include "reserves.h"
-#include "schedule.h"
 #include "json/json.hpp"
+#include <algorithm>
+#include <string>
 
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 

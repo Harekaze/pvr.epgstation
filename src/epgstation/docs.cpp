@@ -3,8 +3,8 @@
  * https://github.com/Harekaze/pvr.epgstation/
  * SPDX-License-Identifier: GPL-3.0-only
  */
-#include "docs.h"
-#include "api.h"
+#include "epgstation/docs.h"
+#include "epgstation/api.h"
 #include "kodi/libXBMC_addon.h"
 #include "json/json.hpp"
 #include <string>
