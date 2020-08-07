@@ -30,7 +30,11 @@ enum ReservedState {
 
 class program {
 public:
+#if defined(_WIN32) || defined(_WIN64)
+    uint64_t id; // Patch for signed uint32_t
+#else
     uint32_t id;
+#endif
     uint32_t programId;
     uint32_t channelId;
     uint32_t eventId;

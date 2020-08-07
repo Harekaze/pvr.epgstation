@@ -165,7 +165,11 @@ namespace api {
     int postReserves(const std::string id)
     {
         nlohmann::json body = {
+#if defined(_WIN32) || defined(_WIN64)
+            { "programId", std::stoull(id) }, // Patch for uint64_t
+#else
             { "programId", std::stoul(id) },
+#endif
             { "allowEndLack", true },
         };
         constexpr char apiPath[] = "reserves";
