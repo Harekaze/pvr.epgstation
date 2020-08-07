@@ -8,9 +8,9 @@
 #include "json/json.hpp"
 #include <string>
 
-#define OPTIONAL_JSON_FROM(v)  \
-    if (j.contains(#v)) {      \
-        NLOHMANN_JSON_FROM(v); \
+#define OPTIONAL_JSON_FROM(v)           \
+    if (nlohmann_json_j.contains(#v)) { \
+        NLOHMANN_JSON_FROM(v);          \
     }
 
 namespace epgstation {
@@ -49,7 +49,7 @@ public:
     int16_t ruleId; // Optional for reserved program
     ReservedState state; // Optional for reserved program
 
-    friend void from_json(const nlohmann::json& j, program& t)
+    friend void from_json(const nlohmann::json& nlohmann_json_j, program& nlohmann_json_t)
     {
         NLOHMANN_JSON_FROM(id);
         OPTIONAL_JSON_FROM(programId);
@@ -59,16 +59,16 @@ public:
         NLOHMANN_JSON_FROM(name);
         OPTIONAL_JSON_FROM(description);
         OPTIONAL_JSON_FROM(extended);
-        t.startAt = static_cast<time_t>(j["startAt"].get<long long>() / 1000ll);
-        t.endAt = static_cast<time_t>(j["endAt"].get<long long>() / 1000ll);
+        nlohmann_json_t.startAt = static_cast<time_t>(nlohmann_json_j["startAt"].get<long long>() / 1000ll);
+        nlohmann_json_t.endAt = static_cast<time_t>(nlohmann_json_j["endAt"].get<long long>() / 1000ll);
         OPTIONAL_JSON_FROM(genre1);
         OPTIONAL_JSON_FROM(genre2);
         OPTIONAL_JSON_FROM(recording);
         OPTIONAL_JSON_FROM(hasThumbnail);
         OPTIONAL_JSON_FROM(original);
-        if (j.contains("encoded") && j["encoded"].is_array()) {
-            for (auto e : j["encoded"]) {
-                t.encoded.push_back(std::make_pair(e["encodedId"], e["name"]));
+        if (nlohmann_json_j.contains("encoded") && nlohmann_json_j["encoded"].is_array()) {
+            for (auto e : nlohmann_json_j["encoded"]) {
+                nlohmann_json_t.encoded.push_back(std::make_pair(e["encodedId"], e["name"]));
             }
         }
     }
@@ -99,7 +99,7 @@ public:
     uint16_t timeRange = 0;
     std::string directory = "";
 
-    friend void from_json(const nlohmann::json& j, rule& t)
+    friend void from_json(const nlohmann::json& nlohmann_json_j, rule& nlohmann_json_t)
     {
         NLOHMANN_JSON_FROM(id);
         NLOHMANN_JSON_FROM(keyword);
@@ -107,7 +107,7 @@ public:
         OPTIONAL_JSON_FROM(description);
         NLOHMANN_JSON_FROM(enable);
         NLOHMANN_JSON_FROM(week);
-        t.week = ((t.week & 0b00000001) << 6) | ((t.week & 0b01111110) >> 1);
+        nlohmann_json_t.week = ((nlohmann_json_t.week & 0b00000001) << 6) | ((nlohmann_json_t.week & 0b01111110) >> 1);
         OPTIONAL_JSON_FROM(station);
         OPTIONAL_JSON_FROM(startTime);
         OPTIONAL_JSON_FROM(timeRange);
