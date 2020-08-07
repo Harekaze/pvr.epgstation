@@ -45,7 +45,7 @@ struct tm* localtime_now()
 #endif
 }
 
-unsigned int get_hour(time_t time)
+uint8_t get_hour(time_t time)
 {
 #if defined(_WIN32) || defined(_WIN64)
     return localtime(&time)->tm_hour;

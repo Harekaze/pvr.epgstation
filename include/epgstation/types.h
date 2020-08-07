@@ -30,23 +30,23 @@ enum ReservedState {
 
 class program {
 public:
-    unsigned long id;
-    unsigned long programId;
-    unsigned long channelId;
-    unsigned long eventId;
+    uint32_t id;
+    uint32_t programId;
+    uint32_t channelId;
+    uint32_t eventId;
     std::string channelType;
     std::string name;
     std::string description;
     std::string extended;
     time_t startAt;
     time_t endAt;
-    unsigned int genre1 = 0xff;
-    unsigned int genre2 = 0xff;
+    uint8_t genre1 = 0xff;
+    uint8_t genre2 = 0xff;
     bool recording;
     bool hasThumbnail;
     bool original;
-    std::vector<std::pair<int, std::string>> encoded;
-    int ruleId; // Optional for reserved program
+    std::vector<std::pair<uint8_t, std::string>> encoded;
+    int16_t ruleId; // Optional for reserved program
     ReservedState state; // Optional for reserved program
 
     friend void from_json(const nlohmann::json& j, program& t)
@@ -76,9 +76,9 @@ public:
 
 class channel {
 public:
-    unsigned long id;
-    unsigned int serviceId;
-    unsigned int networkId;
+    uint32_t id;
+    uint16_t serviceId;
+    uint16_t networkId;
     std::string name;
     bool hasLogoData;
     std::string channelType;
@@ -88,15 +88,15 @@ public:
 
 class rule {
 public:
-    unsigned int id;
+    uint16_t id;
     std::string keyword;
     bool title = true;
     bool description = false;
     bool enable = true;
-    unsigned int week = 0;
-    int station = -1;
-    unsigned int startTime = 0;
-    unsigned int timeRange = 0;
+    uint16_t week = 0;
+    int16_t station = -1;
+    uint16_t startTime = 0;
+    uint16_t timeRange = 0;
     std::string directory = "";
 
     friend void from_json(const nlohmann::json& j, rule& t)

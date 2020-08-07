@@ -11,11 +11,11 @@
 // https://www.etsi.org/deliver/etsi_en/300400_300499/300468/01.11.01_60/en_300468v011101p.pdf
 namespace epgstation {
 typedef struct genre_code_t {
-    unsigned int main;
-    unsigned int sub;
+    uint8_t main;
+    uint8_t sub;
 } genre_code;
 
-static genre_code getGenreCodeFromContentNibble(unsigned int level1, unsigned int level2)
+static genre_code getGenreCodeFromContentNibble(uint8_t level1, uint8_t level2)
 {
     switch (level1) {
     case 0x00: { // ニュース/報道

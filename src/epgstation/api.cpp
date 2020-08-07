@@ -64,8 +64,8 @@ namespace api {
         }
 
         XBMC->Log(ADDON::LOG_DEBUG, "Open url for requesting");
-        constexpr int retry_limit = 3;
-        int retry = 0;
+        constexpr uint8_t retry_limit = 3;
+        uint8_t retry = 0;
         do {
             if (XBMC->CURLOpen(handle, XFILE::READ_NO_CACHE)) {
                 break;
@@ -81,9 +81,9 @@ namespace api {
         if (response != NULL) {
             XBMC->Log(ADDON::LOG_DEBUG, "Read response body");
 
-            const unsigned int buffer_size = 4096;
+            constexpr uint16_t buffer_size = 4096;
             char* buffer = static_cast<char*>(malloc(buffer_size));
-            while (int bytesRead = XBMC->ReadFile(handle, buffer, buffer_size)) {
+            while (auto bytesRead = XBMC->ReadFile(handle, buffer, buffer_size)) {
                 text.append(buffer, bytesRead);
             }
             free(buffer);
@@ -181,7 +181,7 @@ namespace api {
 
     nlohmann::json createRulePayload(bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
-        unsigned int newWeekdays = weekdays ^ PVR_WEEKDAY_SUNDAY;
+        uint16_t newWeekdays = weekdays ^ PVR_WEEKDAY_SUNDAY;
         newWeekdays <<= 1;
         if (weekdays & PVR_WEEKDAY_SUNDAY) {
             newWeekdays |= 0x01;
@@ -205,7 +205,7 @@ namespace api {
             body["search"]["CS"] = true;
             body["search"]["SKY"] = true;
         } else {
-            body["search"]["station"] = static_cast<unsigned int>(channelId);
+            body["search"]["station"] = static_cast<uint16_t>(channelId);
         }
 
         if (!anytime) {

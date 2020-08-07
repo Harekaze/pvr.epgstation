@@ -34,7 +34,7 @@ bool Reserve::refresh()
 
         for (const auto& r : response["reserves"]) {
             auto p = r["program"].get<program>();
-            p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int>() : -1;
+            p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int16_t>() : -1;
             p.state = request.first;
             reserves.push_back(p);
         }
