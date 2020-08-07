@@ -12,6 +12,17 @@ on:
   pull_request:
 
 jobs:
+  cpplint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-cpplint@a2362f18c42683419d9fa90fdb45cb1580980769
+        with:
+          github_token: ${{secrets.github_token}}
+          reporter: github-check
+          flags: --linelength=280
+          filter: -whitespace/braces,-whitespace/comments,-whitespace/indent,-build/include_order,-runtime/references,-runtime/int
+          targets: --exclude=src/dlfcn-win32 --exclude=src/base64 --recursive src
   build:
     runs-on: ${{matrix.os}}
     strategy:
