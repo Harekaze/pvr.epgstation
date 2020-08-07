@@ -10,9 +10,9 @@
 namespace epgstation {
 class Docs {
 private:
-    static std::string backendName;
-    static std::string backendVersion;
-    static std::string backendHostname;
+    static char backendName[128];
+    static char backendVersion[128];
+    static char backendHostname[128];
     static bool fetchSystemInfo();
 
 public:

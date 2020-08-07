@@ -7,6 +7,7 @@
 #include "api.h"
 #include "kodi/libXBMC_addon.h"
 #include "json/json.hpp"
+#include <string>
 
 namespace epgstation {
 bool Docs::fetchSystemInfo()
@@ -16,39 +17,43 @@ bool Docs::fetchSystemInfo()
         return false;
     }
 
-    Docs::backendName = response["info"]["title"].get<std::string>();
-    Docs::backendVersion = response["info"]["version"].get<std::string>();
-    Docs::backendHostname = response["host"].get<std::string>();
+    std::string name = response["info"]["title"].get<std::string>();
+    std::string version = response["info"]["version"].get<std::string>();
+    std::string hostname = response["host"].get<std::string>();
+
+    snprintf(Docs::backendName, sizeof(Docs::backendName), "%s", name.c_str());
+    snprintf(Docs::backendVersion, sizeof(Docs::backendVersion), "%s", version.c_str());
+    snprintf(Docs::backendHostname, sizeof(Docs::backendHostname), "%s", hostname.c_str());
 
     return true;
 }
 
 const char* Docs::getBackendName()
 {
-    if (Docs::backendName.empty()) {
+    if (std::char_traits<char>::length(Docs::backendName) == 0) {
         Docs::fetchSystemInfo();
     }
-    return Docs::backendName.c_str();
+    return Docs::backendName;
 }
 
 const char* Docs::getBackendVersion()
 {
-    if (Docs::backendVersion.empty()) {
+    if (std::char_traits<char>::length(Docs::backendVersion) == 0) {
         Docs::fetchSystemInfo();
     }
-    return Docs::backendVersion.c_str();
+    return Docs::backendVersion;
 }
 
 const char* Docs::getBackendHostname()
 {
-    if (Docs::backendHostname.empty()) {
+    if (std::char_traits<char>::length(Docs::backendHostname) == 0) {
         Docs::fetchSystemInfo();
     }
-    return Docs::backendHostname.c_str();
+    return Docs::backendHostname;
 }
 
-std::string Docs::backendName = "";
-std::string Docs::backendVersion = "";
-std::string Docs::backendHostname = "";
+char Docs::backendName[128] = { 0 };
+char Docs::backendVersion[128] = { 0 };
+char Docs::backendHostname[128] = { 0 };
 
-}
+} // namespace epgstation
