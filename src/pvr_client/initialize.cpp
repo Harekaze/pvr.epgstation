@@ -36,7 +36,6 @@ extern "C" {
 
 ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 {
-
     if (!callbacks || !props) {
         return ADDON_STATUS_UNKNOWN;
     }
