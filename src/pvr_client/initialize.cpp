@@ -169,10 +169,22 @@ PVR_ERROR CallMenuHook(const PVR_MENUHOOK& menuhook, const PVR_MENUHOOK_DATA& it
     return PVR_ERROR_FAILED;
 }
 
+void OnSystemWake()
+{
+    PVR->TriggerRecordingUpdate();
+    PVR->TriggerTimerUpdate();
+    PVR->TriggerChannelUpdate();
+}
+
+void OnPowerSavingDeactivated()
+{
+    PVR->TriggerRecordingUpdate();
+    PVR->TriggerTimerUpdate();
+    PVR->TriggerChannelUpdate();
+}
+
 /* not implemented */
 void OnSystemSleep() {}
-void OnSystemWake() {}
 void OnPowerSavingActivated() {}
-void OnPowerSavingDeactivated() {}
 PVR_ERROR GetStreamTimes(PVR_STREAM_TIMES* times) { return PVR_ERROR_NOT_IMPLEMENTED; }
 }
