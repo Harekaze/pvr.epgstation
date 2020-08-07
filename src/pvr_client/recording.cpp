@@ -85,7 +85,7 @@ PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED
             auto entries = static_cast<char**>(malloc(sizeof(char*) * rec->encoded.size()));
             for (size_t i = 0; i < rec->encoded.size(); i++) {
                 const auto name = rec->encoded[i].second;
-                entries[i] = (char*)malloc(name.length() + 1);
+                entries[i] = static_cast<char*>(malloc(name.length() + 1));
                 memcpy(entries[i], name.c_str(), name.length());
             }
             const auto selected = GUI->Dialog_Select("Select media", (const char**)(entries), rec->encoded.size());

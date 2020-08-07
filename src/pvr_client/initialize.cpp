@@ -60,7 +60,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 
     time(&lastStartTime);
 
-    const char* strUserPath = ((PVR_PROPERTIES*)props)->strUserPath;
+    const char* strUserPath = static_cast<PVR_PROPERTIES*>(props)->strUserPath;
 
     if (!XBMC->DirectoryExists(strUserPath)) {
         XBMC->CreateDirectory(strUserPath);
