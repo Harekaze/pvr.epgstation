@@ -1,3 +1,8 @@
+v0.0.6
+- Fix a bug that recording was not possible on Windows
+- Add a feature to update the recording list and timers on wake up from sleep mode
+- Make a couple of small improvements
+
 v0.0.5
 - Fix an issue where unencoded files would not play
 - Fix an error that the menuhook doesn't work
