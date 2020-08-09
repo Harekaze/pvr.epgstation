@@ -219,10 +219,15 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
         return PVR_ERROR_SERVER_ERROR;
     }
     case CREATE_TIMER_MANUAL_RESERVED: {
-        const auto program = std::find_if(g_schedule.programs.begin(), g_schedule.programs.end(), [timer](epgstation::program p) {
-            return static_cast<int>(p.channelId) == timer.iClientChannelUid && p.startAt == timer.startTime;
+        auto programs = g_schedule.list[timer.iClientChannelUid];
+        if (programs.empty()) {
+            programs = g_schedule.fetch(static_cast<uint32_t>(timer.iClientChannelUid), timer.startTime, timer.endTime);
+        }
+
+        const auto program = std::find_if(programs.begin(), programs.end(), [timer](epgstation::program p) {
+            return p.startAt == timer.startTime;
         });
-        if (program != g_schedule.programs.end()) {
+        if (program != programs.end()) {
             if (g_reserve.add(std::to_string(program->id))) {
                 goto complete;
             }
