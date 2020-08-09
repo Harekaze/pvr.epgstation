@@ -10,6 +10,7 @@
 #include "json/json.hpp"
 #include <algorithm>
 #include <string>
+#include <time.h>
 #include <vector>
 
 extern ADDON::CHelper_libXBMC_addon* XBMC;
@@ -26,7 +27,7 @@ std::vector<program> Schedule::fetch(uint32_t channelId, time_t start, time_t en
 
     char time[10] = { 0 };
     strftime(time, sizeof(time) - 1, "%y%m%d%H", &t);
-    const auto days = static_cast<uint16_t>(std::ceil(std::difftime(end, start) / 86400));
+    const auto days = static_cast<uint16_t>(std::ceil(difftime(end, start) / 86400));
 
     if (api::getSchedule(std::to_string(channelId), time, days, response) == api::REQUEST_FAILED) {
         return list[channelId];
