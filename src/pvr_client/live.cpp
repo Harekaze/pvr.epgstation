@@ -19,9 +19,7 @@ extern "C" {
 
 PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time_t iStart, time_t iEnd)
 {
-    for (const auto epg : g_schedule.programs) {
-        if (epg.channelId != channel.iUniqueId)
-            continue;
+    for (const auto epg : g_schedule.fetch(channel.iUniqueId, iStart, iEnd)) {
         if (epg.endAt < iStart)
             continue;
         if (epg.startAt > iEnd)
