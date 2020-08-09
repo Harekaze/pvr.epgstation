@@ -44,7 +44,14 @@ std::vector<program> Schedule::fetch(uint32_t channelId, time_t start, time_t en
 
     list[channelId] = std::vector<program>();
 
-    if (api::getSchedule(std::to_string(channelId), response) == api::REQUEST_FAILED) {
+    struct tm t;
+    localtime_r(&start, &t);
+
+    char time[10] = { 0 };
+    strftime(time, sizeof(time) - 1, "%y%m%d%H", &t);
+    const auto days = static_cast<uint16_t>(std::ceil(std::difftime(end, start) / 86400));
+
+    if (api::getSchedule(std::to_string(channelId), time, days, response) == api::REQUEST_FAILED) {
         return list[channelId];
     }
 

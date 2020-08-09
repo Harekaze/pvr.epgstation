@@ -119,10 +119,10 @@ namespace api {
         return request("GET", apiPath, &response);
     }
 
-    // GET /api/schedule/:id
-    int getSchedule(const std::string id, nlohmann::json& response)
+    // GET /api/schedule/:id?time=:time&days=:days
+    int getSchedule(const std::string id, const char* time, const uint16_t days, nlohmann::json& response)
     {
-        const auto apiPath = "schedule/" + id;
+        const auto apiPath = "schedule/" + id + "?time=" + time + "&days=" + std::to_string(days);
         return request("GET", apiPath, &response);
     }
 
