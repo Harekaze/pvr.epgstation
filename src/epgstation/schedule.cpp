@@ -38,6 +38,26 @@ bool Schedule::refresh()
     return true;
 }
 
+std::vector<program> Schedule::fetch(uint32_t channelId, time_t start, time_t end)
+{
+    nlohmann::json response;
+
+    list[channelId] = std::vector<program>();
+
+    if (api::getSchedule(std::to_string(channelId), response) == api::REQUEST_FAILED) {
+        return list[channelId];
+    }
+
+    for (const auto& o : response) {
+        if (o["programs"].empty()) {
+            continue;
+        }
+        std::copy(o["programs"].begin(), o["programs"].end(), std::back_inserter(list[channelId]));
+    }
+
+    return list[channelId];
+}
+
 bool Schedule::update()
 {
     const auto success = api::putScheduleUpdate() != epgstation::api::REQUEST_FAILED;
