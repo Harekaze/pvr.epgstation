@@ -10,7 +10,7 @@
 		<description />
 		<platform>all</platform>
 	</extension>
-</addon><addon id="pvr.epgstation" name="Harekaze (EPGStation PVR client)" provider-name="Harekaze project" version="0.0.6">
+</addon><addon id="pvr.epgstation" name="Harekaze (EPGStation PVR client)" provider-name="Harekaze project" version="0.0.7">
 	<requires>
 		<import addon="kodi.binary.instance.pvr" version="5.10.0" />
 		<import addon="kodi.binary.global.main" version="1.0.12" />
