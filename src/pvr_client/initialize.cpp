@@ -21,6 +21,7 @@
 #define MSG_FORCE_REFRESH_TIMER 30801
 #define MSG_FORCE_EXECUTE_SCHEDULER 30802
 
+epgstation::Channels g_channels;
 epgstation::Schedule g_schedule;
 epgstation::Recorded g_recorded;
 epgstation::Rule g_rule;
@@ -83,8 +84,8 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
         epgstation::api::baseURL += "api/";
     }
 
-    g_schedule.liveStreamingPath = epgstation::api::baseURL + "streams/live/%u/mpegts";
-    g_schedule.channelLogoPath = epgstation::api::baseURL + "channels/%u/logo";
+    g_channels.liveStreamingPath = epgstation::api::baseURL + "streams/live/%u/mpegts";
+    g_channels.channelLogoPath = epgstation::api::baseURL + "channels/%u/logo";
     g_recorded.recordedStreamingPath = epgstation::api::baseURL + "recorded/%s/file";
     g_recorded.recordedThumbnailPath = epgstation::api::baseURL + "recorded/%s/thumbnail";
 
@@ -94,7 +95,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 
     XBMC->Log(ADDON::LOG_NOTICE, "Transcoding parameter: %s", transcodeParams.c_str());
 
-    g_schedule.liveStreamingPath += transcodeParams;
+    g_channels.liveStreamingPath += transcodeParams;
 
     PVR_MENUHOOK menuHookRec;
     memset(&menuHookRec, 0, sizeof(PVR_MENUHOOK));

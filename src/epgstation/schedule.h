@@ -14,10 +14,7 @@
 namespace epgstation {
 class Schedule {
 public:
-    std::string channelLogoPath;
-    std::string liveStreamingPath;
     std::vector<program> programs;
-    std::vector<channel> channels;
     bool refresh();
     bool update();
 };

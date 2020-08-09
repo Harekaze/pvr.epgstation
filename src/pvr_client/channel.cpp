@@ -10,7 +10,7 @@
 #include <iostream>
 #include <set>
 
-extern epgstation::Schedule g_schedule;
+extern epgstation::Channels g_channels;
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 extern CHelper_libXBMC_pvr* PVR;
 
@@ -18,7 +18,10 @@ extern "C" {
 
 int GetChannelsAmount(void)
 {
-    return g_schedule.channels.size();
+    if (!g_channels.refresh()) {
+        return PVR_ERROR_SERVER_ERROR;
+    }
+    return g_channels.channels.size();
 }
 
 PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
@@ -27,11 +30,11 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
         return PVR_ERROR_NO_ERROR;
     }
 
-    if (!g_schedule.refresh()) {
+    if (!g_channels.refresh()) {
         return PVR_ERROR_SERVER_ERROR;
     }
 
-    for (const auto c : g_schedule.channels) {
+    for (const auto c : g_channels.channels) {
         PVR_CHANNEL ch;
         memset(&ch, 0, sizeof(PVR_CHANNEL));
 
@@ -44,7 +47,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 
         if (c.hasLogoData) {
             snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
-                g_schedule.channelLogoPath.c_str(), c.id);
+                g_channels.channelLogoPath.c_str(), c.id);
         }
         PVR->TransferChannelEntry(handle, &ch);
     }
@@ -55,7 +58,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 int GetChannelGroupsAmount(void)
 {
     std::set<std::string> list;
-    for (const auto channel : g_schedule.channels) {
+    for (const auto channel : g_channels.channels) {
         list.insert(channel.channelType);
     }
     return list.size();
@@ -64,7 +67,7 @@ int GetChannelGroupsAmount(void)
 PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 {
     std::set<std::string> list;
-    for (const auto channel : g_schedule.channels) {
+    for (const auto channel : g_channels.channels) {
         list.insert(channel.channelType);
     }
 
@@ -83,7 +86,7 @@ PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 
 PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& group)
 {
-    for (const auto channel : g_schedule.channels) {
+    for (const auto channel : g_channels.channels) {
         if (channel.channelType != group.strGroupName) {
             continue;
         }

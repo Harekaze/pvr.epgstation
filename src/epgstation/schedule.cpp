@@ -20,7 +20,6 @@ bool Schedule::refresh()
     nlohmann::json response;
 
     programs.clear();
-    channels.clear();
 
     std::vector<std::string> types = { "GR", "BS", "CS" };
     for (const auto type : types) {
@@ -32,12 +31,10 @@ bool Schedule::refresh()
             if (o["programs"].empty()) {
                 continue;
             }
-            channels.push_back(o["channel"]);
             std::copy(o["programs"].begin(), o["programs"].end(), std::back_inserter(programs));
         }
     }
 
-    XBMC->Log(ADDON::LOG_NOTICE, "Updated schedule: channel ammount = %d", 8);
     return true;
 }
 

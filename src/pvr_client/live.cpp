@@ -11,6 +11,7 @@
 #include <iostream>
 
 extern epgstation::Schedule g_schedule;
+extern epgstation::Channels g_channels;
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 extern CHelper_libXBMC_pvr* PVR;
 
@@ -63,7 +64,7 @@ void* liveStreamHandle = NULL;
 bool OpenLiveStream(const PVR_CHANNEL& channel)
 {
     char url[1024];
-    snprintf(url, sizeof(url) - 1, g_schedule.liveStreamingPath.c_str(), channel.iUniqueId);
+    snprintf(url, sizeof(url) - 1, g_channels.liveStreamingPath.c_str(), channel.iUniqueId);
     liveStreamHandle = XBMC->OpenFile(url, 0);
     return liveStreamHandle != NULL;
 }
