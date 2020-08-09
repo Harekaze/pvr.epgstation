@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\src\epgstation\api.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\epgstation\channels.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\epgstation\docs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\epgstation\api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\epgstation\channels.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\epgstation\docs.h">

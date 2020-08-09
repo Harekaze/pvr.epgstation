@@ -6,6 +6,7 @@
 #ifndef SRC_EPGSTATION_EPGSTATION_H_
 #define SRC_EPGSTATION_EPGSTATION_H_
 
+#include "epgstation/channels.h"
 #include "epgstation/recorded.h"
 #include "epgstation/reserves.h"
 #include "epgstation/rules.h"

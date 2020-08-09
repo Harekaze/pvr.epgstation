@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\base64\base64.cpp" />
     <ClCompile Include="..\..\src\epgstation\api.cpp" />
+    <ClCompile Include="..\..\src\epgstation\channels.cpp" />
     <ClCompile Include="..\..\src\epgstation\docs.cpp" />
     <ClCompile Include="..\..\src\epgstation\recorded.cpp" />
     <ClCompile Include="..\..\src\epgstation\reserves.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="..\..\include\epgstation\types.h" />
     <ClInclude Include="..\..\src\base64\base64.h" />
     <ClInclude Include="..\..\src\epgstation\api.h" />
+    <ClInclude Include="..\..\src\epgstation\channels.h" />
     <ClInclude Include="..\..\src\epgstation\docs.h" />
     <ClInclude Include="..\..\src\epgstation\epgstation.h" />
     <ClInclude Include="..\..\src\epgstation\recorded.h" />

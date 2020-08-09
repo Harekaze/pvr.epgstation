@@ -3,6 +3,7 @@ noinst_LTLIBRARIES = libepgstation.la
 libepgstation_la_SOURCES = \
 	../base64/base64.cpp \
 	api.cpp \
+	channels.cpp \
 	recorded.cpp \
 	reserves.cpp \
 	rules.cpp \
