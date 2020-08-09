@@ -65,7 +65,7 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
 PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED_VALUE* properties, unsigned int* iPropertiesCount)
 {
     const auto rec = std::find_if(g_recorded.programs.begin(), g_recorded.programs.end(), [recording](epgstation::program p) {
-        return p.id == std::stoul(recording->strRecordingId);
+        return p.id == std::stoull(recording->strRecordingId);
     });
 
     if (rec == g_recorded.programs.end()) {

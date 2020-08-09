@@ -30,14 +30,10 @@ enum ReservedState {
 
 class program {
 public:
-#if defined(_WIN32) || defined(_WIN64)
-    uint64_t id; // Patch for signed uint32_t
-#else
-    uint32_t id;
-#endif
-    uint32_t programId;
-    uint32_t channelId;
-    uint32_t eventId;
+    uint64_t id;
+    uint64_t programId;
+    uint64_t channelId;
+    uint64_t eventId;
     std::string channelType;
     std::string name;
     std::string description;
@@ -80,9 +76,9 @@ public:
 
 class channel {
 public:
-    uint32_t id;
-    uint16_t serviceId;
-    uint16_t networkId;
+    uint64_t id;
+    uint32_t serviceId;
+    uint32_t networkId;
     std::string name;
     bool hasLogoData;
     std::string channelType;
@@ -92,13 +88,13 @@ public:
 
 class rule {
 public:
-    uint16_t id;
+    uint32_t id;
     std::string keyword;
     bool title = true;
     bool description = false;
     bool enable = true;
     uint16_t week = 0;
-    int16_t station = -1;
+    int32_t station = -1;
     uint16_t startTime = 0;
     uint16_t timeRange = 0;
     std::string directory = "";
