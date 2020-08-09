@@ -160,7 +160,7 @@ PVR_ERROR CallMenuHook(const PVR_MENUHOOK& menuhook, const PVR_MENUHOOK_DATA& it
         return PVR_ERROR_NO_ERROR;
     }
     case MENUHOOK_FORCE_EXECUTE_SCHEDULER: {
-        if (g_schedule.update() && g_schedule.refresh()) {
+        if (g_schedule.update()) {
             PVR->TriggerChannelUpdate();
             return PVR_ERROR_NO_ERROR;
         }

@@ -15,29 +15,6 @@
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 
 namespace epgstation {
-bool Schedule::refresh()
-{
-    nlohmann::json response;
-
-    programs.clear();
-
-    std::vector<std::string> types = { "GR", "BS", "CS" };
-    for (const auto type : types) {
-        if (api::getScheduleAll(type, response) == api::REQUEST_FAILED) {
-            return false;
-        }
-
-        for (const auto& o : response) {
-            if (o["programs"].empty()) {
-                continue;
-            }
-            std::copy(o["programs"].begin(), o["programs"].end(), std::back_inserter(programs));
-        }
-    }
-
-    return true;
-}
-
 std::vector<program> Schedule::fetch(uint32_t channelId, time_t start, time_t end)
 {
     nlohmann::json response;
