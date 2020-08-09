@@ -15,6 +15,9 @@ namespace api {
     extern const int REQUEST_FAILED;
     extern std::string baseURL;
 
+    // GET /api/channels
+    int getChannels(nlohmann::json& response);
+
     // GET /api/schedule
     int getSchedule(const std::string type, nlohmann::json& response);
 

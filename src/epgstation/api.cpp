@@ -105,6 +105,13 @@ namespace api {
         return 0;
     }
 
+    // GET /api/channels
+    int getChannels(nlohmann::json& response)
+    {
+        const auto apiPath = "channels";
+        return request("GET", apiPath, &response);
+    }
+
     // GET /api/schedule?type=:type
     int getSchedule(const std::string type, nlohmann::json& response)
     {
