@@ -8,9 +8,9 @@
 #include "json/json.hpp"
 #include <string>
 
-#define OPTIONAL_JSON_FROM(v)           \
-    if (nlohmann_json_j.contains(#v)) { \
-        NLOHMANN_JSON_FROM(v);          \
+#define OPTIONAL_JSON_FROM(v)                                             \
+    if (nlohmann_json_j.contains(#v) && !nlohmann_json_j[#v].is_null()) { \
+        NLOHMANN_JSON_FROM(v);                                            \
     }
 
 namespace epgstation {
