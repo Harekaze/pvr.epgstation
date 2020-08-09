@@ -23,7 +23,7 @@ bool Schedule::refresh()
 
     std::vector<std::string> types = { "GR", "BS", "CS" };
     for (const auto type : types) {
-        if (api::getSchedule(type, response) == api::REQUEST_FAILED) {
+        if (api::getScheduleAll(type, response) == api::REQUEST_FAILED) {
             return false;
         }
 

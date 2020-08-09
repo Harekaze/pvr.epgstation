@@ -113,9 +113,16 @@ namespace api {
     }
 
     // GET /api/schedule?type=:type
-    int getSchedule(const std::string type, nlohmann::json& response)
+    int getScheduleAll(const std::string type, nlohmann::json& response)
     {
         const auto apiPath = "schedule?type=" + type;
+        return request("GET", apiPath, &response);
+    }
+
+    // GET /api/schedule/:id
+    int getSchedule(const std::string id, nlohmann::json& response)
+    {
+        const auto apiPath = "schedule/" + id;
         return request("GET", apiPath, &response);
     }
 

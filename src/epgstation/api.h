@@ -18,8 +18,11 @@ namespace api {
     // GET /api/channels
     int getChannels(nlohmann::json& response);
 
-    // GET /api/schedule
-    int getSchedule(const std::string type, nlohmann::json& response);
+    // GET /api/schedule?type=:type
+    int getScheduleAll(const std::string type, nlohmann::json& response);
+
+    // GET /api/schedule/:id
+    int getSchedule(const std::string id, nlohmann::json& response);
 
     // GET /api/recorded
     int getRecorded(nlohmann::json& response);
