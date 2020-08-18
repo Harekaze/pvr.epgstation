@@ -82,8 +82,9 @@ public:
     std::string name;
     bool hasLogoData;
     std::string channelType;
+    uint8_t type;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(channel, id, serviceId, networkId, name, hasLogoData, channelType);
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(channel, id, serviceId, networkId, name, hasLogoData, channelType, type);
 };
 
 class rule {

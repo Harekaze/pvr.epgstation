@@ -25,7 +25,9 @@ bool Channels::refresh()
         return false;
     }
 
-    std::copy(response.begin(), response.end(), std::back_inserter(channels));
+    std::copy_if(response.begin(), response.end(), std::back_inserter(channels), [](epgstation::channel c) {
+        return c.type != 0xC0; // filter 1-seg channel
+    });
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated channels: channel ammount = %d", channels.size());
     return true;
