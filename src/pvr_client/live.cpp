@@ -53,20 +53,20 @@ PVR_ERROR IsEPGTagPlayable(const EPG_TAG* tag, bool* bIsPlayable)
     return PVR_ERROR_NO_ERROR;
 }
 
-void* liveStreamHandle = NULL;
+void* liveStreamHandle = nullptr;
 bool OpenLiveStream(const PVR_CHANNEL& channel)
 {
     char url[1024];
     snprintf(url, sizeof(url) - 1, g_channels.liveStreamingPath.c_str(), channel.iUniqueId);
     liveStreamHandle = XBMC->OpenFile(url, 0);
-    return liveStreamHandle != NULL;
+    return liveStreamHandle != nullptr;
 }
 
 void CloseLiveStream(void)
 {
-    if (liveStreamHandle != NULL)
+    if (liveStreamHandle != nullptr)
         XBMC->CloseFile(liveStreamHandle);
-    liveStreamHandle = NULL;
+    liveStreamHandle = nullptr;
 }
 
 int ReadLiveStream(unsigned char* pBuffer, unsigned int iBufferSize)

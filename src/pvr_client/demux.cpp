@@ -17,5 +17,5 @@ extern "C" {
 void DemuxReset(void) {}
 void DemuxFlush(void) {}
 void DemuxAbort(void) {}
-DemuxPacket* DemuxRead(void) { return NULL; }
+DemuxPacket* DemuxRead(void) { return nullptr; }
 }

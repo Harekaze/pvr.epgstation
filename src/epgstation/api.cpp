@@ -25,7 +25,7 @@ namespace api {
     const int REQUEST_FAILED = -1;
     std::string baseURL = "";
 
-    int request(const std::string method, const std::string path, nlohmann::json* response = NULL, nlohmann::json body = NULL)
+    int request(const std::string method, const std::string path, nlohmann::json* response = nullptr, nlohmann::json body = nullptr)
     {
         const auto url = baseURL + path;
         XBMC->Log(ADDON::LOG_DEBUG, "Request URL: %s", url.c_str());
@@ -33,7 +33,7 @@ namespace api {
 
         std::string text;
         void* handle = XBMC->CURLCreate(url.c_str());
-        if (handle == NULL) {
+        if (handle == nullptr) {
             XBMC->Log(ADDON::LOG_ERROR, "Failed to create URL: %s", url.c_str());
             return REQUEST_FAILED;
         }
@@ -46,7 +46,7 @@ namespace api {
             }
         }
 
-        if (body != NULL) {
+        if (body != nullptr) {
             XBMC->Log(ADDON::LOG_DEBUG, "Setting request header");
             if (!XBMC->CURLAddOption(handle, XFILE::CURLOPTIONTYPE::CURL_OPTION_HEADER, "Content-Type", "application/json")) {
                 XBMC->Log(ADDON::LOG_ERROR, "Failed to set content-type to %s", url.c_str());
@@ -78,7 +78,7 @@ namespace api {
             sleep(3);
         } while (1);
 
-        if (response != NULL) {
+        if (response != nullptr) {
             XBMC->Log(ADDON::LOG_DEBUG, "Read response body");
 
             constexpr uint16_t buffer_size = 4096;
@@ -91,7 +91,7 @@ namespace api {
 
         XBMC->CloseFile(handle);
 
-        if (response != NULL && !text.empty()) {
+        if (response != nullptr && !text.empty()) {
             try {
                 *response = nlohmann::json::parse(text);
             } catch (nlohmann::json::parse_error err) {
@@ -183,7 +183,7 @@ namespace api {
             { "allowEndLack", true },
         };
         constexpr char apiPath[] = "reserves";
-        return request("POST", apiPath, NULL, body);
+        return request("POST", apiPath, nullptr, body);
     }
 
     // GET /api/rules
@@ -238,7 +238,7 @@ namespace api {
     {
         constexpr char apiPath[] = "rules";
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
-        return request("POST", apiPath, NULL, body);
+        return request("POST", apiPath, nullptr, body);
     }
 
     // PUT /api/rules/:id
@@ -246,7 +246,7 @@ namespace api {
     {
         const auto apiPath = "rules/" + std::to_string(id);
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
-        return request("PUT", apiPath, NULL, body);
+        return request("PUT", apiPath, nullptr, body);
     }
 
     // PUT /api/rules/:id/:action

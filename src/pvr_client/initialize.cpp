@@ -26,9 +26,9 @@ epgstation::Schedule g_schedule;
 epgstation::Recorded g_recorded;
 epgstation::Rule g_rule;
 epgstation::Reserve g_reserve;
-ADDON::CHelper_libXBMC_addon* XBMC = NULL;
-CHelper_libXBMC_pvr* PVR = NULL;
-CHelper_libKODI_guilib* GUI = NULL;
+ADDON::CHelper_libXBMC_addon* XBMC = nullptr;
+CHelper_libXBMC_pvr* PVR = nullptr;
+CHelper_libKODI_guilib* GUI = nullptr;
 time_t lastStartTime;
 
 ADDON_STATUS currentStatus = ADDON_STATUS_UNKNOWN;
@@ -52,9 +52,9 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
         delete PVR;
         delete XBMC;
         delete GUI;
-        PVR = NULL;
-        XBMC = NULL;
-        GUI = NULL;
+        PVR = nullptr;
+        XBMC = nullptr;
+        GUI = nullptr;
         return ADDON_STATUS_PERMANENT_FAILURE;
     }
 
