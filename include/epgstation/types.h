@@ -83,8 +83,19 @@ public:
     bool hasLogoData;
     std::string channelType;
     uint8_t type;
+    uint8_t remoteControlKeyId;
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(channel, id, serviceId, networkId, name, hasLogoData, channelType, type);
+    friend void from_json(const nlohmann::json& nlohmann_json_j, channel& nlohmann_json_t)
+    {
+        NLOHMANN_JSON_FROM(id);
+        NLOHMANN_JSON_FROM(serviceId);
+        NLOHMANN_JSON_FROM(networkId);
+        NLOHMANN_JSON_FROM(name);
+        NLOHMANN_JSON_FROM(hasLogoData);
+        NLOHMANN_JSON_FROM(channelType);
+        NLOHMANN_JSON_FROM(type);
+        OPTIONAL_JSON_FROM(remoteControlKeyId);
+    }
 };
 
 class rule {
