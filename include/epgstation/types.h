@@ -85,6 +85,7 @@ public:
     uint8_t channelTypeId;
     uint8_t type;
     uint8_t remoteControlKeyId;
+    int internalId; // for internal use
 
     friend void from_json(const nlohmann::json& nlohmann_json_j, channel& nlohmann_json_t)
     {
