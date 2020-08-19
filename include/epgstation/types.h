@@ -46,7 +46,7 @@ public:
     bool hasThumbnail;
     bool original;
     std::vector<std::pair<uint8_t, std::string>> encoded;
-    int16_t ruleId; // Optional for reserved program
+    int16_t ruleId = 0; // Optional for reserved program
     ReservedState state; // Optional for reserved program
 
     friend void from_json(const nlohmann::json& nlohmann_json_j, program& nlohmann_json_t)

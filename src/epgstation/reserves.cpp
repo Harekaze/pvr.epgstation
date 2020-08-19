@@ -35,7 +35,7 @@ bool Reserve::refresh()
 
         std::transform(response["reserves"].begin(), response["reserves"].end(), std::back_inserter(reserves), [request](const nlohmann::json& r) {
             auto p = r["program"].get<program>();
-            p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int16_t>() : -1;
+            p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int16_t>() : 0;
             p.state = request.first;
             return p;
         });

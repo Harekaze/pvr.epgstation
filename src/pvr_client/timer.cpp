@@ -108,7 +108,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
                 .iGenreSubType = genre.sub,
                 .bStartAnyTime = false,
                 .bEndAnyTime = false,
-                .iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED,
+                .iTimerType = p.ruleId != 0 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED,
             };
             strncpy(timer.strTitle, p.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(timer.strSummary, (p.extended + p.description).c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
@@ -125,10 +125,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
                 timer.state = PVR_TIMER_STATE_DISABLED;
                 break;
             }
-
-            if (p.ruleId != -1) {
-                timer.iParentClientIndex = p.ruleId;
-            }
+            timer.iParentClientIndex = p.ruleId;
 
             PVR->TransferTimerEntry(handle, &timer);
         }
