@@ -108,7 +108,7 @@ public:
     bool description = false;
     bool enable = true;
     uint16_t week = 0;
-    int32_t station = -1;
+    uint64_t station = 0;
     uint16_t startTime = 0;
     uint16_t timeRange = 0;
     std::string directory = "";

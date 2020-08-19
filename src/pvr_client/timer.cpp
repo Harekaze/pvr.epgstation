@@ -74,7 +74,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             PVR_TIMER timer = {
                 .iClientIndex = static_cast<unsigned int>(rule.id),
                 .state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED,
-                .iClientChannelUid = rule.station == -1 ? PVR_TIMER_ANY_CHANNEL : static_cast<int>(rule.station),
+                .iClientChannelUid = rule.station == 0 ? PVR_TIMER_ANY_CHANNEL : static_cast<int>(rule.station),
                 .iTimerType = CREATE_RULES_PATTERN_MATCHED,
                 .bStartAnyTime = rule.timeRange == 0,
                 .bEndAnyTime = rule.timeRange == 0,

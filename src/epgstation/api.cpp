@@ -213,7 +213,7 @@ namespace api {
                         } }
         };
 
-        if (channelId == -1) {
+        if (channelId == 0) {
             body["search"]["GR"] = true;
             body["search"]["BS"] = true;
             body["search"]["CS"] = true;
