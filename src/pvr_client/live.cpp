@@ -20,19 +20,20 @@ extern "C" {
 PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time_t iStart, time_t iEnd)
 {
     for (const auto epg : g_schedule.fetch(g_channels.getId(static_cast<int>(channel.iUniqueId)), iStart, iEnd)) {
-        const auto genre = epgstation::getGenreCodeFromContentNibble(epg.genre1, epg.genre2);
         EPG_TAG tag = {
             .iUniqueBroadcastId = static_cast<unsigned int>(epg.id % 100000ul),
-            .strTitle = epg.name.c_str(),
-            .strOriginalTitle = epg.name.c_str(),
             .iUniqueChannelId = channel.iUniqueId,
+            .strTitle = epg.name.c_str(),
             .startTime = epg.startAt,
             .endTime = epg.endAt,
             .strPlotOutline = epg.description.c_str(),
             .strPlot = epg.extended.c_str(),
-            .iGenreType = genre.main,
-            .iGenreSubType = genre.sub,
+            .strOriginalTitle = epg.name.c_str(),
         };
+        const auto genre = epgstation::getGenreCodeFromContentNibble(epg.genre1, epg.genre2);
+        tag.iGenreType = genre.main;
+        tag.iGenreSubType = genre.sub;
+
         PVR->TransferEpgEntry(handle, &tag);
     }
 

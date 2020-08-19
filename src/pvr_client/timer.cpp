@@ -74,14 +74,17 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
         for (const auto rule : g_rule.rules) {
             PVR_TIMER timer = {
                 .iClientIndex = static_cast<unsigned int>(rule.id),
-                .state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED,
+                .iParentClientIndex = PVR_TIMER_NO_PARENT,
                 .iClientChannelUid = rule.station == 0 ? PVR_TIMER_ANY_CHANNEL : g_channels.getId(rule.station),
-                .iTimerType = CREATE_RULES_PATTERN_MATCHED,
+                .startTime = 0,
+                .endTime = 0,
                 .bStartAnyTime = rule.timeRange == 0,
                 .bEndAnyTime = rule.timeRange == 0,
-                .iWeekdays = rule.week,
-                .bFullTextEpgSearch = rule.description,
+                .state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED,
+                .iTimerType = CREATE_RULES_PATTERN_MATCHED,
             };
+            timer.iWeekdays = rule.week;
+            timer.bFullTextEpgSearch = rule.description;
             strncpy(timer.strTitle, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             if (!timer.bStartAnyTime) {
                 auto time = localtime_now();
@@ -98,19 +101,22 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
         }
 
         for (const auto p : g_reserve.reserves) {
-            const auto genre = epgstation::getGenreCodeFromContentNibble(p.genre1, p.genre2);
             struct PVR_TIMER timer = {
-                .iEpgUid = static_cast<unsigned int>(p.eventId),
                 .iClientIndex = static_cast<unsigned int>(p.id),
+                .iParentClientIndex = static_cast<unsigned int>(p.ruleId),
                 .iClientChannelUid = g_channels.getId(p.channelId),
                 .startTime = p.startAt,
                 .endTime = p.endAt,
-                .iGenreType = genre.main,
-                .iGenreSubType = genre.sub,
                 .bStartAnyTime = false,
                 .bEndAnyTime = false,
+                .state = PVR_TIMER_STATE_NEW,
                 .iTimerType = p.ruleId != 0 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED,
             };
+            const auto genre = epgstation::getGenreCodeFromContentNibble(p.genre1, p.genre2);
+            timer.iGenreType = genre.main;
+            timer.iGenreSubType = genre.sub;
+            timer.iEpgUid = static_cast<unsigned int>(p.eventId);
+
             strncpy(timer.strTitle, p.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(timer.strSummary, (p.extended + p.description).c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             strncpy(timer.strDirectory, std::to_string(p.id).c_str(), PVR_ADDON_URL_STRING_LENGTH - 1); // NOTE: Store original ID
@@ -126,7 +132,6 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
                 timer.state = PVR_TIMER_STATE_DISABLED;
                 break;
             }
-            timer.iParentClientIndex = p.ruleId;
 
             PVR->TransferTimerEntry(handle, &timer);
         }

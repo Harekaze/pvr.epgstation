@@ -98,23 +98,23 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
     g_channels.liveStreamingPath += transcodeParams;
 
     PVR_MENUHOOK menuHookRec = {
+        .iHookId = MENUHOOK_FORCE_REFRESH_RECORDING,
         .iLocalizedStringId = MSG_FORCE_REFRESH_RECORDING,
         .category = PVR_MENUHOOK_RECORDING,
-        .iHookId = MENUHOOK_FORCE_REFRESH_RECORDING,
     };
     PVR->AddMenuHook(&menuHookRec);
 
     PVR_MENUHOOK menuHookTimer = {
+        .iHookId = MENUHOOK_FORCE_REFRESH_TIMER,
         .iLocalizedStringId = MSG_FORCE_REFRESH_TIMER,
         .category = PVR_MENUHOOK_TIMER,
-        .iHookId = MENUHOOK_FORCE_REFRESH_TIMER,
     };
     PVR->AddMenuHook(&menuHookTimer);
 
     PVR_MENUHOOK menuHookScheduler = {
+        .iHookId = MENUHOOK_FORCE_EXECUTE_SCHEDULER,
         .iLocalizedStringId = MSG_FORCE_EXECUTE_SCHEDULER,
         .category = PVR_MENUHOOK_EPG,
-        .iHookId = MENUHOOK_FORCE_EXECUTE_SCHEDULER,
     };
     PVR->AddMenuHook(&menuHookScheduler);
 
