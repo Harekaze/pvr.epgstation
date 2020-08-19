@@ -60,6 +60,9 @@ namespace api {
     // PUT /api/rules/:id/:action
     int putRuleAction(int id, bool state);
 
+    // DELETE /api/rules/:id
+    int deleteRule(int id);
+
     // PUT /api/scheduler
     int putScheduleUpdate();
 

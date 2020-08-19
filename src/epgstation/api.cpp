@@ -256,6 +256,13 @@ namespace api {
         return request("PUT", apiPath);
     }
 
+    // DELETE /api/rules/:id
+    int deleteRule(int id)
+    {
+        const auto apiPath = "rules/" + std::to_string(id);
+        return request("DELETE", apiPath);
+    }
+
     // PUT /api/schedule/update
     int putScheduleUpdate()
     {
