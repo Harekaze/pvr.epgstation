@@ -25,13 +25,16 @@ std::vector<program> Schedule::fetch(uint32_t channelId, time_t start, time_t en
 #if defined(_WIN32) || defined(_WIN64)
     const auto t = localtime(&start);
 #else
-    const auto t = static_cast<struct tm*>(malloc(sizeof(struct tm)));
+    auto t = new struct tm;
     localtime_r(&start, t);
 #endif
 
     char time[10] = { 0 };
     strftime(time, sizeof(time) - 1, "%y%m%d%H", t);
     const auto days = static_cast<uint16_t>(std::ceil(difftime(end, start) / 86400));
+#if !defined(_WIN32) && !defined(_WIN64)
+    delete t;
+#endif
 
     if (api::getSchedule(std::to_string(channelId), time, days, response) == api::REQUEST_FAILED) {
         return list[channelId];

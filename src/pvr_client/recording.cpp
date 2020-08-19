@@ -8,6 +8,7 @@
 #include "kodi/libKODI_guilib.h"
 #include "kodi/libXBMC_addon.h"
 #include "kodi/libXBMC_pvr.h"
+#include <algorithm>
 #include <climits>
 #include <iostream>
 
@@ -80,17 +81,13 @@ PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED
         auto id = rec->encoded[0].first;
 
         if (rec->encoded.size() > 1) {
-            auto entries = static_cast<char**>(malloc(sizeof(char*) * rec->encoded.size()));
-            for (size_t i = 0; i < rec->encoded.size(); i++) {
-                const auto name = rec->encoded[i].second;
-                entries[i] = static_cast<char*>(malloc(name.length() + 1));
-                memcpy(entries[i], name.c_str(), name.length());
-            }
-            const auto selected = GUI->Dialog_Select("Select media", (const char**)(entries), rec->encoded.size());
-            for (size_t i = 0; i < rec->encoded.size(); i++) {
-                free(entries[i]);
-            }
-            free(entries);
+            std::vector<const char*> entries;
+            std::transform(rec->encoded.begin(), rec->encoded.end(), std::back_inserter(entries), [](std::pair<uint8_t, std::string>& s) {
+                return s.second.c_str();
+            });
+            entries.push_back(nullptr);
+
+            const auto selected = GUI->Dialog_Select("Select media", entries.data(), rec->encoded.size());
             if (selected < 0) {
                 return PVR_ERROR_NOT_IMPLEMENTED;
             }
