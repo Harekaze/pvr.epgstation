@@ -35,19 +35,18 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
     }
 
     for (const auto c : g_channels.channels) {
-        PVR_CHANNEL ch;
-        memset(&ch, 0, sizeof(PVR_CHANNEL));
+        PVR_CHANNEL ch = {
+            .iUniqueId = static_cast<unsigned int>(c.id),
+            .bIsRadio = false,
+            .bIsHidden = false,
+            .iChannelNumber = c.serviceId,
+            .iSubChannelNumber = c.networkId,
+        };
 
-        ch.iUniqueId = c.id;
-        ch.bIsRadio = false;
-        ch.bIsHidden = false;
-        ch.iChannelNumber = c.serviceId;
-        ch.iSubChannelNumber = c.networkId;
         strncpy(ch.strChannelName, c.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
 
         if (c.hasLogoData) {
-            snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1,
-                g_channels.channelLogoPath.c_str(), c.id);
+            snprintf(ch.strIconPath, PVR_ADDON_URL_STRING_LENGTH - 1, g_channels.channelLogoPath.c_str(), c.id);
         }
         PVR->TransferChannelEntry(handle, &ch);
     }
@@ -72,11 +71,10 @@ PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
     }
 
     for (const auto channelType : list) {
-        PVR_CHANNEL_GROUP chGroup;
-        memset(&chGroup, 0, sizeof(PVR_CHANNEL_GROUP));
-
+        PVR_CHANNEL_GROUP chGroup = {
+            .bIsRadio = false,
+        };
         strncpy(chGroup.strGroupName, channelType.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-        chGroup.bIsRadio = false;
 
         PVR->TransferChannelGroup(handle, &chGroup);
     }
@@ -90,11 +88,10 @@ PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& g
         if (channel.channelType != group.strGroupName) {
             continue;
         }
-        PVR_CHANNEL_GROUP_MEMBER chMem;
-        memset(&chMem, 0, sizeof(PVR_CHANNEL_GROUP_MEMBER));
-
-        chMem.iChannelUniqueId = channel.id;
-        chMem.iChannelNumber = channel.serviceId;
+        PVR_CHANNEL_GROUP_MEMBER chMem = {
+            .iChannelUniqueId = static_cast<unsigned int>(channel.id),
+            .iChannelNumber = channel.serviceId,
+        };
         strncpy(chMem.strGroupName, group.strGroupName, PVR_ADDON_NAME_STRING_LENGTH - 1);
 
         PVR->TransferChannelGroupMember(handle, &chMem);

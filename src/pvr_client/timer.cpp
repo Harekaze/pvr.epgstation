@@ -19,8 +19,10 @@
 #include <unistd.h>
 #endif
 
-#define CREATE_TIMER_MANUAL_RESERVED 0x11
-#define CREATE_RULES_PATTERN_MATCHED 0x12
+constexpr int CREATE_TIMER_MANUAL_RESERVED = 0x11;
+constexpr int CREATE_RULES_PATTERN_MATCHED = 0x12;
+constexpr unsigned int TIMER_MANUAL_RESERVED = 0x01;
+constexpr unsigned int TIMER_PATTERN_MATCHED = 0x02;
 
 #define MSG_TIMER_MANUAL_RESERVED 30900
 #define MSG_TIMER_PATTERN_MATCHED 30901
@@ -66,16 +68,17 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
 {
     if (g_rule.refresh() && g_reserve.refresh()) {
         for (const auto rule : g_rule.rules) {
-            PVR_TIMER timer;
-            memset(&timer, 0, sizeof(PVR_TIMER));
-
-            timer.iClientIndex = rule.id;
-            timer.state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED;
+            PVR_TIMER timer = {
+                .iClientIndex = static_cast<unsigned int>(rule.id),
+                .state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED,
+                .iClientChannelUid = rule.station == -1 ? PVR_TIMER_ANY_CHANNEL : static_cast<int>(rule.station),
+                .iTimerType = CREATE_RULES_PATTERN_MATCHED,
+                .bStartAnyTime = rule.timeRange == 0,
+                .bEndAnyTime = rule.timeRange == 0,
+                .iWeekdays = rule.week,
+                .bFullTextEpgSearch = rule.description,
+            };
             strncpy(timer.strTitle, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
-            timer.iClientChannelUid = rule.station == -1 ? PVR_TIMER_ANY_CHANNEL : rule.station;
-            timer.iTimerType = CREATE_RULES_PATTERN_MATCHED;
-            timer.bStartAnyTime = rule.timeRange == 0;
-            timer.bEndAnyTime = rule.timeRange == 0;
             if (!timer.bStartAnyTime) {
                 auto time = localtime_now();
                 time->tm_hour = rule.startTime;
@@ -83,23 +86,27 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
                 timer.startTime = mktime(time);
                 timer.endTime = timer.startTime + rule.timeRange * 60 * 60;
             }
-            timer.iWeekdays = rule.week;
             strncpy(timer.strEpgSearchString, rule.keyword.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(timer.strSummary, rule.keyword.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             strncpy(timer.strDirectory, rule.directory.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
-            timer.bFullTextEpgSearch = rule.description;
 
             PVR->TransferTimerEntry(handle, &timer);
         }
 
         for (const auto p : g_reserve.reserves) {
             const auto genre = epgstation::getGenreCodeFromContentNibble(p.genre1, p.genre2);
-            struct PVR_TIMER timer;
-            memset(&timer, 0, sizeof(PVR_TIMER));
-
-            timer.iEpgUid = p.eventId;
-            timer.iClientIndex = p.id;
-            timer.iClientChannelUid = p.channelId;
+            struct PVR_TIMER timer = {
+                .iEpgUid = static_cast<unsigned int>(p.eventId),
+                .iClientIndex = static_cast<unsigned int>(p.id),
+                .iClientChannelUid = static_cast<int>(p.channelId),
+                .startTime = p.startAt,
+                .endTime = p.endAt,
+                .iGenreType = genre.main,
+                .iGenreSubType = genre.sub,
+                .bStartAnyTime = false,
+                .bEndAnyTime = false,
+                .iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED,
+            };
             strncpy(timer.strTitle, p.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(timer.strSummary, (p.extended + p.description).c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             strncpy(timer.strDirectory, std::to_string(p.id).c_str(), PVR_ADDON_URL_STRING_LENGTH - 1); // NOTE: Store original ID
@@ -116,13 +123,6 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
                 break;
             }
 
-            timer.startTime = p.startAt;
-            timer.endTime = p.endAt;
-            timer.iGenreType = genre.main;
-            timer.iGenreSubType = genre.sub;
-            timer.bStartAnyTime = false;
-            timer.bEndAnyTime = false;
-            timer.iTimerType = p.ruleId != -1 ? TIMER_PATTERN_MATCHED : TIMER_MANUAL_RESERVED;
             if (p.ruleId != -1) {
                 timer.iParentClientIndex = p.ruleId;
             }
@@ -265,41 +265,40 @@ PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
 
 PVR_ERROR GetTimerTypes(PVR_TIMER_TYPE types[], int* size)
 {
-    int& count = *size;
-    count = 0;
+    std::vector<PVR_TIMER_TYPE> tt = {
+        {
+            .iId = CREATE_RULES_PATTERN_MATCHED,
+            .iAttributes = PVR_TIMER_TYPE_SUPPORTS_ENABLE_DISABLE
+                | PVR_TIMER_TYPE_SUPPORTS_TITLE_EPG_MATCH | PVR_TIMER_TYPE_SUPPORTS_FULLTEXT_EPG_MATCH
+                | PVR_TIMER_TYPE_SUPPORTS_CHANNELS | PVR_TIMER_TYPE_SUPPORTS_ANY_CHANNEL
+                | PVR_TIMER_TYPE_SUPPORTS_START_TIME | PVR_TIMER_TYPE_SUPPORTS_START_ANYTIME
+                | PVR_TIMER_TYPE_SUPPORTS_END_TIME | PVR_TIMER_TYPE_SUPPORTS_END_ANYTIME
+                | PVR_TIMER_TYPE_SUPPORTS_WEEKDAYS | PVR_TIMER_TYPE_IS_REPEATING | PVR_TIMER_TYPE_SUPPORTS_RECORDING_FOLDERS,
+        },
+        {
+            .iId = CREATE_TIMER_MANUAL_RESERVED,
+            .iAttributes = PVR_TIMER_TYPE_REQUIRES_EPG_TAG_ON_CREATE,
+        },
+        {
+            .iId = TIMER_MANUAL_RESERVED,
+            .iAttributes = PVR_TIMER_TYPE_FORBIDS_NEW_INSTANCES | PVR_TIMER_TYPE_IS_READONLY | PVR_TIMER_TYPE_IS_MANUAL
+                | PVR_TIMER_TYPE_SUPPORTS_START_TIME | PVR_TIMER_TYPE_SUPPORTS_END_TIME | PVR_TIMER_TYPE_SUPPORTS_READONLY_DELETE,
+        },
+        {
+            .iId = TIMER_PATTERN_MATCHED,
+            .iAttributes = PVR_TIMER_TYPE_FORBIDS_NEW_INSTANCES | PVR_TIMER_TYPE_IS_READONLY | PVR_TIMER_TYPE_SUPPORTS_ENABLE_DISABLE,
+        },
+    };
 
-    // Create timer rule
-    memset(&types[count], 0, sizeof(types[count]));
-    types[count].iId = CREATE_RULES_PATTERN_MATCHED;
-    types[count].iAttributes = PVR_TIMER_TYPE_SUPPORTS_ENABLE_DISABLE
-        | PVR_TIMER_TYPE_SUPPORTS_TITLE_EPG_MATCH | PVR_TIMER_TYPE_SUPPORTS_FULLTEXT_EPG_MATCH
-        | PVR_TIMER_TYPE_SUPPORTS_CHANNELS | PVR_TIMER_TYPE_SUPPORTS_ANY_CHANNEL
-        | PVR_TIMER_TYPE_SUPPORTS_START_TIME | PVR_TIMER_TYPE_SUPPORTS_START_ANYTIME
-        | PVR_TIMER_TYPE_SUPPORTS_END_TIME | PVR_TIMER_TYPE_SUPPORTS_END_ANYTIME
-        | PVR_TIMER_TYPE_SUPPORTS_WEEKDAYS | PVR_TIMER_TYPE_IS_REPEATING | PVR_TIMER_TYPE_SUPPORTS_RECORDING_FOLDERS;
-    strncpy(types[count].strDescription, XBMC->GetLocalizedString(MSG_RULES_PATTERN_MATCHED_CREATION), PVR_ADDON_TIMERTYPE_STRING_LENGTH - 1);
-    count++;
+    strncpy(std::find_if(tt.begin(), tt.end(), [](PVR_TIMER_TYPE t) { return t.iId == CREATE_RULES_PATTERN_MATCHED; })->strDescription,
+        XBMC->GetLocalizedString(MSG_RULES_PATTERN_MATCHED_CREATION), PVR_ADDON_TIMERTYPE_STRING_LENGTH - 1);
+    strncpy(std::find_if(tt.begin(), tt.end(), [](PVR_TIMER_TYPE t) { return t.iId == TIMER_MANUAL_RESERVED; })->strDescription,
+        XBMC->GetLocalizedString(MSG_TIMER_MANUAL_RESERVED), PVR_ADDON_TIMERTYPE_STRING_LENGTH - 1);
+    strncpy(std::find_if(tt.begin(), tt.end(), [](PVR_TIMER_TYPE t) { return t.iId == TIMER_PATTERN_MATCHED; })->strDescription,
+        XBMC->GetLocalizedString(MSG_TIMER_PATTERN_MATCHED), PVR_ADDON_TIMERTYPE_STRING_LENGTH - 1);
 
-    // Reserve program manually
-    memset(&types[count], 0, sizeof(types[count]));
-    types[count].iId = CREATE_TIMER_MANUAL_RESERVED;
-    types[count].iAttributes = PVR_TIMER_TYPE_REQUIRES_EPG_TAG_ON_CREATE;
-    count++;
-
-    // Manual reserved programs
-    memset(&types[count], 0, sizeof(types[count]));
-    types[count].iId = TIMER_MANUAL_RESERVED;
-    types[count].iAttributes = PVR_TIMER_TYPE_FORBIDS_NEW_INSTANCES | PVR_TIMER_TYPE_IS_READONLY | PVR_TIMER_TYPE_IS_MANUAL
-        | PVR_TIMER_TYPE_SUPPORTS_START_TIME | PVR_TIMER_TYPE_SUPPORTS_END_TIME | PVR_TIMER_TYPE_SUPPORTS_READONLY_DELETE;
-    strncpy(types[count].strDescription, XBMC->GetLocalizedString(MSG_TIMER_MANUAL_RESERVED), PVR_ADDON_TIMERTYPE_STRING_LENGTH - 1);
-    count++;
-
-    // Rule based reserved programs
-    memset(&types[count], 0, sizeof(types[count]));
-    types[count].iId = TIMER_PATTERN_MATCHED;
-    types[count].iAttributes = PVR_TIMER_TYPE_FORBIDS_NEW_INSTANCES | PVR_TIMER_TYPE_IS_READONLY | PVR_TIMER_TYPE_SUPPORTS_ENABLE_DISABLE;
-    strncpy(types[count].strDescription, XBMC->GetLocalizedString(MSG_TIMER_PATTERN_MATCHED), PVR_ADDON_TIMERTYPE_STRING_LENGTH - 1);
-    count++;
+    std::copy(tt.begin(), tt.end(), types);
+    *size = tt.size();
 
     return PVR_ERROR_NO_ERROR;
 }

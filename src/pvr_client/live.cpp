@@ -20,21 +20,19 @@ extern "C" {
 PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time_t iStart, time_t iEnd)
 {
     for (const auto epg : g_schedule.fetch(channel.iUniqueId, iStart, iEnd)) {
-        EPG_TAG tag;
-        memset(&tag, 0, sizeof(EPG_TAG));
         const auto genre = epgstation::getGenreCodeFromContentNibble(epg.genre1, epg.genre2);
-
-        tag.iUniqueBroadcastId = static_cast<unsigned int>(epg.id % 100000ul);
-        tag.strTitle = epg.name.c_str();
-        tag.strOriginalTitle = epg.name.c_str();
-        tag.iUniqueChannelId = channel.iUniqueId;
-        tag.startTime = epg.startAt;
-        tag.endTime = epg.endAt;
-        tag.strPlotOutline = epg.description.c_str();
-        tag.strPlot = epg.extended.c_str();
-        tag.iGenreType = genre.main;
-        tag.iGenreSubType = genre.sub;
-
+        EPG_TAG tag = {
+            .iUniqueBroadcastId = static_cast<unsigned int>(epg.id % 100000ul),
+            .strTitle = epg.name.c_str(),
+            .strOriginalTitle = epg.name.c_str(),
+            .iUniqueChannelId = channel.iUniqueId,
+            .startTime = epg.startAt,
+            .endTime = epg.endAt,
+            .strPlotOutline = epg.description.c_str(),
+            .strPlot = epg.extended.c_str(),
+            .iGenreType = genre.main,
+            .iGenreSubType = genre.sub,
+        };
         PVR->TransferEpgEntry(handle, &tag);
     }
 

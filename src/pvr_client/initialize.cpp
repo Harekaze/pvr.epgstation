@@ -97,25 +97,25 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
 
     g_channels.liveStreamingPath += transcodeParams;
 
-    PVR_MENUHOOK menuHookRec;
-    memset(&menuHookRec, 0, sizeof(PVR_MENUHOOK));
-    menuHookRec.iLocalizedStringId = MSG_FORCE_REFRESH_RECORDING;
-    menuHookRec.category = PVR_MENUHOOK_RECORDING;
-    menuHookRec.iHookId = MENUHOOK_FORCE_REFRESH_RECORDING;
+    PVR_MENUHOOK menuHookRec = {
+        .iLocalizedStringId = MSG_FORCE_REFRESH_RECORDING,
+        .category = PVR_MENUHOOK_RECORDING,
+        .iHookId = MENUHOOK_FORCE_REFRESH_RECORDING,
+    };
     PVR->AddMenuHook(&menuHookRec);
 
-    PVR_MENUHOOK menuHookTimer;
-    memset(&menuHookTimer, 0, sizeof(PVR_MENUHOOK));
-    menuHookTimer.iLocalizedStringId = MSG_FORCE_REFRESH_TIMER;
-    menuHookTimer.category = PVR_MENUHOOK_TIMER;
-    menuHookTimer.iHookId = MENUHOOK_FORCE_REFRESH_TIMER;
+    PVR_MENUHOOK menuHookTimer = {
+        .iLocalizedStringId = MSG_FORCE_REFRESH_TIMER,
+        .category = PVR_MENUHOOK_TIMER,
+        .iHookId = MENUHOOK_FORCE_REFRESH_TIMER,
+    };
     PVR->AddMenuHook(&menuHookTimer);
 
-    PVR_MENUHOOK menuHookScheduler;
-    memset(&menuHookScheduler, 0, sizeof(PVR_MENUHOOK));
-    menuHookScheduler.iLocalizedStringId = MSG_FORCE_EXECUTE_SCHEDULER;
-    menuHookScheduler.category = PVR_MENUHOOK_EPG;
-    menuHookScheduler.iHookId = MENUHOOK_FORCE_EXECUTE_SCHEDULER;
+    PVR_MENUHOOK menuHookScheduler = {
+        .iLocalizedStringId = MSG_FORCE_EXECUTE_SCHEDULER,
+        .category = PVR_MENUHOOK_EPG,
+        .iHookId = MENUHOOK_FORCE_EXECUTE_SCHEDULER,
+    };
     PVR->AddMenuHook(&menuHookScheduler);
 
     currentStatus = ADDON_STATUS_OK;

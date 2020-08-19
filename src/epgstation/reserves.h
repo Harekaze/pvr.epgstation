@@ -10,9 +10,6 @@
 #include <string>
 #include <vector>
 
-#define TIMER_MANUAL_RESERVED 0x01
-#define TIMER_PATTERN_MATCHED 0x02
-
 namespace epgstation {
 class Reserve {
 public:

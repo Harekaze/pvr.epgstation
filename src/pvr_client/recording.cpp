@@ -36,20 +36,19 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
     if (g_recorded.refresh()) {
         for (const auto r : g_recorded.programs) {
             const auto genre = epgstation::getGenreCodeFromContentNibble(r.genre1, r.genre2);
-            PVR_RECORDING rec;
-            memset(&rec, 0, sizeof(PVR_RECORDING));
-
+            PVR_RECORDING rec = {
+                .recordingTime = r.startAt,
+                .iDuration = static_cast<int>(r.endAt - r.startAt),
+                .iGenreType = genre.main,
+                .iGenreSubType = genre.sub,
+                .iEpgEventId = static_cast<unsigned int>(r.programId % 100000),
+                .iChannelUid = static_cast<int>(r.channelId),
+                .channelType = PVR_RECORDING_CHANNEL_TYPE_TV,
+            };
             strncpy(rec.strRecordingId, std::to_string(r.id).c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(rec.strTitle, r.name.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
             strncpy(rec.strPlotOutline, r.description.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
             strncpy(rec.strPlot, r.extended.c_str(), PVR_ADDON_DESC_STRING_LENGTH - 1);
-            rec.recordingTime = r.startAt;
-            rec.iDuration = static_cast<int>(r.endAt - r.startAt);
-            rec.iGenreType = genre.main;
-            rec.iGenreSubType = genre.sub;
-            rec.iEpgEventId = static_cast<unsigned int>(r.programId % 100000);
-            rec.iChannelUid = static_cast<int>(r.channelId);
-            rec.channelType = PVR_RECORDING_CHANNEL_TYPE_TV;
             if (r.hasThumbnail) {
                 snprintf(rec.strThumbnailPath, PVR_ADDON_URL_STRING_LENGTH - 1, g_recorded.recordedThumbnailPath.c_str(), rec.strRecordingId);
             }
