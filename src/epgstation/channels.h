@@ -17,6 +17,8 @@ public:
     std::string channelLogoPath;
     std::string liveStreamingPath;
     std::vector<channel> channels;
+    int getId(uint64_t realId);
+    uint64_t getId(int internalId);
     bool refresh();
 };
 } // namespace epgstation
