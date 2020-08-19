@@ -82,6 +82,7 @@ public:
     std::string name;
     bool hasLogoData;
     std::string channelType;
+    uint8_t channelTypeId;
     uint8_t type;
     uint8_t remoteControlKeyId;
 
@@ -93,6 +94,7 @@ public:
         NLOHMANN_JSON_FROM(name);
         NLOHMANN_JSON_FROM(hasLogoData);
         NLOHMANN_JSON_FROM(channelType);
+        OPTIONAL_JSON_FROM(channelTypeId);
         NLOHMANN_JSON_FROM(type);
         OPTIONAL_JSON_FROM(remoteControlKeyId);
     }
