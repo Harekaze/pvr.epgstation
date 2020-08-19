@@ -61,7 +61,10 @@ extern "C" {
 
 int GetTimersAmount(void)
 {
-    return g_rule.rules.size() + g_reserve.reserves.size();
+    if (g_rule.refresh() && g_reserve.refresh()) {
+        return g_rule.rules.size() + g_reserve.reserves.size();
+    }
+    return -1;
 }
 
 PVR_ERROR GetTimers(ADDON_HANDLE handle)
