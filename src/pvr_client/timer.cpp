@@ -34,6 +34,7 @@ extern epgstation::Recorded g_recorded;
 extern epgstation::Schedule g_schedule;
 extern epgstation::Rule g_rule;
 extern epgstation::Reserve g_reserve;
+extern epgstation::Channels g_channels;
 
 struct tm* localtime_now()
 {
@@ -74,7 +75,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             PVR_TIMER timer = {
                 .iClientIndex = static_cast<unsigned int>(rule.id),
                 .state = rule.enable ? PVR_TIMER_STATE_SCHEDULED : PVR_TIMER_STATE_DISABLED,
-                .iClientChannelUid = rule.station == 0 ? PVR_TIMER_ANY_CHANNEL : static_cast<int>(rule.station),
+                .iClientChannelUid = rule.station == 0 ? PVR_TIMER_ANY_CHANNEL : g_channels.getId(rule.station),
                 .iTimerType = CREATE_RULES_PATTERN_MATCHED,
                 .bStartAnyTime = rule.timeRange == 0,
                 .bEndAnyTime = rule.timeRange == 0,
@@ -101,7 +102,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             struct PVR_TIMER timer = {
                 .iEpgUid = static_cast<unsigned int>(p.eventId),
                 .iClientIndex = static_cast<unsigned int>(p.id),
-                .iClientChannelUid = static_cast<int>(p.channelId),
+                .iClientChannelUid = g_channels.getId(p.channelId),
                 .startTime = p.startAt,
                 .endTime = p.endAt,
                 .iGenreType = genre.main,
@@ -154,7 +155,7 @@ PVR_ERROR UpdateTimer(const PVR_TIMER& timer)
             auto endHour = get_hour(timer.endTime);
             if (g_rule.edit(timer.iClientIndex, timer.state != PVR_TIMER_STATE_DISABLED,
                     timer.strEpgSearchString, timer.bFullTextEpgSearch,
-                    timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
+                    g_channels.getId(timer.iClientChannelUid), timer.iWeekdays, startHour, endHour,
                     timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)) {
                 goto complete;
             }
@@ -212,16 +213,16 @@ PVR_ERROR AddTimer(const PVR_TIMER& timer)
         auto endHour = get_hour(timer.endTime);
 
         if (g_rule.add(timer.state != PVR_TIMER_STATE_DISABLED, timer.strEpgSearchString, timer.bFullTextEpgSearch,
-                timer.iClientChannelUid, timer.iWeekdays, startHour, endHour,
+                g_channels.getId(timer.iClientChannelUid), timer.iWeekdays, startHour, endHour,
                 timer.bStartAnyTime || timer.bEndAnyTime, timer.strDirectory)) {
             goto complete;
         }
         return PVR_ERROR_SERVER_ERROR;
     }
     case CREATE_TIMER_MANUAL_RESERVED: {
-        auto programs = g_schedule.list[timer.iClientChannelUid];
+        auto programs = g_schedule.list[g_channels.getId(timer.iClientChannelUid)];
         if (programs.empty()) {
-            programs = g_schedule.fetch(static_cast<uint32_t>(timer.iClientChannelUid), timer.startTime, timer.endTime);
+            programs = g_schedule.fetch(g_channels.getId(timer.iClientChannelUid), timer.startTime, timer.endTime);
         }
 
         const auto program = std::find_if(programs.begin(), programs.end(), [timer](epgstation::program p) {

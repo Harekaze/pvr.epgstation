@@ -20,6 +20,7 @@
 #endif
 
 extern epgstation::Recorded g_recorded;
+extern epgstation::Channels g_channels;
 extern ADDON::CHelper_libXBMC_addon* XBMC;
 extern CHelper_libXBMC_pvr* PVR;
 extern CHelper_libKODI_guilib* GUI;
@@ -42,7 +43,7 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
                 .iGenreType = genre.main,
                 .iGenreSubType = genre.sub,
                 .iEpgEventId = static_cast<unsigned int>(r.programId % 100000),
-                .iChannelUid = static_cast<int>(r.channelId),
+                .iChannelUid = g_channels.getId(r.channelId),
                 .channelType = PVR_RECORDING_CHANNEL_TYPE_TV,
             };
             strncpy(rec.strRecordingId, std::to_string(r.id).c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);

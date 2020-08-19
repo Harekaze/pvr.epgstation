@@ -36,7 +36,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 
     for (const auto c : g_channels.channels) {
         PVR_CHANNEL ch = {
-            .iUniqueId = static_cast<unsigned int>(c.id),
+            .iUniqueId = static_cast<unsigned int>(g_channels.getId(c.id)),
             .bIsRadio = false,
             .bIsHidden = false,
             .iChannelNumber = c.serviceId,
@@ -89,7 +89,7 @@ PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& g
             continue;
         }
         PVR_CHANNEL_GROUP_MEMBER chMem = {
-            .iChannelUniqueId = static_cast<unsigned int>(channel.id),
+            .iChannelUniqueId = static_cast<unsigned int>(g_channels.getId(channel.id)),
             .iChannelNumber = channel.serviceId,
         };
         strncpy(chMem.strGroupName, group.strGroupName, PVR_ADDON_NAME_STRING_LENGTH - 1);
