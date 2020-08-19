@@ -85,9 +85,10 @@ public:
     uint8_t channelTypeId;
     uint8_t type;
     uint8_t remoteControlKeyId;
+    std::string channel;
     int internalId; // for internal use
 
-    friend void from_json(const nlohmann::json& nlohmann_json_j, channel& nlohmann_json_t)
+    friend void from_json(const nlohmann::json& nlohmann_json_j, epgstation::channel& nlohmann_json_t)
     {
         NLOHMANN_JSON_FROM(id);
         NLOHMANN_JSON_FROM(serviceId);
@@ -98,6 +99,7 @@ public:
         OPTIONAL_JSON_FROM(channelTypeId);
         NLOHMANN_JSON_FROM(type);
         OPTIONAL_JSON_FROM(remoteControlKeyId);
+        OPTIONAL_JSON_FROM(channel);
     }
 };
 
