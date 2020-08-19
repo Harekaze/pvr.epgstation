@@ -40,14 +40,14 @@ bool Channels::refresh()
 
 int Channels::getId(uint64_t realId)
 {
-    return std::find_if(channels.begin(), channels.end(), [realId](channel ch) {
+    return std::find_if(channels.begin(), channels.end(), [realId](epgstation::channel ch) {
         return ch.id == realId;
     })->internalId;
 }
 
 uint64_t Channels::getId(int internalId)
 {
-    return std::find_if(channels.begin(), channels.end(), [internalId](channel ch) {
+    return std::find_if(channels.begin(), channels.end(), [internalId](epgstation::channel ch) {
         return ch.internalId == internalId;
     })->id;
 }

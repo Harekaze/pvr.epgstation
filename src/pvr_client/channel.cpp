@@ -44,8 +44,8 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
             .iSubChannelNumber = c.serviceId,
         };
 
-        if (std::find(transferred.begin(), transferred.end(), c.channel) != transferred.end()) {
-            XBMC->Log(ADDON::LOG_DEBUG, "Hide \"%s\" because main channel of %s is transferred", c.name.c_str(), c.channel.c_str());
+        if (std::find(transferred.begin(), transferred.end(), c.channelStr) != transferred.end()) {
+            XBMC->Log(ADDON::LOG_DEBUG, "Hide \"%s\" because main channel of %s is transferred", c.name.c_str(), c.channelStr.c_str());
             ch.bIsHidden = true;
         }
 
@@ -56,7 +56,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
         }
         PVR->TransferChannelEntry(handle, &ch);
 
-        transferred.push_back(c.channel);
+        transferred.push_back(c.channelStr);
     }
 
     return PVR_ERROR_NO_ERROR;
