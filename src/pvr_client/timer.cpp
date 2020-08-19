@@ -257,6 +257,15 @@ PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool bForceDelete)
         }
         return PVR_ERROR_SERVER_ERROR;
     }
+    case CREATE_RULES_PATTERN_MATCHED: {
+        if (g_rule.remove(timer.iClientIndex)) {
+            sleep(1);
+            PVR->TriggerRecordingUpdate();
+            PVR->TriggerTimerUpdate();
+            return PVR_ERROR_NO_ERROR;
+        }
+        return PVR_ERROR_SERVER_ERROR;
+    }
     default: {
         XBMC->Log(ADDON::LOG_ERROR, "Unknown timer type for deletion request: %d", timer.iTimerType);
         return PVR_ERROR_NOT_IMPLEMENTED;
