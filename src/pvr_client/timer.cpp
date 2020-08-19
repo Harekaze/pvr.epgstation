@@ -41,7 +41,7 @@ struct tm* localtime_now()
     time_t now;
     time(&now);
 #if defined(_WIN32) || defined(_WIN64)
-    return localtime(&now);
+    return localtime(&now); // NOLINT
 #else
     struct tm time;
     return localtime_r(&now, &time);
@@ -51,7 +51,7 @@ struct tm* localtime_now()
 uint8_t get_hour(time_t time)
 {
 #if defined(_WIN32) || defined(_WIN64)
-    return localtime(&time)->tm_hour;
+    return localtime(&time)->tm_hour; // NOLINT
 #else
     struct tm t;
     return localtime_r(&time, &t)->tm_hour;

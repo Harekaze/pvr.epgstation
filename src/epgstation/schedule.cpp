@@ -23,7 +23,7 @@ std::vector<program> Schedule::fetch(uint32_t channelId, time_t start, time_t en
     list[channelId] = std::vector<program>();
 
 #if defined(_WIN32) || defined(_WIN64)
-    const auto t = localtime(&start);
+    const auto t = localtime(&start); // NOLINT
 #else
     auto t = new struct tm;
     localtime_r(&start, t);
