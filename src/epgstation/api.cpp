@@ -193,7 +193,7 @@ namespace api {
         return request("GET", apiPath, &response);
     }
 
-    nlohmann::json createRulePayload(bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
+    nlohmann::json createRulePayload(bool enabled, const std::string searchText, bool fullText, uint64_t channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
         uint16_t newWeekdays = weekdays ^ PVR_WEEKDAY_SUNDAY;
         newWeekdays <<= 1;
@@ -219,7 +219,7 @@ namespace api {
             body["search"]["CS"] = true;
             body["search"]["SKY"] = true;
         } else {
-            body["search"]["station"] = static_cast<uint16_t>(channelId);
+            body["search"]["station"] = channelId;
         }
 
         if (!anytime) {
@@ -234,7 +234,7 @@ namespace api {
     }
 
     // POST /api/rules
-    int postRules(bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
+    int postRules(bool enabled, const std::string searchText, bool fullText, uint64_t channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
         constexpr char apiPath[] = "rules";
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
@@ -242,7 +242,7 @@ namespace api {
     }
 
     // PUT /api/rules/:id
-    int putRule(int id, bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
+    int putRule(int id, bool enabled, const std::string searchText, bool fullText, uint64_t channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
     {
         const auto apiPath = "rules/" + std::to_string(id);
         nlohmann::json body = createRulePayload(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory);
