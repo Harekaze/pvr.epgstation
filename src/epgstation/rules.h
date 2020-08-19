@@ -19,6 +19,7 @@ public:
     bool add(bool enabled, const std::string searchText, bool fullText, uint64_t channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory);
     bool edit(int id, bool enabled, const std::string searchText, bool fullText, uint64_t channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory);
     bool enable(int id, bool enabled);
+    bool remove(int id);
 };
 } // namespace epgstation
 

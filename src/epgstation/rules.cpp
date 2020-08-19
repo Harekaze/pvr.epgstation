@@ -56,4 +56,11 @@ bool Rule::enable(int id, bool enabled)
     return success;
 }
 
+bool Rule::remove(int id)
+{
+    const auto success = api::deleteRule(id) != api::REQUEST_FAILED;
+    XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR, "Rule delete: #%d", id);
+    return success;
+}
+
 } // namespace epgstation
