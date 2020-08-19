@@ -32,7 +32,7 @@ bool Rule::refresh()
     return true;
 }
 
-bool Rule::add(bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
+bool Rule::add(bool enabled, const std::string searchText, bool fullText, uint64_t channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
 {
     const auto success = api::postRules(enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != api::REQUEST_FAILED;
     XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
@@ -40,7 +40,7 @@ bool Rule::add(bool enabled, const std::string searchText, bool fullText, int ch
     return success;
 }
 
-bool Rule::edit(int id, bool enabled, const std::string searchText, bool fullText, int channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
+bool Rule::edit(int id, bool enabled, const std::string searchText, bool fullText, uint64_t channelId, unsigned int weekdays, unsigned int startHour, unsigned int endHour, bool anytime, const std::string directory)
 {
     const auto success = api::putRule(id, enabled, searchText, fullText, channelId, weekdays, startHour, endHour, anytime, directory) != api::REQUEST_FAILED;
     XBMC->Log(success ? ADDON::LOG_NOTICE : ADDON::LOG_ERROR,
