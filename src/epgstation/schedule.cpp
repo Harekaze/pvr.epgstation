@@ -41,12 +41,8 @@ std::vector<program> Schedule::fetch(uint32_t channelId, time_t start, time_t en
     }
 
     for (const auto& o : response) {
-        if (o["programs"].empty()) {
-            continue;
-        }
         std::copy(o["programs"].begin(), o["programs"].end(), std::back_inserter(list[channelId]));
     }
-
     return list[channelId];
 }
 

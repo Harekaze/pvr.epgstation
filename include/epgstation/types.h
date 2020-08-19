@@ -67,9 +67,9 @@ public:
         OPTIONAL_JSON_FROM(hasThumbnail);
         OPTIONAL_JSON_FROM(original);
         if (nlohmann_json_j.contains("encoded") && nlohmann_json_j["encoded"].is_array()) {
-            for (auto e : nlohmann_json_j["encoded"]) {
-                nlohmann_json_t.encoded.push_back(std::make_pair(e["encodedId"], e["name"]));
-            }
+            std::transform(nlohmann_json_j["encoded"].begin(), nlohmann_json_j["encoded"].end(), std::back_inserter(nlohmann_json_t.encoded), [](const nlohmann::json& e) {
+                return std::make_pair(e["encodedId"], e["name"]);
+            });
         }
     }
 };

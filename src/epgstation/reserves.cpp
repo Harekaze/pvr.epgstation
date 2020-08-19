@@ -10,6 +10,7 @@
 #include "epgstation/types.h"
 #include "kodi/libXBMC_addon.h"
 #include "json/json.hpp"
+#include <algorithm>
 #include <map>
 #include <string>
 
@@ -32,12 +33,12 @@ bool Reserve::refresh()
             return false;
         }
 
-        for (const auto& r : response["reserves"]) {
+        std::transform(response["reserves"].begin(), response["reserves"].end(), std::back_inserter(reserves), [request](const nlohmann::json& r) {
             auto p = r["program"].get<program>();
             p.ruleId = r.contains("ruleId") && r["ruleId"].is_number() ? r["ruleId"].get<int16_t>() : -1;
             p.state = request.first;
-            reserves.push_back(p);
-        }
+            return p;
+        });
     }
 
     XBMC->Log(ADDON::LOG_NOTICE, "Updated conflicted program: ammount = %d", response["reserves"].size());
