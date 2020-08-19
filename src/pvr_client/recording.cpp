@@ -47,12 +47,10 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
             rec.iGenreType = genre.main;
             rec.iGenreSubType = genre.sub;
             rec.iEpgEventId = static_cast<unsigned int>(r.programId % 100000);
-            rec.iChannelUid = r.channelId;
+            rec.iChannelUid = static_cast<int>(r.channelId);
             rec.channelType = PVR_RECORDING_CHANNEL_TYPE_TV;
             if (r.hasThumbnail) {
                 snprintf(rec.strThumbnailPath, PVR_ADDON_URL_STRING_LENGTH - 1, g_recorded.recordedThumbnailPath.c_str(), rec.strRecordingId);
-            } else {
-                strncpy(rec.strThumbnailPath, "", PVR_ADDON_URL_STRING_LENGTH - 1);
             }
 
             PVR->TransferRecordingEntry(handle, &rec);
