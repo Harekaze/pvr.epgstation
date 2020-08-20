@@ -13,10 +13,10 @@ Kodi のための EPGStation PVR アドオン
 ## サポート環境
 
 ### バックエンド
-- EPGStation [v1.7](https://github.com/l3tnun/EPGStation/tree/v1.7.0)
+- EPGStation [v1.7](https://github.com/l3tnun/EPGStation/tree/v1.7.4)
 
 ### フロントエンド
-- Kodi **18.7** Leia
+- Kodi **18.8** Leia
   + for macOS (x86_64)
   + for Raspberry Pi OS (armv7)
   + for Windows 10 (64 bit/Microsoft Store)
