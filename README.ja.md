@@ -51,6 +51,17 @@ $ ls pvr.epgstation.zip
 
 ## インストール方法
 
+### リポジトリを追加してインストール（推奨）
+
+1. リポジトリアドオンを[https://repo.harekaze.org/](https://repo.harekaze.org/)から取得
+2. Kodiを起動する
+3. 画面を操作し、System -> Add-ons -> Install from zip file へと行く
+4. 画面でzipファイルを選択してインストールする
+5. Install from repositoryからHarekaze2 repositoryに移動
+6. PVR Clientからアドオンをインストールする
+
+### 手動インストール
+
 1. ソースコードからビルドするか、最適なバージョンのリリースをダウンロードする
 2. Kodiを起動する
 3. 画面を操作し、System -> Add-ons -> Install from zip file へと行く

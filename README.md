@@ -52,6 +52,17 @@ Requirements:
 
 ## Installation
 
+### Install from Repository (recommended)
+
+1. Download the latest repository add-on from [https://repo.harekaze.org/](https://repo.harekaze.org/)
+2. Launch Kodi.
+3. Navigate to **System** -> **Add-ons** -> **Install from zip file**
+4. Select the zip file which you get in first step.
+5. Go to **Install from repository** -> **Harekaze2 repository**
+6. Install PVR add-on from the repository
+
+### Install manually
+
 1. Build or download the appropriate version for your platform.
 2. Launch Kodi.
 3. Navigate to System -> Add-ons -> Install from zip file
