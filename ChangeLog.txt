@@ -1,3 +1,11 @@
+v0.0.8
+- Add full channel request to display all channels including sub service (hidden by default)
+- Change channel ID for internal use
+- Fix program ID overflow in 32-bit platforms
+- Fix timer rule addition and deletion
+- Fix a bug of recording/reserved entry size less than 24
+- Optimize EPG program API request
+
 v0.0.7
 - Fix a bug that recording was not possible on non-Windows platforms
 
