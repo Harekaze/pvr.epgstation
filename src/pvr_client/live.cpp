@@ -56,7 +56,7 @@ void* liveStreamHandle = nullptr;
 bool OpenLiveStream(const PVR_CHANNEL& channel)
 {
     char url[1024];
-    snprintf(url, sizeof(url) - 1, g_channels.liveStreamingPath.c_str(), channel.iUniqueId);
+    snprintf(url, sizeof(url) - 1, g_channels.liveStreamingPath.c_str(), g_channels.getId(static_cast<int>(channel.iUniqueId)));
     liveStreamHandle = XBMC->OpenFile(url, 0);
     return liveStreamHandle != nullptr;
 }
