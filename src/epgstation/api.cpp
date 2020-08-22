@@ -129,28 +129,28 @@ namespace api {
     // GET /api/recorded
     int getRecorded(nlohmann::json& response)
     {
-        constexpr char apiPath[] = "recorded";
+        constexpr char apiPath[] = "recorded?limit=65535";
         return request("GET", apiPath, &response);
     }
 
     // GET /api/reserves
     int getReserves(nlohmann::json& response)
     {
-        constexpr char apiPath[] = "reserves";
+        constexpr char apiPath[] = "reserves?limit=65535";
         return request("GET", apiPath, &response);
     }
 
     // GET /api/reserves/skips
     int getReservesSkips(nlohmann::json& response)
     {
-        constexpr char apiPath[] = "reserves/skips";
+        constexpr char apiPath[] = "reserves/skips?limit=65535";
         return request("GET", apiPath, &response);
     }
 
     // GET /api/reserves/conflicts
     int getReservesConflicts(nlohmann::json& response)
     {
-        constexpr char apiPath[] = "reserves/conflicts";
+        constexpr char apiPath[] = "reserves/conflicts?limit=65535";
         return request("GET", apiPath, &response);
     }
 
@@ -189,7 +189,7 @@ namespace api {
     // GET /api/rules
     int getRules(nlohmann::json& response)
     {
-        constexpr char apiPath[] = "rules";
+        constexpr char apiPath[] = "rules?limit=65535";
         return request("GET", apiPath, &response);
     }
 
