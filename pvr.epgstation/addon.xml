@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="pvr.epgstation" name="Harekaze (EPGStation PVR client)" version="0.0.7" provider-name="Harekaze project">
+<addon id="pvr.epgstation" name="Harekaze (EPGStation PVR client)" version="0.0.8" provider-name="Harekaze project">
 	<requires>
 		<import addon="kodi.binary.instance.pvr" version="5.10.0"/>
 		<import addon="kodi.binary.global.main" version="1.0.12"/>
