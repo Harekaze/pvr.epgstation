@@ -1,3 +1,7 @@
+v0.0.9
+- Add now-recording and recording completed state in timer list view
+- Fix playback failure of encoded recordings when there are more than 255 files
+
 v0.0.8
 - Add full channel request to display all channels including sub service (hidden by default)
 - Change channel ID for internal use
