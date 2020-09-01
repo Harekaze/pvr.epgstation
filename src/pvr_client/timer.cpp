@@ -100,6 +100,9 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             PVR->TransferTimerEntry(handle, &timer);
         }
 
+        const auto time = localtime_now();
+        const auto now = mktime(time);
+
         for (const auto& p : g_reserve.reserves) {
             struct PVR_TIMER timer = {
                 .iClientIndex = static_cast<unsigned int>(p.id),
@@ -122,9 +125,16 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             strncpy(timer.strDirectory, std::to_string(p.id).c_str(), PVR_ADDON_URL_STRING_LENGTH - 1); // NOTE: Store original ID
 
             switch (p.state) {
-            case epgstation::STATE_RESERVED:
-                timer.state = PVR_TIMER_STATE_SCHEDULED;
+            case epgstation::STATE_RESERVED: {
+                if (now < timer.startTime) {
+                    timer.state = PVR_TIMER_STATE_SCHEDULED;
+                } else if (now < timer.endTime) {
+                    timer.state = PVR_TIMER_STATE_RECORDING;
+                } else {
+                    timer.state = PVR_TIMER_STATE_COMPLETED;
+                }
                 break;
+            }
             case epgstation::STATE_CONFLICT:
                 timer.state = PVR_TIMER_STATE_CONFLICT_NOK;
                 break;
