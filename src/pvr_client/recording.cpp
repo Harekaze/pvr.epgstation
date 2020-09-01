@@ -81,7 +81,7 @@ PVR_ERROR GetRecordingStreamProperties(const PVR_RECORDING* recording, PVR_NAMED
 
         if (rec->encoded.size() > 1) {
             std::vector<const char*> entries;
-            std::transform(rec->encoded.begin(), rec->encoded.end(), std::back_inserter(entries), [](std::pair<uint8_t, std::string>& s) {
+            std::transform(rec->encoded.begin(), rec->encoded.end(), std::back_inserter(entries), [](std::pair<uint64_t, std::string>& s) {
                 return s.second.c_str();
             });
             entries.push_back(nullptr);

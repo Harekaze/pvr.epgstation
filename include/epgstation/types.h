@@ -45,7 +45,7 @@ public:
     bool recording;
     bool hasThumbnail;
     bool original;
-    std::vector<std::pair<uint8_t, std::string>> encoded;
+    std::vector<std::pair<uint64_t, std::string>> encoded;
     int16_t ruleId = 0; // Optional for reserved program
     ReservedState state; // Optional for reserved program
 
