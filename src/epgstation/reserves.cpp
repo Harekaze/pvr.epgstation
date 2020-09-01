@@ -28,7 +28,7 @@ bool Reserve::refresh()
 
     reserves.clear();
 
-    for (const auto request : requests) {
+    for (const auto& request : requests) {
         if (request.second(response) == api::REQUEST_FAILED) {
             return false;
         }

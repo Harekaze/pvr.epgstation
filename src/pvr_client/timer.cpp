@@ -71,7 +71,7 @@ int GetTimersAmount(void)
 PVR_ERROR GetTimers(ADDON_HANDLE handle)
 {
     if (g_rule.refresh() && g_reserve.refresh()) {
-        for (const auto rule : g_rule.rules) {
+        for (const auto& rule : g_rule.rules) {
             PVR_TIMER timer = {
                 .iClientIndex = static_cast<unsigned int>(rule.id),
                 .iParentClientIndex = PVR_TIMER_NO_PARENT,
@@ -100,7 +100,7 @@ PVR_ERROR GetTimers(ADDON_HANDLE handle)
             PVR->TransferTimerEntry(handle, &timer);
         }
 
-        for (const auto p : g_reserve.reserves) {
+        for (const auto& p : g_reserve.reserves) {
             struct PVR_TIMER timer = {
                 .iClientIndex = static_cast<unsigned int>(p.id),
                 .iParentClientIndex = static_cast<unsigned int>(p.ruleId),

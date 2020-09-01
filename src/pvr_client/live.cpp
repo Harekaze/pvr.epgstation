@@ -19,7 +19,7 @@ extern "C" {
 
 PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL& channel, time_t iStart, time_t iEnd)
 {
-    for (const auto epg : g_schedule.fetch(g_channels.getId(static_cast<int>(channel.iUniqueId)), iStart, iEnd)) {
+    for (const auto& epg : g_schedule.fetch(g_channels.getId(static_cast<int>(channel.iUniqueId)), iStart, iEnd)) {
         EPG_TAG tag = {
             .iUniqueBroadcastId = static_cast<unsigned int>(epg.id % 100000ul),
             .iUniqueChannelId = channel.iUniqueId,

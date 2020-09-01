@@ -36,7 +36,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 
     std::vector<std::string> transferred;
 
-    for (const auto c : g_channels.channels) {
+    for (const auto& c : g_channels.channels) {
         PVR_CHANNEL ch = {
             .iUniqueId = static_cast<unsigned int>(g_channels.getId(c.id)),
             .bIsRadio = false,
@@ -65,7 +65,7 @@ PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio)
 int GetChannelGroupsAmount(void)
 {
     std::set<std::string> list;
-    for (const auto channel : g_channels.channels) {
+    for (const auto& channel : g_channels.channels) {
         list.insert(channel.channelType);
     }
     return list.size();
@@ -74,11 +74,11 @@ int GetChannelGroupsAmount(void)
 PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 {
     std::set<std::string> list;
-    for (const auto channel : g_channels.channels) {
+    for (const auto& channel : g_channels.channels) {
         list.insert(channel.channelType);
     }
 
-    for (const auto channelType : list) {
+    for (const auto& channelType : list) {
         PVR_CHANNEL_GROUP chGroup = {};
         strncpy(chGroup.strGroupName, channelType.c_str(), PVR_ADDON_NAME_STRING_LENGTH - 1);
 
@@ -90,7 +90,7 @@ PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 
 PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& group)
 {
-    for (const auto c : g_channels.channels) {
+    for (const auto& c : g_channels.channels) {
         if (c.channelType != group.strGroupName) {
             continue;
         }

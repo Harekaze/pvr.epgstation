@@ -35,7 +35,7 @@ int GetRecordingsAmount(bool deleted)
 PVR_ERROR GetRecordings(ADDON_HANDLE handle, bool deleted)
 {
     if (g_recorded.refresh()) {
-        for (const auto r : g_recorded.programs) {
+        for (const auto& r : g_recorded.programs) {
             const auto genre = epgstation::getGenreCodeFromContentNibble(r.genre1, r.genre2);
             PVR_RECORDING rec = {};
             rec.recordingTime = r.startAt;
